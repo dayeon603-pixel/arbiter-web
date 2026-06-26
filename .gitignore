@@ -1,9 +1,8 @@
 # dependencies
 node_modules/
 
-# next.js
+# next.js build cache (but we DO commit out/ so Cloudflare can serve it with no build step)
 .next/
-out/
 build/
 
 # misc
