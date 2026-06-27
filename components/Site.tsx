@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import Lenis from 'lenis'
 import GradientCanvas from './GradientCanvas'
+import LogoMark from './LogoMark'
 import { sectors, hero, company, founder, navLinks, type Sector } from '@/lib/data'
 
 const EASE = [0.16, 0.7, 0.18, 1] as const
@@ -29,7 +30,10 @@ function Nav() {
   return (
     <header className="nav">
       <div className="wrap nav__inner">
-        <a href="#top" className="wordmark">ARBITER</a>
+        <a href="#top" className="brand" aria-label="Arbiter — home">
+          <LogoMark size={26} />
+          <span className="wordmark">ARBITER</span>
+        </a>
         <nav className="nav__links" aria-label="Primary">
           {navLinks.map((l) => (<a key={l.id} href={`#${l.id}`}>{l.label}</a>))}
           <a href="#company">Company</a>
@@ -42,18 +46,19 @@ function Nav() {
 
 function Hero() {
   return (
-    <section id="top" className="hero">
+    <section id="top" className="hero hero--center">
       <GradientCanvas />
       <motion.div
         className="wrap hero__inner"
         initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: EASE }}
       >
-        <p className="eyebrow">{hero.eyebrow}</p>
+        <LogoMark size={62} className="hero__mark" />
+        <p className="eyebrow eyebrow--plain">{hero.eyebrow}</p>
         <h1 className="hero__title">{hero.title}</h1>
         <p className="hero__sub">{hero.sub}</p>
         <div className="hero__actions">
-          <a href={`#${sectors[0].id}`} className="btn btn--solid">Explore the work</a>
-          <a href={`mailto:${founder.contact}`} className="btn btn--ghost">Get in touch</a>
+          <a href={`#${sectors[0].id}`} className="btn btn--solid">See the work</a>
+          <a href="#company" className="btn-link">About the company&nbsp;→</a>
         </div>
       </motion.div>
     </section>
@@ -148,7 +153,7 @@ function Footer() {
     <footer className="footer">
       <div className="wrap footer__grid">
         <div>
-          <div className="footer__brand">ARBITER</div>
+          <div className="footer__brand"><LogoMark size={24} /><span>ARBITER</span></div>
           <p className="footer__note">Decision, safety, and infrastructure across five regulated and high-stakes domains. Built in the open.</p>
         </div>
         <div className="footer__col">

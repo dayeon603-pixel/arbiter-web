@@ -1,7 +1,7 @@
 'use client'
 
 import { Canvas, useFrame } from '@react-three/fiber'
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 
 const vertex = /* glsl */ `
@@ -81,13 +81,22 @@ function GradientPlane() {
 }
 
 export default function GradientCanvas() {
-  const reduce = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  // Only mount the WebGL canvas if the browser can actually create a context.
+  // If not, render nothing → clean white hero, never a white-screen crash.
+  const [ready, setReady] = useState(false)
+  useEffect(() => {
+    try {
+      const c = document.createElement('canvas')
+      const gl = c.getContext('webgl') || c.getContext('experimental-webgl')
+      if (gl && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) setReady(true)
+    } catch { /* no WebGL → stay clean */ }
+  }, [])
+  if (!ready) return null
   return (
     <Canvas
       className="hero__canvas"
       gl={{ antialias: false, alpha: false }}
       dpr={[1, 1.5]}
-      frameloop={reduce ? 'demand' : 'always'}
       style={{ position: 'absolute', inset: 0 }}
     >
       <GradientPlane />
