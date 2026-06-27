@@ -109,8 +109,8 @@
 
   /* sector — full-bleed background image with overlaid text */
   .sector { position: relative; display: flex; align-items: center; min-height: 92vh; padding-block: clamp(4rem, 3rem + 5vw, 6.5rem); overflow: hidden; color: #fff; isolation: isolate; }
-  .sector__bg { position: absolute; inset: 0; z-index: -1; overflow: hidden; }
-  .sector__bg img { position: absolute; inset: -8%; width: 116%; height: 116%; object-fit: cover; will-change: transform; }
+  .sector__bg { position: absolute; inset: 0; z-index: -1; overflow: hidden; background: #0a0d12; }
+  .sector__bg img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: center; }
   .sector__bg::after { content: ""; position: absolute; inset: 0;
     background: linear-gradient(90deg, rgba(8,10,14,0.86) 0%, rgba(8,10,14,0.66) 40%, rgba(8,10,14,0.28) 78%, rgba(8,10,14,0.12) 100%),
                 linear-gradient(0deg, rgba(8,10,14,0.5) 0%, rgba(8,10,14,0) 45%); }

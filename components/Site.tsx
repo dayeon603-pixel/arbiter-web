@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import Link from 'next/link'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion } from 'framer-motion'
 import Lenis from 'lenis'
 import GradientCanvas from './GradientCanvas'
 import LogoMark from './LogoMark'
@@ -66,14 +66,11 @@ function Hero() {
 }
 
 function SectorBlock({ s, index }: { s: Sector; index: number }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
-  const y = useTransform(scrollYProgress, [0, 1], ['-7%', '7%'])
   const rev = index % 2 === 1
   return (
-    <section id={s.id} ref={ref} className={`sector${rev ? ' sector--rev' : ''}`}>
+    <section id={s.id} className={`sector${rev ? ' sector--rev' : ''}`}>
       <div className="sector__bg">
-        <motion.img style={{ y }} src={s.image} alt="" loading="lazy" />
+        <img src={s.image} alt="" loading="lazy" />
       </div>
       <div className="wrap">
         <motion.div
