@@ -63,9 +63,8 @@ export const founder = {
   kicker: 'The operator',
   name: 'Dayeon Kang',
   lines: [
-    'Founder and sole operator of Arbiter. A developer, quantitative researcher, and civic-technology builder who designs, builds, and ships across all five domains herself, from the cold-chain hardware thesis to the cryptographic trust rails to the AI-safety research.',
-    'Her method is the same everywhere: find a place where a high-stakes decision is made badly or slowly, build the system that makes it well, and keep proof it was right. She works in the open and ships one venture at a time, honest about what is real and what is still being built.',
-    'Chairman of the Seongnam Youth Council. Founder of Youths Unite. Conference speaker.',
+    'I’m the founder and sole operator of Arbiter — a developer, quantitative researcher, and civic-technology builder. I design, build, and ship across all five domains myself, from the cold-chain hardware thesis to the cryptographic trust rails to the AI-safety research.',
+    'My method is the same everywhere: I find a place where a high-stakes decision is made badly or slowly, build the system that makes it well, and keep proof it was right. I work in the open and ship one venture at a time, honest about what is real and what is still being built.',
   ],
   contact: 'dayeon603@gmail.com',
 }
