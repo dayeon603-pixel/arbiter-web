@@ -71,18 +71,15 @@ function SectorBlock({ s, index }: { s: Sector; index: number }) {
   const y = useTransform(scrollYProgress, [0, 1], ['-7%', '7%'])
   const rev = index % 2 === 1
   return (
-    <section id={s.id} className={`sector${rev ? ' sector--rev' : ''}`}>
-      <div className="wrap sector__grid">
+    <section id={s.id} ref={ref} className={`sector${rev ? ' sector--rev' : ''}`}>
+      <div className="sector__bg">
+        <motion.img style={{ y }} src={s.image} alt="" loading="lazy" />
+      </div>
+      <div className="wrap">
         <motion.div
-          ref={ref} className="sector__media"
+          className="sector__content"
           initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-12%' }} transition={{ duration: 0.7, ease: EASE }}
-        >
-          <motion.img style={{ y }} src={s.image} alt={s.kicker} loading="lazy" />
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-12%' }} transition={{ duration: 0.7, delay: 0.06, ease: EASE }}
+          viewport={{ once: true, margin: '-15%' }} transition={{ duration: 0.7, ease: EASE }}
         >
           <div className="sector__eyebrow">
             <span className="sector__fig">FIG. {s.fig}</span>
@@ -133,16 +130,13 @@ function Company() {
 function Founder() {
   return (
     <section id="founder" className="founder">
-      <div className="wrap founder__grid">
-        <div className="founder__portrait"><img src="/img/founder.jpg" alt={founder.name} /></div>
-        <div>
-          <p className="eyebrow">{founder.kicker}</p>
-          <h2 className="founder__name">{founder.name}</h2>
-          <div className="prose" style={{ marginTop: 'var(--s-5)' }}>
-            {founder.lines.map((l, i) => (<p key={i}>{l}</p>))}
-          </div>
-          <a href={`mailto:${founder.contact}`} className="founder__contact">{founder.contact}</a>
+      <div className="wrap founder__inner">
+        <p className="eyebrow">{founder.kicker}</p>
+        <h2 className="founder__name">{founder.name}</h2>
+        <div className="prose" style={{ marginTop: 'var(--s-5)' }}>
+          {founder.lines.map((l, i) => (<p key={i}>{l}</p>))}
         </div>
+        <a href={`mailto:${founder.contact}`} className="founder__contact">{founder.contact}</a>
       </div>
     </section>
   )
