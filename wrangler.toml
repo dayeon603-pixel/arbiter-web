@@ -1,0 +1,9 @@
+name = "arbiter-web"
+compatibility_date = "2025-01-01"
+
+# Static-only Worker: serve the Next.js static export in ./out (built by `npm run build`).
+# No Worker script needed — Cloudflare serves the assets directly.
+[assets]
+directory = "./out"
+not_found_handling = "404-page"
+html_handling = "auto-trailing-slash"
