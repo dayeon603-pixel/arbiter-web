@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { caravan, founder } from '@/lib/data'
+import { caravan, contactHref } from '@/lib/data'
 
 export const metadata: Metadata = {
   title: 'Caravan — Arbiter',
@@ -16,7 +16,7 @@ export default function CaravanPage() {
           <nav className="nav__links" aria-label="Primary">
             <Link href="/#finance">Finance</Link>
             <Link href="/#company">Company</Link>
-            <a href={`mailto:${founder.contact}`} className="nav__cta">Contact</a>
+            <a href={contactHref('Caravan — Inquiry')} className="nav__cta">Contact</a>
           </nav>
         </div>
       </header>
@@ -66,7 +66,7 @@ export default function CaravanPage() {
 
         <section className="wrap cv__cta">
           <Link href="/#finance" className="btn btn--ghost">← Back to Finance</Link>
-          <a href={`mailto:${founder.contact}`} className="btn btn--solid">Get in touch</a>
+          <a href={contactHref('Caravan — Inquiry')} className="btn btn--solid">Get in touch</a>
         </section>
       </main>
 

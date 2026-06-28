@@ -69,6 +69,10 @@ export const founder = {
   contact: 'dayeon603@gmail.com',
 }
 
+/** Build a proper mailto with a subject so "Contact"/"Get in touch" open a ready-to-send email. */
+export const contactHref = (subject = 'Arbiter — Inquiry') =>
+  `mailto:${founder.contact}?subject=${encodeURIComponent(subject)}`
+
 export const caravan = {
   eyebrow: 'A product of Arbiter · Finance',
   name: 'Caravan',

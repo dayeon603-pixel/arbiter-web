@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import Lenis from 'lenis'
 import GradientCanvas from './GradientCanvas'
 import LogoMark from './LogoMark'
-import { sectors, hero, company, founder, navLinks, type Sector } from '@/lib/data'
+import { sectors, hero, company, founder, navLinks, contactHref, type Sector } from '@/lib/data'
 
 const EASE = [0.16, 0.7, 0.18, 1] as const
 
@@ -37,7 +37,7 @@ function Nav() {
         <nav className="nav__links" aria-label="Primary">
           {navLinks.map((l) => (<a key={l.id} href={`#${l.id}`}>{l.label}</a>))}
           <a href="#company">Company</a>
-          <a href={`mailto:${founder.contact}`} className="nav__cta">Contact</a>
+          <a href={contactHref('Arbiter — Inquiry')} className="nav__cta">Contact</a>
         </nav>
       </div>
     </header>
@@ -133,7 +133,7 @@ function Founder() {
         <div className="prose" style={{ marginTop: 'var(--s-5)' }}>
           {founder.lines.map((l, i) => (<p key={i}>{l}</p>))}
         </div>
-        <a href={`mailto:${founder.contact}`} className="founder__contact">{founder.contact}</a>
+        <a href={contactHref('Arbiter — Inquiry')} className="founder__contact">{founder.contact}</a>
       </div>
     </section>
   )
@@ -156,7 +156,7 @@ function Footer() {
           <ul>
             <li><a href="#company">About</a></li>
             <li><a href="#founder">Founder</a></li>
-            <li><a href={`mailto:${founder.contact}`}>Contact</a></li>
+            <li><a href={contactHref('Arbiter — Inquiry')}>Contact</a></li>
           </ul>
         </div>
       </div>
