@@ -100,6 +100,16 @@ function SectorBlock({ s, index }: { s: Sector; index: number }) {
               <span className="product-card__arrow" aria-hidden>→</span>
             </Link>
           )}
+          {s.products?.map((p) => (
+            <Link key={p.href} href={p.href} className="product-card" aria-label={`Learn about ${p.name}`}>
+              <span className="product-card__tag">Product</span>
+              <span className="product-card__body">
+                <span className="product-card__name">{p.name}</span>
+                <span className="product-card__note">{p.note}</span>
+              </span>
+              <span className="product-card__arrow" aria-hidden>→</span>
+            </Link>
+          ))}
         </motion.div>
       </div>
     </section>

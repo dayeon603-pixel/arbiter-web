@@ -2,6 +2,7 @@ export type Sector = {
   id: string; fig: string; kicker: string; stage: string
   title: string; mission: string; target: string; image: string
   product?: { name: string; note: string; href: string }
+  products?: { name: string; note: string; href: string }[]
 }
 
 export const hero = {
@@ -32,6 +33,10 @@ export const sectors: Sector[] = [
     mission: 'Developing systems that detect cloned and synthetic voices in real time, to stop the fastest-growing fraud of the decade: the scam phone call. The work spans the whole kill-chain — verify the voice is human, defend the call while it is happening, and help victims recover afterward — and runs on the device, so the audio never has to leave it.',
     target: 'The elderly phone users who are targeted most, and the banks and fintechs that carry the loss.',
     image: '/img/cyber.jpg',
+    products: [
+      { name: 'HALO', note: 'On-device defense that shields elders from voice-phishing, in real time.', href: '/halo' },
+      { name: 'Goldentime', note: 'A recovery copilot for the first hour after a voice-phishing transfer.', href: '/goldentime' },
+    ],
   },
   {
     id: 'health', fig: '04', kicker: 'Health & Bio', stage: 'Shipping · Research',
@@ -89,6 +94,52 @@ export const caravan = {
   status: {
     label: 'Status',
     body: 'Caravan runs today as working, tested software, not a slide or a concept. It is solo-built and pre-commercial: no customers, revenue, or funding are claimed anywhere. This page describes what Caravan does and why it matters, deliberately at a high level — the internal mechanics, models, and the specific trade lanes it targets are kept off the public page while the product is still being hardened.',
+  },
+}
+
+export const halo = {
+  eyebrow: 'A product of Arbiter · Cybersecurity & Fraud',
+  name: 'HALO',
+  tagline: 'On-device defense that shields elders from voice-phishing, in real time.',
+  lead: 'HALO runs on the phone itself and watches the channels a scam actually travels through — the call, the message, the chat, and the banking screen at the moment of transfer — to catch a scam while it is happening, not after the money is gone. It works entirely on the device, so the conversation never leaves the phone, and it routes a warning to the family the instant something looks wrong. The hard part is not the call or the text, which the platforms already cover; it is the two channels no platform can see — the messenger conversation and the bank screen one tap before a transfer — and that is exactly where HALO lives.',
+  problem: {
+    label: 'The problem',
+    body: 'The fastest-growing fraud of the decade is a phone call, and the people targeted most are elderly. They are convinced they are not being deceived right up to the moment they send the money, and the family only finds out afterward. The defenses that exist watch the call and the text — but the scam is completed somewhere they cannot look: inside the messenger thread and on the banking app’s transfer screen. By the time a blocklist catches a new script, the loss has already spread. Nobody is defending the two surfaces where the money actually leaves.',
+  },
+  how: {
+    label: 'How it works',
+    points: [
+      { h: 'It reads the channels nobody else can', p: 'An on-device language model reads the two surfaces platforms structurally cannot access — the messenger conversation and the pre-transfer bank screen — so it can flag a scam at the exact point of loss, not from a blocklist that is always a step behind.' },
+      { h: 'On-device, so nothing leaves the phone', p: 'The call and the chat are analyzed locally on the device. No audio and no conversation is sent to a server, which solves privacy and latency at the same time and lets the defense work even where a network does not.' },
+      { h: 'A warning that reaches the family in time', p: 'When risk is detected, HALO routes an alert to a trusted family member while the call is still happening — not a report after it. It detects and warns; it never silently blocks or moves money on its own.' },
+    ],
+  },
+  status: {
+    label: 'Status',
+    body: 'HALO is in active development — pre-alpha and pre-commercial. A working prototype and a measured scam-classifier already exist; on-device performance and field pilots are the current work. No customers, revenue, or funding are claimed anywhere. The internal models, datasets, and the specific channels are kept off this public page while the product is still being hardened.',
+  },
+}
+
+export const goldentime = {
+  eyebrow: 'A product of Arbiter · Cybersecurity & Fraud',
+  name: 'Goldentime',
+  tagline: 'A recovery copilot for the first hour after a voice-phishing transfer.',
+  lead: 'The hour after money is sent decides whether it can be recovered. Goldentime is the copilot a victim and their family open at that moment — it walks them through the exact, time-critical steps in the right order, so the small window to claw the money back is not lost to panic or confusion. It turns a chaotic, high-stakes situation into a guided sequence, so the people least prepared for it can act like the people who handle it every day.',
+  problem: {
+    label: 'The problem',
+    body: 'When a scam succeeds, the difference between recovering the money and losing it is measured in minutes. But the victim is panicked, often elderly, and does not know that the bank can freeze the receiving account, which agency to call first, or what to preserve as evidence — and the family scrambling to help knows even less. The official steps exist, but they are scattered, slow to find, and written for no one in the moment of crisis. The recoverable window closes while everyone is still figuring out what to do.',
+  },
+  how: {
+    label: 'How it works',
+    points: [
+      { h: 'The right steps, in the right order, now', p: 'Goldentime gives the victim and family the exact time-critical sequence — freeze the receiving account, report to the authorities, preserve the evidence — instead of a list to decipher under pressure. The order is the product: the actions that recover money come first.' },
+      { h: 'Built for the panicked, not the expert', p: 'The guidance is written for someone in shock: plain, sequenced, and acting in minutes. The people least prepared for this are the ones it is designed for, so they move with the speed the situation demands.' },
+      { h: 'A record that helps the case', p: 'The actions and evidence are captured as a clean, ordered record that supports the bank’s freeze request and the police report — so the recovery effort is not rebuilt from memory after the fact.' },
+    ],
+  },
+  status: {
+    label: 'Status',
+    body: 'Goldentime is in active development and pre-commercial. It builds on the same fraud understanding as HALO, applied to the real, time-critical recovery process. No customers, revenue, or funding are claimed anywhere. The specific institutional integrations are kept off this public page while the product is still being built.',
   },
 }
 
