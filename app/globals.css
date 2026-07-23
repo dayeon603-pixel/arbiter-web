@@ -164,7 +164,10 @@
   .founder__portrait { aspect-ratio: 3 / 4; max-width: 300px; width: 100%; border: 1px solid var(--line); border-radius: 24px; overflow: hidden; background: var(--bg-2); box-shadow: 0 24px 60px -34px rgba(15, 20, 25, 0.3); }
   .founder__portrait img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .founder__name { font-weight: 800; font-size: var(--step-h2); letter-spacing: -0.03em; line-height: 1.02; }
-  .founder__contact { display: inline-block; margin-top: var(--s-6); font-family: var(--font-mono); font-size: 0.82rem; color: var(--accent); border-bottom: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); padding-bottom: 1px; }
+  .founder__contact { display: inline-block; font-family: var(--font-mono); font-size: 0.82rem; color: var(--accent); border-bottom: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); padding-bottom: 1px; }
+  .founder__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-6); margin-top: var(--s-6); }
+  .founder__card-link { display: inline-flex; align-items: center; font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); transition: color 0.2s; }
+  .founder__card-link:hover { color: var(--accent); }
   @media (max-width: 760px) { .split, .founder__grid { grid-template-columns: 1fr; } }
 
   /* footer */

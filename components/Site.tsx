@@ -137,7 +137,10 @@ function Founder() {
         <div className="prose" style={{ marginTop: 'var(--s-5)' }}>
           {founder.lines.map((l, i) => (<p key={i}>{l}</p>))}
         </div>
-        <a href={contactHref('Arbiter — Inquiry')} className="founder__contact">{founder.contact}</a>
+        <div className="founder__actions">
+          <a href={contactHref('Arbiter — Inquiry')} className="founder__contact">{founder.contact}</a>
+          <Link href="/card" className="founder__card-link">View my card&nbsp;→</Link>
+        </div>
       </div>
     </section>
   )
@@ -160,6 +163,7 @@ function Footer() {
           <ul>
             <li><a href="#company">About</a></li>
             <li><a href="#founder">Founder</a></li>
+            <li><Link href="/card">Founder Card</Link></li>
             <li><a href={contactHref('Arbiter — Inquiry')}>Contact</a></li>
           </ul>
         </div>
