@@ -288,3 +288,78 @@
 .legal__prose strong { color: var(--ink); font-weight: 600; }
 .legal__todo { font-family: var(--font-mono); font-size: 0.78rem; line-height: 1.6; color: var(--accent); background: var(--accent-soft); border: 1px dashed color-mix(in srgb, var(--accent) 40%, transparent); border-radius: var(--radius); padding: var(--s-3) var(--s-4); }
 .legal__nav { display: flex; justify-content: space-between; gap: var(--s-5); flex-wrap: wrap; }
+
+/* ================================================================ business card (/card) */
+.bizcard {
+  --bc-stock: #EBE8E0; --bc-stock-2: #E3DFD5;
+  --bc-ink: #17171d; --bc-ink-soft: #33333b; --bc-ink-mut: #6f6e66;
+  --bc-press-hi: rgba(255,255,255,0.85);
+  --bc-ink-back: #07070a; --bc-bone: #ECEDEA; --bc-bone-mut: #83848c;
+  --bc-orange: #E0632F;
+  --bc-stage-1: #1c1813; --bc-stage-2: #0b0a0d; --bc-stage-glow: rgba(224,99,47,0.09); --bc-stage-faint: #6f6f78;
+  --bc-sans: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', system-ui, sans-serif;
+  --bc-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', 'Cascadia Code', Menlo, monospace;
+
+  min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: clamp(20px, 4vh, 38px); padding: 6vw 5vw; font-family: var(--bc-sans);
+  background:
+    radial-gradient(120% 90% at 50% 10%, var(--bc-stage-glow), transparent 58%),
+    linear-gradient(162deg, var(--bc-stage-1) 0%, var(--bc-stage-2) 74%);
+  color: var(--bc-stage-faint);
+}
+@media (prefers-color-scheme: light) {
+  .bizcard { --bc-stage-1: #e7e2da; --bc-stage-2: #ccc6bf; --bc-stage-glow: rgba(224,99,47,0.12); --bc-stage-faint: #8d8d96; }
+}
+:root[data-theme="dark"]  .bizcard { --bc-stage-1: #1c1813; --bc-stage-2: #0b0a0d; --bc-stage-glow: rgba(224,99,47,0.09); --bc-stage-faint: #6f6f78; }
+:root[data-theme="light"] .bizcard { --bc-stage-1: #e7e2da; --bc-stage-2: #ccc6bf; --bc-stage-glow: rgba(224,99,47,0.12); --bc-stage-faint: #8d8d96; }
+
+.bizcard .stage { perspective: 1700px; perspective-origin: 50% 28%; }
+.bizcard .card {
+  position: relative; width: min(87vw, 460px); aspect-ratio: 1.75 / 1; transform-style: preserve-3d;
+  transition: transform 0.92s cubic-bezier(0.2, 0.82, 0.2, 1); cursor: pointer; border-radius: 15px;
+  transform: rotateX(var(--rx, 0deg)) rotateY(calc(var(--flip, 0deg) + var(--ry, 0deg)));
+}
+.bizcard .card:focus-visible { outline: none; }
+.bizcard .card:focus-visible .face { box-shadow: 0 0 0 2.5px var(--bc-orange), var(--bc-drop); }
+.bizcard .card.flipped { --flip: 180deg; }
+.bizcard .face {
+  --bc-drop: 0 34px 64px -26px rgba(0,0,0,0.78), 0 10px 22px -14px rgba(0,0,0,0.6);
+  position: absolute; inset: 0; border-radius: 15px; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  overflow: hidden; box-shadow: 0 0 0 1.5px var(--bc-orange), var(--bc-drop); container-type: inline-size;
+}
+.bizcard .front { background: linear-gradient(158deg, var(--bc-stock) 0%, var(--bc-stock-2) 100%); color: var(--bc-ink); padding: clamp(24px, 6.6cqw, 36px); }
+.bizcard .front::before {
+  content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0.5; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+}
+.bizcard .front__grid { position: relative; z-index: 1; height: 100%; display: grid; grid-template-rows: auto 1fr auto; }
+.bizcard .brandrow { display: flex; align-items: center; justify-content: space-between; }
+.bizcard .brandrow__l { display: flex; align-items: center; gap: 10px; }
+.bizcard .mark-deboss { flex: none; width: 21px; height: 21px; filter: drop-shadow(0 1px 0 var(--bc-press-hi)); }
+.bizcard .bc-wordmark { font-family: var(--bc-mono); font-size: clamp(9px, 2.5cqw, 11px); letter-spacing: 0.42em; font-weight: 600; color: var(--bc-ink-soft); padding-left: 2px; text-shadow: 0 1px 0 var(--bc-press-hi); }
+.bizcard .reg { font-family: var(--bc-mono); font-size: clamp(7px, 1.9cqw, 8.5px); letter-spacing: 0.24em; color: var(--bc-ink-mut); text-transform: uppercase; text-shadow: 0 1px 0 var(--bc-press-hi); }
+.bizcard .id { align-self: center; }
+.bizcard .bc-name { font-size: clamp(20px, 6.4cqw, 27px); font-weight: 600; letter-spacing: -0.015em; line-height: 1; color: var(--bc-ink); text-shadow: 0 1px 0 var(--bc-press-hi); text-wrap: balance; }
+.bizcard .bc-title { margin-top: 9px; display: inline-flex; align-items: center; gap: 9px; font-family: var(--bc-mono); font-size: clamp(8.5px, 2.3cqw, 10px); letter-spacing: 0.19em; text-transform: uppercase; color: var(--bc-ink-mut); }
+.bizcard .bc-title::before { content: ""; width: 18px; height: 2px; background: var(--bc-orange); border-radius: 2px; }
+.bizcard .contacts { display: grid; gap: clamp(4px, 1.25cqw, 6.5px); font-family: var(--bc-mono); font-size: clamp(9px, 2.3cqw, 10.5px); }
+.bizcard .row { display: grid; grid-template-columns: 2.1em 1fr; align-items: baseline; gap: 11px; color: var(--bc-ink-soft); text-decoration: none; transition: color 0.18s; text-shadow: 0 1px 0 var(--bc-press-hi); }
+.bizcard .row .k { color: var(--bc-ink-mut); font-size: 0.82em; letter-spacing: 0.1em; }
+.bizcard .row .v { letter-spacing: 0.02em; position: relative; width: fit-content; }
+.bizcard .row .v::after { content: ""; position: absolute; left: 0; right: 0; bottom: -2px; height: 1px; background: var(--bc-orange); transform: scaleX(0); transform-origin: left; transition: transform 0.22s ease; }
+.bizcard .row:hover { color: var(--bc-ink); }
+.bizcard .row:hover .v::after { transform: scaleX(1); }
+.bizcard .row:focus-visible { outline: 2px solid var(--bc-orange); outline-offset: 3px; border-radius: 3px; }
+.bizcard .back { transform: rotateY(180deg); background: radial-gradient(88% 78% at 50% 46%, #131218 0%, var(--bc-ink-back) 72%); color: var(--bc-bone); display: grid; place-items: center; text-align: center; }
+.bizcard .seal { position: relative; display: grid; place-items: center; z-index: 1; }
+.bizcard .seal__canvas { position: absolute; top: 50%; left: 50%; width: clamp(150px, 52cqw, 228px); height: clamp(150px, 52cqw, 228px); transform: translate(-50%, -54%); pointer-events: none; }
+.bizcard .seal__stack { position: relative; display: grid; justify-items: center; gap: 13px; }
+.bizcard .seal__mark { width: clamp(56px, 18.5cqw, 78px); height: clamp(56px, 18.5cqw, 78px); filter: drop-shadow(0 2px 0 rgba(0,0,0,0.5)); }
+.bizcard .seal__wm { font-family: var(--bc-mono); font-size: clamp(10px, 3cqw, 13px); letter-spacing: 0.5em; font-weight: 600; padding-left: 5px; }
+.bizcard .seal__line { display: flex; align-items: center; gap: 9px; font-family: var(--bc-mono); font-size: clamp(7.5px, 2.1cqw, 9px); letter-spacing: 0.26em; text-transform: uppercase; color: var(--bc-bone-mut); }
+.bizcard .seal__line .d { width: 4px; height: 4px; border-radius: 50%; background: var(--bc-orange); }
+.bizcard .seal__foot { position: absolute; bottom: clamp(13px, 4cqw, 18px); left: 0; right: 0; font-family: var(--bc-mono); font-size: clamp(6.5px, 1.8cqw, 8px); letter-spacing: 0.3em; text-transform: uppercase; color: var(--bc-stage-faint); }
+.bizcard .hint { display: inline-flex; align-items: center; gap: 9px; font-family: var(--bc-mono); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--bc-stage-faint); user-select: none; }
+.bizcard .hint kbd { font-family: var(--bc-mono); font-size: 9.5px; border: 1px solid currentColor; border-radius: 5px; padding: 2px 6px; opacity: 0.85; }
+.bizcard .hint .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--bc-orange); box-shadow: 0 0 9px var(--bc-orange); }
+@media (prefers-reduced-motion: reduce) { .bizcard .card { transition: transform 0.001s; } }
