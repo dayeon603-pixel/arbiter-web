@@ -21,11 +21,6 @@ function useLenis() {
   }, [])
 }
 
-function Badge({ stage }: { stage: string }) {
-  const ship = /shipping/i.test(stage)
-  return <span className={`badge${ship ? ' badge--ship' : ''}`}>{stage}</span>
-}
-
 function Nav() {
   return (
     <header className="nav">
@@ -82,7 +77,6 @@ function SectorBlock({ s, index }: { s: Sector; index: number }) {
             <span className="sector__fig">FIG. {s.fig}</span>
             <span className="sector__rule" />
             {s.kicker}
-            <Badge stage={s.stage} />
           </div>
           <h2 className="sector__title">{s.title}</h2>
           <p className="sector__mission">{s.mission}</p>

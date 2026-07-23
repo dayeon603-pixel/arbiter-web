@@ -39,9 +39,9 @@ export default function TermsPage() {
           <p>
             This website is an informational presentation of {legal.entity}, a
             company operated by {legal.operator} in the {legal.jurisdiction}. It
-            describes work across several domains at different stages, each labeled
-            plainly as shipping, in development, or research. Those stage labels are
-            statements of current status, not promises about the future.
+            describes work across several domains at different stages of maturity.
+            Descriptions of that work are statements of current status, not
+            promises about the future.
           </p>
 
           <h2>2. Not an offer, and not advice</h2>

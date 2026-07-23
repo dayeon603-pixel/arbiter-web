@@ -60,7 +60,7 @@ export const company = {
   title: 'One operator. Five domains. Built in the open.',
   body: [
     'Arbiter builds decision, safety, and infrastructure for regulated and high-stakes domains: places where being wrong is expensive and someone is required to be right.',
-    'It is solo-operated. No revenue, funding, or customers are claimed anywhere. Each domain is at an honest stage, stated plainly: shipping, in development, or research.',
+    'It is solo-operated. No revenue, funding, or customers are claimed anywhere. Each domain is described by what it does, plainly and without overclaiming.',
     'The unifying idea is the same in every domain. Take an ambiguous input, apply the rules, make the call, and keep proof a third party can check.',
   ],
 }
