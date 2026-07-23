@@ -86,13 +86,17 @@ export const contactHref = (subject = 'Arbiter — Inquiry') =>
  */
 export const legal = {
   entity: 'Arbiter',
+  // The legally registered business behind the Arbiter brand.
+  registeredEntity: '카라반 (Caravan)',
   operator: 'Dayeon Kang',
   contact: founder.contact,
   jurisdiction: 'Republic of Korea',
-  // Registered on the Korean business registry; number/address to be inserted
-  // by the operator before any commercial or data-collecting launch.
-  registrationNumber: 'TODO — insert business registration number',
-  registeredAddress: 'TODO — insert registered address',
+  registrationNumber: '414-01-72904',
+  // Registered business address. Held back from the public page for now: the
+  // site collects no personal data, so Korean PIPA does not yet require it to be
+  // displayed, and it is a personal address. Set showAddress to true to publish.
+  registeredAddress: '경기도 용인시 처인구 삼가로58번길 17-12, 사무실동 1층',
+  showAddress: false,
   effectiveDate: 'July 23, 2026',
   host: 'Cloudflare, Inc.',
 }

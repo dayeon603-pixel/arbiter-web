@@ -40,16 +40,14 @@ export default function PrivacyPage() {
 
           <h2>1. Who is responsible</h2>
           <p>
-            This website is operated by {legal.operator}, doing business as{' '}
-            {legal.entity} ({legal.jurisdiction}). For any privacy question you can
-            reach the operator directly at{' '}
+            {legal.entity} is a brand operated by {legal.registeredEntity}, a
+            business registered in the {legal.jurisdiction} by {legal.operator}
+            {' '}(business registration number {legal.registrationNumber}). For any
+            privacy question you can reach the operator directly at{' '}
             <a href={`mailto:${legal.contact}`}>{legal.contact}</a>.
           </p>
-          {!legal.registrationNumber.startsWith('TODO') && (
-            <p>
-              Business registration number: {legal.registrationNumber}. Registered
-              address: {legal.registeredAddress}.
-            </p>
+          {legal.showAddress && (
+            <p>Registered business address: {legal.registeredAddress}.</p>
           )}
 
           <h2>2. What this site collects</h2>
