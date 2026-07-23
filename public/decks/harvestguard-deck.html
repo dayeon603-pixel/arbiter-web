@@ -1,0 +1,361 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HarvestGuard — Research &amp; Pilot Proposal</title>
+<style>
+  :root{
+    --ink:#141210; --dim:#6a7280; --faint:#98a0ac; --line:#eae6df; --paper:#ffffff; --dark:#0f1a12;
+    --o1:#B7E27E; --o2:#2E9E5B; --orange:#1C9A55; --green:#0F7C43; --cold:#3E9BD6;
+    --sans:"Neue Montreal","Helvetica Neue",Arial,-apple-system,sans-serif;
+    --mono:"SF Mono",ui-monospace,"Courier New",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:#0f1419;font-family:var(--sans);-webkit-font-smoothing:antialiased;letter-spacing:-.005em;}
+  .deck{display:flex;flex-direction:column;gap:14px;padding:14px;}
+  @media(max-width:640px){.deck{gap:8px;padding:8px;}}
+  .slide{position:relative;width:100%;max-width:1180px;margin-inline:auto;aspect-ratio:16/9;container-type:inline-size;
+    overflow:hidden;border-radius:12px;box-shadow:0 14px 46px -20px rgba(0,0,0,.6);display:flex;flex-direction:column;}
+  .light{background:var(--paper);color:var(--ink);} .dark{background:#0f1a12;color:#fff;}
+  .pad{flex:1;display:flex;flex-direction:column;justify-content:center;padding:5.4cqw 7cqw;min-height:0;}
+  /* orange blob */
+  .blob{position:absolute;border-radius:50%;filter:blur(3cqw);background:radial-gradient(circle at 45% 45%,var(--o1),var(--o2) 52%,transparent 70%);pointer-events:none;z-index:0;}
+  .blob.tr{width:46cqw;height:46cqw;top:-18cqw;right:-14cqw;opacity:.85;}
+  .blob.c{width:66cqw;height:66cqw;top:50%;left:50%;transform:translate(-50%,-50%);opacity:.5;}
+  .blob.bl{width:40cqw;height:40cqw;bottom:-16cqw;left:-14cqw;opacity:.4;}
+  .pad>*{position:relative;z-index:1;}
+  /* chrome */
+  .chrome{position:absolute;top:5cqw;left:7cqw;right:7cqw;display:flex;align-items:center;justify-content:space-between;z-index:4;}
+  .mark{display:flex;align-items:center;gap:1.4cqw;} .mark svg{width:3.8cqw;height:3.8cqw;} .mark img{width:4cqw;height:4cqw;border-radius:1cqw;display:block;}
+  .mark span{font-family:var(--mono);font-weight:700;font-size:1.6cqw;letter-spacing:.24em;}
+  .badge{font-family:var(--mono);font-weight:700;font-size:1.3cqw;letter-spacing:.08em;background:var(--ink);color:#fff;border-radius:999px;padding:.85cqw 1.7cqw;}
+  .dark .badge{background:#fff;color:var(--ink);}
+  .arrow{width:4cqw;height:4cqw;border-radius:50%;background:var(--orange);color:#fff;display:grid;place-items:center;font-size:1.9cqw;margin-left:1.1cqw;}
+  /* type */
+  .kicker{font-family:var(--mono);font-size:1.5cqw;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:2cqw;}
+  h1{font-size:11.5cqw;font-weight:700;letter-spacing:-.04em;line-height:.92;}
+  h2{font-size:5.2cqw;font-weight:700;letter-spacing:-.035em;line-height:1.0;max-width:20ch;}
+  h2.sm{font-size:4.1cqw;} .accent{color:var(--orange);}
+  .lead{font-size:2.3cqw;line-height:1.4;color:var(--dim);margin-top:2.4cqw;max-width:40ch;}
+  .dark .lead{color:rgba(255,255,255,.75);}
+  /* cover meta */
+  .meta{position:absolute;left:7cqw;right:7cqw;bottom:6cqw;display:flex;gap:5cqw;border-top:1px solid var(--line);padding-top:2.4cqw;z-index:1;}
+  .meta .lab{font-family:var(--mono);font-size:1.2cqw;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:.6cqw;}
+  .meta .val{font-size:1.95cqw;font-weight:700;}
+  /* stat callouts */
+  .stats{display:grid;gap:4cqw;margin-top:4cqw;}
+  .stats.c4{grid-template-columns:repeat(4,1fr);} .stats.c3{grid-template-columns:repeat(3,1fr);} .stats.c2{grid-template-columns:repeat(2,1fr);gap:6cqw;}
+  .stat .num{font-size:5.8cqw;font-weight:700;letter-spacing:-.04em;line-height:.92;white-space:nowrap;}
+  .stat .num.g{color:var(--green);} .stat .num.o{color:var(--orange);}
+  .stat .lab{font-size:1.55cqw;line-height:1.3;color:var(--dim);margin-top:1.1cqw;max-width:22ch;}
+  .dark .stat .lab{color:rgba(255,255,255,.7);}
+  /* cards */
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:2.4cqw;margin-top:3.4cqw;}
+  .card{background:#faf7f2;border:1px solid var(--line);border-radius:2.2cqw;padding:2.9cqw;}
+  .dark .card{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12);}
+  .card .cn{font-family:var(--mono);font-size:1.4cqw;color:var(--orange);letter-spacing:.06em;}
+  .card h3{font-size:2.25cqw;font-weight:700;letter-spacing:-.02em;margin:1cqw 0 .9cqw;line-height:1.05;}
+  .card p{font-size:1.58cqw;line-height:1.36;color:var(--dim);} .dark .card p{color:rgba(255,255,255,.68);}
+  /* hero visual */
+  .hero{position:relative;margin-top:2.4cqw;display:flex;justify-content:center;}
+  .hero svg{width:74%;height:auto;position:relative;z-index:1;}
+  .eng{display:grid;grid-template-columns:1fr 1fr;gap:2.4cqw;margin-top:2.2cqw;}
+  .eng3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.8cqw;margin-top:2.4cqw;}
+  .eng3 .panel svg{height:20cqw;}
+  .eng3 .panel img{width:100%;height:19cqw;object-fit:contain;display:block;}
+  .eng3 .pl{font-size:1.15cqw;}
+  .eng3 .cap{font-size:1cqw;margin-top:.9cqw;}
+  .matgrid{display:grid;grid-template-columns:1.05fr 1fr;gap:2.6cqw;margin-top:2cqw;align-items:start;}
+  .matdetail{border:1px solid rgba(255,255,255,.16);border-radius:1.6cqw;padding:1.8cqw;background:rgba(255,255,255,.03);}
+  .matdetail svg{width:100%;height:auto;display:block;}
+  .matlist{display:flex;flex-direction:column;gap:0.85cqw;}
+  .matrow{display:grid;grid-template-columns:9cqw 1fr;gap:1.2cqw;align-items:baseline;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:0.8cqw;}
+  .matrow .mk{font-family:var(--mono);font-size:1.18cqw;color:var(--orange);letter-spacing:.03em;line-height:1.25;}
+  .matrow .mv{font-size:1.34cqw;line-height:1.28;color:rgba(255,255,255,.8);}
+  .matrow .mv b{color:#fff;font-weight:700;}
+  .panel{border:1px solid rgba(255,255,255,.16);border-radius:1.6cqw;padding:1.9cqw 2cqw 1.6cqw;background:rgba(255,255,255,.03);}
+  .panel .pl{font-family:var(--mono);font-size:1.25cqw;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);margin-bottom:1cqw;}
+  .panel svg{height:23cqw;width:auto;max-width:100%;display:block;margin-inline:auto;}
+  .panel .cap{font-family:var(--mono);font-size:1.08cqw;color:var(--faint);margin-top:1cqw;line-height:1.4;}
+  .specs{display:flex;flex-wrap:wrap;gap:1cqw;margin-top:2.2cqw;justify-content:center;}
+  .specs span{font-family:var(--mono);font-size:1.3cqw;color:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:.65cqw 1.2cqw;}
+  .light .specs span{color:var(--dim);border-color:var(--line);}
+  /* timeline */
+  .tl{display:grid;grid-template-columns:repeat(4,1fr);gap:2.2cqw;margin-top:4.5cqw;}
+  .tl .step{border-top:2px solid var(--orange);padding-top:1.8cqw;}
+  .tl .ph{font-family:var(--mono);font-size:1.35cqw;letter-spacing:.08em;text-transform:uppercase;color:var(--orange);}
+  .tl .wn{font-size:1.5cqw;color:var(--faint);margin:.5cqw 0 1.2cqw;font-family:var(--mono);}
+  .tl h4{font-size:2.05cqw;font-weight:700;letter-spacing:-.02em;margin-bottom:1cqw;line-height:1.1;}
+  .tl p{font-size:1.5cqw;line-height:1.36;color:var(--dim);}
+  /* compare rows */
+  .rows{margin-top:4cqw;}
+  .row{display:grid;grid-template-columns:1.1fr 2fr;gap:3cqw;padding:2.2cqw 0;border-top:1px solid var(--line);align-items:baseline;}
+  .dark .row{border-color:rgba(255,255,255,.14);}
+  .row .who{font-size:2.4cqw;font-weight:700;letter-spacing:-.02em;} .row .who small{display:block;font-size:1.45cqw;font-weight:400;color:var(--faint);font-family:var(--mono);margin-top:.5cqw;}
+  .row .gap{font-size:1.85cqw;line-height:1.36;color:var(--dim);} .dark .row .gap{color:rgba(255,255,255,.72);}
+  /* note + source */
+  .note{margin-top:2.8cqw;font-size:1.68cqw;line-height:1.4;color:var(--dim);max-width:66ch;border-left:3px solid var(--orange);padding-left:2.2cqw;}
+  .dark .note{color:rgba(255,255,255,.74);}
+  .src{position:absolute;left:7cqw;right:7cqw;bottom:3cqw;font-family:var(--mono);font-size:1.12cqw;line-height:1.5;color:var(--faint);z-index:1;}
+  .refs{columns:2;column-gap:6cqw;margin-top:3.5cqw;}
+  .refs div{break-inside:avoid;font-family:var(--mono);font-size:1.4cqw;line-height:1.5;color:var(--dim);margin-bottom:1.4cqw;}
+  .refs b{color:var(--ink);font-weight:700;}
+</style></head>
+<body>
+<div class="deck">
+
+  <!-- 1 · COVER -->
+  <section class="slide light">
+    <div class="blob tr"></div>
+    <div class="chrome">
+      <div class="mark">
+        <img src="/img/logo.png" alt="Arbiter">
+        <span>ARBITER</span>
+      </div>
+      <span class="badge">RESEARCH &amp; PILOT PROPOSAL</span>
+    </div>
+    <div class="pad" style="justify-content:flex-end;padding-bottom:15cqw;">
+      <h1>HarvestGuard</h1>
+      <p class="lead">A solar cold-storage pod — and the verified-data credit rail it builds for the smallholder farmers finance cannot see.</p>
+    </div>
+    <div class="meta">
+      <div><span class="lab">Domain</span><span class="val">Agriculture &amp; Food Security</span></div>
+      <div><span class="lab">Stage</span><span class="val">Designed · engineer-reviewed</span></div>
+      <div><span class="lab">Ask</span><span class="val">10-pod pilot, Meru, Kenya</span></div>
+    </div>
+  </section>
+
+  <!-- 2 · PROBLEM -->
+  <section class="slide dark">
+    <div class="pad">
+      <div class="kicker">The Problem</div>
+      <h2 class="sm">The cold chain stops before the smallholder farmer.</h2>
+      <div class="stats c4">
+        <div class="stat"><div class="num o">&lt;1%</div><div class="lab">of the world's refrigerated storage is in Africa</div></div>
+        <div class="stat"><div class="num o">50%</div><div class="lab">of the fruit &amp; vegetable harvest lost after harvest (up to)</div></div>
+        <div class="stat"><div class="num o">33M</div><div class="lab">smallholder farms carry that loss each season</div></div>
+        <div class="stat"><div class="num o">&lt;6%</div><div class="lab">of commercial loans ever reach these farmers</div></div>
+      </div>
+    </div>
+    <div class="src">GCCA/IIR Global Cold Storage Capacity Report (2023) · FAO/IIR post-harvest loss, SSA (2022) · FAO Family Farming; One Acre Fund (2023) · IFC, Scaling Farmer Financing in SSA (2024).</div>
+  </section>
+
+  <!-- 3 · THESIS -->
+  <section class="slide light">
+    <div class="blob tr"></div>
+    <div class="pad">
+      <div class="kicker">The Thesis</div>
+      <h2>The pod is the wedge.<br>The verified data is the moat.</h2>
+      <div class="cards">
+        <div class="card"><div class="cn">01</div><h3>Cold at the farm gate</h3><p>A solar pod, sub-village scale, billed <b>per crate-day</b> over M-Pesa — one 4–13 °C zone, crop-cohorted by the app.</p></div>
+        <div class="card"><div class="cn">02</div><h3>A record by construction</h3><p>Every use is device-signed and payment-reconciled — a history, not a claim.</p></div>
+        <div class="card"><div class="cn">03</div><h3>A credit identity</h3><p>The first credential a lender can act on — cold storage as an on-ramp to finance.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · SYSTEM -->
+  <section class="slide dark">
+    <div class="pad" style="justify-content:flex-start;padding:6cqw 7cqw;">
+      <div class="kicker">System Design</div>
+      <h2 class="sm">Off-the-shelf refrigeration, sized for 35&nbsp;°C and no grid.</h2>
+      <div class="hero">
+        <div class="blob c" style="opacity:.28;"></div>
+        <svg viewBox="0 0 980 290" role="img" aria-label="pod schematic">
+          <defs><marker id="ao" markerWidth="9" markerHeight="9" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6Z" fill="#1C9A55"/></marker><marker id="ab" markerWidth="9" markerHeight="9" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6Z" fill="#3E9BD6"/></marker></defs>
+          <g font-family="ui-monospace,Menlo,monospace" fill="rgba(255,255,255,.86)">
+            <rect x="18" y="6" width="612" height="38" rx="9" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.28)"/><text x="34" y="30" font-size="14">CONTROLLER · ESP32-S3 + LTE · Daraja / M-Pesa gating (KES 50/day)</text>
+            <polygon points="30,146 74,98 204,98 160,146" fill="rgba(255,255,255,.07)" stroke="rgba(255,255,255,.32)"/><line x1="54" y1="146" x2="98" y2="98" stroke="rgba(255,255,255,.2)"/><line x1="94" y1="146" x2="138" y2="98" stroke="rgba(255,255,255,.2)"/><line x1="134" y1="146" x2="178" y2="98" stroke="rgba(255,255,255,.2)"/><text x="30" y="168" font-size="13" fill="rgba(255,255,255,.6)">330W PV · MPPT 75/35</text>
+            <rect x="18" y="188" width="206" height="90" rx="10" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.3)"/><rect x="34" y="204" width="28" height="22" rx="3" fill="none" stroke="#1C9A55"/><text x="34" y="242" font-size="12" fill="rgba(255,255,255,.72)">MPPT</text><rect x="86" y="202" width="15" height="28" rx="2" fill="rgba(62,155,214,.16)" stroke="rgba(62,155,214,.55)"/><rect x="105" y="202" width="15" height="28" rx="2" fill="rgba(62,155,214,.16)" stroke="rgba(62,155,214,.55)"/><rect x="124" y="202" width="15" height="28" rx="2" fill="rgba(62,155,214,.16)" stroke="rgba(62,155,214,.55)"/><rect x="143" y="202" width="15" height="28" rx="2" fill="rgba(62,155,214,.16)" stroke="rgba(62,155,214,.55)"/><text x="86" y="246" font-size="11.5" fill="rgba(255,255,255,.6)">16× LF100 · 4.8 kWh</text><text x="34" y="270" font-size="12.5">POWER · ~89 h autonomy</text>
+            <line x1="116" y1="148" x2="116" y2="186" stroke="#1C9A55" stroke-width="2" marker-end="url(#ao)"/>
+            <rect x="254" y="188" width="166" height="90" rx="10" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.3)"/><path d="M280,236 q12,-15 24,0 q12,15 24,0 q12,-15 24,0" fill="none" stroke="#1C9A55" stroke-width="2"/><text x="270" y="268" font-size="13">SECOP BD35F · R290</text>
+            <line x1="224" y1="234" x2="252" y2="234" stroke="#1C9A55" stroke-width="2" marker-end="url(#ao)"/>
+            <rect x="472" y="72" width="488" height="206" rx="12" fill="rgba(62,155,214,.06)" stroke="rgba(255,255,255,.34)"/><rect x="486" y="86" width="460" height="178" rx="8" fill="none" stroke="rgba(255,255,255,.16)"/>
+            <g fill="rgba(255,255,255,.16)" stroke="rgba(255,255,255,.32)"><circle cx="560" cy="200" r="16"/><circle cx="602" cy="209" r="13"/><circle cx="644" cy="198" r="15"/><circle cx="706" cy="203" r="16"/><circle cx="750" cy="211" r="12"/><circle cx="796" cy="199" r="15"/></g>
+            <line x1="620" y1="108" x2="620" y2="148" stroke="#3E9BD6" stroke-width="2" marker-end="url(#ab)"/><line x1="720" y1="108" x2="720" y2="148" stroke="#3E9BD6" stroke-width="2" marker-end="url(#ab)"/><line x1="820" y1="108" x2="820" y2="148" stroke="#3E9BD6" stroke-width="2" marker-end="url(#ab)"/>
+            <text x="488" y="256" font-size="13.5">COLD CHAMBER · 1.5 m³ · 80 mm PU · 4–13 °C</text>
+            <line x1="420" y1="196" x2="470" y2="178" stroke="#3E9BD6" stroke-width="2" marker-end="url(#ab)"/>
+            <line x1="326" y1="44" x2="326" y2="186" stroke="rgba(255,255,255,.26)" stroke-dasharray="3,4"/><line x1="620" y1="44" x2="620" y2="70" stroke="rgba(255,255,255,.26)" stroke-dasharray="3,4"/>
+          </g>
+        </svg>
+      </div>
+      <div class="specs"><span>1.5 m³ · 80 mm PU</span><span>R290 · Secop BD35F</span><span>330 W · Victron 75/35</span><span>16× EVE LF100 · 4.8 kWh</span><span>ESP32-S3 · X.509 · offline-first</span></div>
+    </div>
+  </section>
+
+  <!-- 4b · ENGINEERING (CAD model from parametric source) -->
+  <section class="slide dark">
+    <div class="pad" style="justify-content:flex-start;padding:5cqw 7cqw;">
+      <div class="kicker">Engineering Model</div>
+      <h2 class="sm">A full CAD model — down to the crate, the compressor, the seal.</h2>
+      <div class="eng3">
+        <div class="panel"><div class="pl">01 · CAD · cutaway</div><img src="cad/pod_cutaway.png" alt="HarvestGuard pod cutaway"><div class="cap">Real part footprints: Secop BD35F compressor · Victron MPPT 75/15 · 16× EVE LF100LA (4S4P) · ESP32-S3 · 330 W panel. 80 mm layered wall, 2 crate shelves, sealed bulkhead.</div></div>
+        <div class="panel"><div class="pl">02 · FEA mesh</div><img src="cad/pod_mesh.png" alt="HarvestGuard pod mesh"><div class="cap">Full assembly discretised for thermal simulation — Fusion 360 FEA is a Phase-0 deliverable.</div></div>
+        <div class="panel"><div class="pl">03 · Thermal</div><img src="cad/pod_thermal.png" alt="HarvestGuard pod thermal"><div class="cap">Surface heat-ingress ≈ 99 W · peak on the sun-facing roof &amp; door seal · from the first-principles budget.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4c · MATERIALS & CONSTRUCTION -->
+  <section class="slide dark">
+    <div class="pad" style="justify-content:flex-start;padding:5cqw 7cqw;">
+      <div class="kicker">Materials &amp; Construction</div>
+      <h2 class="sm">Chosen for heat, humidity, and dust.</h2>
+      <div class="matgrid">
+        <!-- wall-section DETAIL A callout -->
+        <div class="matdetail">
+          <svg viewBox="0 0 560 300" role="img" aria-label="wall section detail">
+            <g font-family="ui-monospace,Menlo,monospace">
+              <rect x="24" y="76" width="80" height="118" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.2"/>
+              <rect x="30" y="66" width="68" height="11" fill="rgba(46,158,91,.4)"/>
+              <circle cx="24" cy="132" r="13" fill="none" stroke="#1C9A55" stroke-width="1.4"/>
+              <text x="15" y="136" font-size="11" fill="#7FD3A0">A</text>
+              <text x="24" y="210" font-size="9.5" fill="rgba(255,255,255,.5)">pod · 1.4×1.0×1.6 m</text>
+              <line x1="37" y1="132" x2="150" y2="60" stroke="rgba(255,255,255,.3)" stroke-dasharray="3,3"/>
+              <line x1="37" y1="132" x2="150" y2="248" stroke="rgba(255,255,255,.3)" stroke-dasharray="3,3"/>
+              <text x="150" y="32" font-size="10.5" fill="#7FD3A0">DETAIL A · wall section</text>
+              <rect x="150" y="54" width="150" height="20" fill="#9a9ea3"/>
+              <rect x="150" y="74" width="150" height="146" fill="#efe4b0"/>
+              <g stroke="rgba(0,0,0,.14)" stroke-width="1"><line x1="150" y1="94" x2="300" y2="94"/><line x1="150" y1="124" x2="300" y2="124"/><line x1="150" y1="154" x2="300" y2="154"/><line x1="150" y1="184" x2="300" y2="184"/></g>
+              <rect x="150" y="220" width="150" height="20" fill="#f2f2f0"/>
+              <line x1="300" y1="64" x2="322" y2="64" stroke="rgba(255,255,255,.4)"/><text x="326" y="68" font-size="10.5" fill="rgba(255,255,255,.85)">3 mm galvanised steel</text><text x="326" y="82" font-size="9" fill="rgba(255,255,255,.5)">+ white PU topcoat</text>
+              <line x1="300" y1="147" x2="322" y2="147" stroke="rgba(255,255,255,.4)"/><text x="326" y="145" font-size="10.5" fill="rgba(255,255,255,.85)">74 mm closed-cell PU foam</text><text x="326" y="159" font-size="9" fill="rgba(255,255,255,.5)">k = 0.025 W/m·K · R ≈ 13</text>
+              <line x1="300" y1="230" x2="322" y2="230" stroke="rgba(255,255,255,.4)"/><text x="326" y="234" font-size="10.5" fill="rgba(255,255,255,.85)">3 mm food-grade FRP liner</text>
+              <text x="150" y="48" font-size="9.5" fill="#F2913A">OUTSIDE · 35 °C</text>
+              <text x="150" y="260" font-size="9.5" fill="#6FA8DC">COLD ZONE · 4–13 °C</text>
+              <g stroke="#1C9A55" stroke-width="1"><line x1="140" y1="54" x2="140" y2="240"/><line x1="136" y1="54" x2="144" y2="54"/><line x1="136" y1="240" x2="144" y2="240"/></g>
+              <text x="118" y="152" font-size="9.5" fill="#7FD3A0" transform="rotate(-90 122 152)">80 mm</text>
+            </g>
+          </svg>
+        </div>
+        <!-- material callouts -->
+        <div class="matlist">
+          <div class="matrow"><span class="mk">FRAME</span><span class="mv"><b>Powder-coated galvanised steel</b> — welded, corrosion-proof in humid heat, locally fabricable.</span></div>
+          <div class="matrow"><span class="mk">DOOR</span><span class="mv">Steel + <b>EPDM magnetic gasket</b> (UV-stable, 18–24 mo) · 3× 304 stainless hinges · 12 V solenoid bolt.</span></div>
+          <div class="matrow"><span class="mk">FLOOR</span><span class="mv"><b>Anti-slip aluminium tread plate</b> — drains condensate, takes crate load.</span></div>
+          <div class="matrow"><span class="mk">REFRIGERANT</span><span class="mv"><b>R290 (propane)</b>, GWP 3 — Secop BD35F hermetic DC compressor.</span></div>
+          <div class="matrow"><span class="mk">HEAT EXCH.</span><span class="mv">Roll-bond <b>aluminium evaporator</b> + finned condenser, externally vented, 12 V fan.</span></div>
+          <div class="matrow"><span class="mk">EXTERIOR</span><span class="mv"><b>White PU topcoat</b> — reflects solar load; black would absorb 20–30% more heat.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 · FEASIBILITY -->
+  <section class="slide light">
+    <div class="pad">
+      <div class="kicker">Engineering Feasibility</div>
+      <h2>The energy budget closes — <span class="accent">with margin.</span></h2>
+      <div class="stats c4">
+        <div class="stat"><div class="num g">1.34</div><div class="lab">kWh/day generated — 330 W array, Meru sun</div></div>
+        <div class="stat"><div class="num">1.10</div><div class="lab">kWh/day used — Secop BD35F at 35 °C, ~83% duty</div></div>
+        <div class="stat"><div class="num g">+235</div><div class="lab">Wh/day surplus at an 8 °C interior setpoint</div></div>
+        <div class="stat"><div class="num">~89h</div><div class="lab">battery autonomy with no sun (16× LF100, 4.8 kWh)</div></div>
+      </div>
+      <div class="note">A first-principles budget, not a datasheet quote — Phase-0 bench testing validates the BD35F and real autonomy under dust, door-openings, and the 40 °C worst case.</div>
+    </div>
+    <div class="src">Independent first-principles thermal/energy analysis. Verify vs. Secop BD35F R290 performance table and NASA POWER irradiance (Meru, 0.05 °N).</div>
+  </section>
+
+  <!-- 6 · TRUST LAYER -->
+  <section class="slide dark">
+    <div class="pad">
+      <div class="kicker">The Trust Layer · core IP</div>
+      <h2 class="sm">A record a lender can trust — by construction.</h2>
+      <div class="cards">
+        <div class="card"><div class="cn">01</div><h3>Device-authenticated</h3><p>A per-pod X.509 certificate; a record from any unauthenticated source cannot enter the system.</p></div>
+        <div class="card"><div class="cn">02</div><h3>Independently witnessed</h3><p>Each transaction reconciles against the M-Pesa settlement API — a payment network no party controls.</p></div>
+        <div class="card"><div class="cn">03</div><h3>Tamper-evident</h3><p>Append-only, offline-first telemetry; gaps from lost connectivity are marked, never hidden.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 · CREDIT PIPELINE -->
+  <section class="slide light">
+    <div class="blob bl"></div>
+    <div class="pad" style="justify-content:flex-start;padding:6cqw 7cqw;">
+      <div class="kicker">The Credit Pipeline · in development</div>
+      <h2 class="sm">Behavioral data → a score a regulated lender can act on.</h2>
+      <div class="hero" style="margin-top:3cqw;">
+        <svg viewBox="0 0 900 250" role="img" aria-label="data to credit pipeline">
+          <defs><marker id="up" markerWidth="13" markerHeight="11" refX="6.5" refY="2" orient="auto"><path d="M0,9 L6.5,0 L13,9Z" fill="#1C9A55"/></marker></defs>
+          <g font-family="ui-monospace,Menlo,monospace">
+            <rect x="40" y="196" width="820" height="46" rx="9" fill="#faf7f2" stroke="#eae6df"/><rect x="40" y="196" width="6" height="46" rx="3" fill="#c9cdd6"/><text x="66" y="216" font-size="14" font-weight="700" fill="#141210">THE POD</text><text x="66" y="233" font-size="12.5" fill="#6a7280">Every store, sale &amp; repayment — device-signed, on-device</text><text x="838" y="223" font-size="12" fill="#98a0ac">01</text>
+            <line x1="450" y1="194" x2="450" y2="181" stroke="#1C9A55" stroke-width="2.2" marker-end="url(#up)"/>
+            <rect x="40" y="134" width="820" height="46" rx="9" fill="#faf7f2" stroke="#eae6df"/><rect x="40" y="134" width="6" height="46" rx="3" fill="#9aa2b0"/><text x="66" y="154" font-size="14" font-weight="700" fill="#141210">FEATURES</text><text x="66" y="171" font-size="12.5" fill="#6a7280">Utilisation · throughput · on-time payment · regularity · tenure</text><text x="838" y="161" font-size="12" fill="#98a0ac">02</text>
+            <line x1="450" y1="132" x2="450" y2="119" stroke="#1C9A55" stroke-width="2.2" marker-end="url(#up)"/>
+            <rect x="40" y="72" width="820" height="46" rx="9" fill="#faf7f2" stroke="#eae6df"/><rect x="40" y="72" width="6" height="46" rx="3" fill="#1C9A55"/><text x="66" y="92" font-size="14" font-weight="700" fill="#141210">MODEL</text><text x="66" y="109" font-size="12.5" fill="#6a7280">Interpretable scorecard / logistic → gradient boosting as data grows</text><rect x="710" y="80" width="132" height="21" rx="10.5" fill="#E9F7EE" stroke="#A9DFBE"/><text x="724" y="95" font-size="10.5" fill="#15733F">trained after pilot</text>
+            <line x1="450" y1="70" x2="450" y2="57" stroke="#1C9A55" stroke-width="2.2" marker-end="url(#up)"/>
+            <rect x="40" y="10" width="820" height="46" rx="9" fill="#ECF8F0" stroke="#BFE6CC"/><rect x="40" y="10" width="6" height="46" rx="3" fill="#1C9A55"/><text x="66" y="30" font-size="14" font-weight="700" fill="#141210">OUTPUT</text><text x="66" y="47" font-size="12.5" fill="#14663B">Risk score + limit for a lender or crop insurer to underwrite</text><text x="838" y="37" font-size="12" fill="#15733F">04</text>
+          </g>
+        </svg>
+      </div>
+      <div class="note" style="margin-top:2.2cqw;">We use <b>transactional, behavioral data</b> — a stronger credit signal than yield prediction (Accion, 2026). Trained only after the pilot; scores stay advisory until a lender validates.</div>
+    </div>
+  </section>
+
+  <!-- 8 · POSITIONING -->
+  <section class="slide dark">
+    <div class="pad">
+      <div class="kicker">Positioning</div>
+      <h2 class="sm">Proven parts, an unfilled seam.</h2>
+      <div class="rows">
+        <div class="row"><div class="who">ColdHubs · InspiraFarms · Koolboks<small>solar cold-chain</small></div><div class="gap">Proved solar cooling and pay-per-use, but stay cold-space or hardware providers, not a farmer's credit rail.</div></div>
+        <div class="row"><div class="who">Tala · FarmDrive<small>alt-data credit</small></div><div class="gap">Proved thin-file lending from behavioral data — but on phone/agronomic data, not a verified physical-storage record.</div></div>
+        <div class="row"><div class="who">HarvestGuard<small>the seam</small></div><div class="gap"><b style="color:#fff;">A trust rail, not a landlord: every stored crate becomes a farmer credit record no incumbent builds.</b></div></div>
+      </div>
+    </div>
+    <div class="src">ColdHubs 2024/2025 (coldhubs.com) · InspiraFarms Asset Finance · Koolboks (TechCabal 2025) · Tala 2023 · FarmDrive (FAO). Competitive scan to our knowledge, from public disclosures.</div>
+  </section>
+
+  <!-- 9 · VALIDATION -->
+  <section class="slide light">
+    <div class="pad">
+      <div class="kicker">Validation &amp; Milestones</div>
+      <h2 class="sm">A testable path, with kill criteria at every gate.</h2>
+      <div class="tl">
+        <div class="step"><div class="ph">Phase 0 · Bench</div><div class="wn">M1–3</div><h4>Prove it under failure</h4><p>±0.5 °C hold · 100% state recovery · ≥18 h autonomy.</p></div>
+        <div class="step"><div class="ph">Phase 1 · Pilot</div><div class="wn">M3–15</div><h4>10 pods, Meru</h4><p>≥95% uptime · ≥70% utilisation · 100% M-Pesa reconciliation.</p></div>
+        <div class="step"><div class="ph">Data gate</div><div class="wn">M12–14</div><h4>Train model v1</h4><p>≥200 farmers × ≥3 cycles × ≥12 months.</p></div>
+        <div class="step"><div class="ph">Phase 2 · Scale</div><div class="wn">M15–24+</div><h4>100 pods · live credit</h4><p>AUC&nbsp;&gt;&nbsp;0.65 · a lender validates on holdout.</p></div>
+      </div>
+      <div class="note">The pilot's central deliverable is not revenue — it is the <b>first verified dataset</b> proving pod records predict repayment.</div>
+    </div>
+  </section>
+
+  <!-- 10 · STATUS & ASK -->
+  <section class="slide dark">
+    <div class="blob tr"></div>
+    <div class="pad">
+      <div class="kicker">Status &amp; The Ask</div>
+      <h2>Designed, engineer-reviewed,<br><span class="accent">ready to pilot.</span></h2>
+      <div class="stats c3" style="margin-top:4.5cqw;">
+        <div class="stat"><div class="lab" style="font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--orange);font-size:1.4cqw;margin:0 0 1.2cqw;">Done</div><div style="font-size:2cqw;line-height:1.32;font-weight:500;">Hardware design, independent engineering review, firmware &amp; data architecture, energy budget.</div></div>
+        <div class="stat"><div class="lab" style="font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--orange);font-size:1.4cqw;margin:0 0 1.2cqw;">The ask</div><div style="font-size:2cqw;line-height:1.32;font-weight:500;">A 10-pod field pilot in Meru County, Kenya, with a local operations lead and an NGO partner.</div></div>
+        <div class="stat"><div class="lab" style="font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--orange);font-size:1.4cqw;margin:0 0 1.2cqw;">Honest risks</div><div style="font-size:2cqw;line-height:1.32;font-weight:500;">Credit model needs a lender partner for labels; autonomy is validated 8–13 °C; 40 °C is a bench item.</div></div>
+      </div>
+    </div>
+    <div class="src">HarvestGuard · A product of Arbiter · dayeon603@gmail.com</div>
+  </section>
+
+  <!-- 11 · REFERENCES -->
+  <section class="slide light">
+    <div class="pad">
+      <div class="kicker">Key References</div>
+      <h2 class="sm">Every figure is sourced.</h2>
+      <div class="refs">
+        <div><b>Cold chain.</b> GCCA/IIR, Global Cold Storage Capacity Report (2023).</div>
+        <div><b>Post-harvest loss.</b> FAO/IIR, Post-harvest losses in SSA (2022).</div>
+        <div><b>Smallholders.</b> FAO Family Farming; One Acre Fund (2023).</div>
+        <div><b>Credit gap.</b> IFC, Scaling Farmer Financing through AgTechs in SSA (2024).</div>
+        <div><b>Climate.</b> FAO, Food Wastage Footprint (2013).</div>
+        <div><b>Alt-data credit.</b> CGAP, M-Shwari (2015); Tala Impact Report (2023).</div>
+        <div><b>Ag credit.</b> FarmDrive (FAO e-Agriculture; RFILC 2020); Apollo (GSMA 2024).</div>
+        <div><b>Caveat cited.</b> Digital Frontiers / Accion (2026).</div>
+        <div><b>Cold-chain precedents.</b> ColdHubs (IIR 2024); Koolboks (GSMA 2024).</div>
+        <div><b>Data → finance.</b> Pula (FarmFit, 2026).</div>
+      </div>
+    </div>
+    <div class="src">Figures tagged SOLID / APPROX per verification; the "3–5% in cold chain" figure is footnoted as an industry estimate, not a primary FAO statistic.</div>
+  </section>
+
+</div>
+</body></html>

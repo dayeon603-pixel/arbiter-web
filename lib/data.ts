@@ -26,6 +26,7 @@ export const sectors: Sector[] = [
     mission: 'Developing solar-powered cold-storage infrastructure for the places the electrical grid does not reach. Up to a third of a smallholder harvest spoils before it can be sold, for want of refrigeration. The work is a pay-as-you-go cold chain at village scale, so a farmer’s crop becomes income instead of waste.',
     target: 'Smallholder farmers in sub-Saharan Africa, and the food-security programs that serve them.',
     image: '/img/agriculture.jpg',
+    product: { name: 'HarvestGuard', note: 'A solar-powered, pay-as-you-go cold chain for smallholder farmers.', href: '/harvestguard' },
   },
   {
     id: 'cyber', fig: '03', kicker: 'Cybersecurity & Fraud', stage: 'In development',
@@ -78,6 +79,24 @@ export const founder = {
 export const contactHref = (subject = 'Arbiter — Inquiry') =>
   `mailto:${founder.contact}?subject=${encodeURIComponent(subject)}`
 
+/**
+ * Legal / entity facts, kept in one place so the policy pages stay accurate.
+ * Only verified facts live here. Fields the operator must confirm before any
+ * commercial launch are marked TODO and rendered as a visible placeholder.
+ */
+export const legal = {
+  entity: 'Arbiter',
+  operator: 'Dayeon Kang',
+  contact: founder.contact,
+  jurisdiction: 'Republic of Korea',
+  // Registered on the Korean business registry; number/address to be inserted
+  // by the operator before any commercial or data-collecting launch.
+  registrationNumber: 'TODO — insert business registration number',
+  registeredAddress: 'TODO — insert registered address',
+  effectiveDate: 'July 23, 2026',
+  host: 'Cloudflare, Inc.',
+}
+
 export const caravan = {
   eyebrow: 'A product of Arbiter · Finance',
   name: 'Caravan',
@@ -98,6 +117,29 @@ export const caravan = {
   status: {
     label: 'Status',
     body: 'Caravan runs today as working, tested software, not a slide or a concept. It is solo-built and pre-commercial: no customers, revenue, or funding are claimed anywhere. This page describes what Caravan does and why it matters, deliberately at a high level — the internal mechanics, models, and the specific trade lanes it targets are kept off the public page while the product is still being hardened.',
+  },
+}
+
+export const harvestguard = {
+  eyebrow: 'A product of Arbiter · Agriculture & Food Security',
+  name: 'HarvestGuard',
+  tagline: 'A solar-powered cold chain for the last village the grid never reached.',
+  lead: 'Up to a third of what a smallholder farmer grows can spoil before it is sold — for want of refrigeration the electrical grid never delivered. HarvestGuard is a solar-powered cold-storage pod built for the village rather than the grid: one small pod serves many farmers, who pay only for the days they use it, with no upfront cost and no wiring. It keeps a harvest edible for weeks instead of days — and every use quietly builds a verified record of a farmer’s yield and payments, the first credential a bank has ever had for someone it otherwise cannot see.',
+  problem: {
+    label: 'The problem',
+    body: 'The technology to stop a harvest from rotting is a century old, and it still has not reached the smallholder farmer. Only a small fraction of fresh produce in sub-Saharan Africa ever touches cold storage, and up to half of a farmer’s crop can spoil before it can be sold. Without a way to hold produce, families are forced into distress sales the day they harvest, taking whatever price the market gives — and the food that rots releases methane on the way. The same farmers are invisible to the banking system, because nothing has ever recorded what they grow or that they pay. Hunger, poverty, and emissions all trace back to one missing cold chain.',
+  },
+  how: {
+    label: 'How it works',
+    points: [
+      { h: 'Built for the village, not the grid', p: 'A solar-powered pod runs where the electrical grid does not, and is billed pay-as-you-go through mobile money — no upfront cost, no wiring, no standing subscription. It is sized for the shared, sub-village scale that large cold hubs skip, so it reaches the farmers infrastructure has always passed over.' },
+      { h: 'Storage is the wedge; trust is the product', p: 'Every use records a verified history of what a farmer stored, sold, and paid — a ground-truth credential for people the formal banking system has never been able to see. That record is what turns an off-grid box into a first door to credit and crop insurance, on terms a lender can actually check.' },
+      { h: 'Built with the community, not for it', p: 'The work is designed to be co-deployed with the partners and local operators already trusted on the ground, not parachuted in from outside. Reach, service, and trust come from the community running it — the pod is the infrastructure, the people are the network.' },
+    ],
+  },
+  status: {
+    label: 'Status',
+    body: 'HarvestGuard is in development and pre-pilot. The hardware is designed and independently engineer-reviewed, the off-grid power system and the pay-as-you-go data layer are specified, and partnership outreach for a first field pilot is underway. No pods are deployed yet, and no customers, revenue, or funding are claimed anywhere. This page and the overview describe the work at a high level while the first pilot is still ahead.',
   },
 }
 

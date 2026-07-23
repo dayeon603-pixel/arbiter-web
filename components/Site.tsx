@@ -169,6 +169,13 @@ function Footer() {
             <li><a href={contactHref('Arbiter — Inquiry')}>Contact</a></li>
           </ul>
         </div>
+        <div className="footer__col">
+          <h4>Legal</h4>
+          <ul>
+            <li><Link href="/privacy">Privacy Policy</Link></li>
+            <li><Link href="/terms">Terms of Use</Link></li>
+          </ul>
+        </div>
       </div>
       <div className="footer__bar"><div className="wrap"><span>© 2026 Arbiter</span><span>Described by mission, not unreleased product names.</span></div></div>
     </footer>
