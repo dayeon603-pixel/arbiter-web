@@ -32,7 +32,7 @@ function Nav() {
         <nav className="nav__links" aria-label="Primary">
           {navLinks.map((l) => (<a key={l.id} href={`#${l.id}`}>{l.label}</a>))}
           <a href="#company">Company</a>
-          <a href={contactHref('Arbiter — Inquiry')} className="nav__cta">Contact</a>
+          <Link href="/card" className="nav__cta">Contact</Link>
         </nav>
       </div>
     </header>
@@ -163,8 +163,7 @@ function Footer() {
           <ul>
             <li><a href="#company">About</a></li>
             <li><a href="#founder">Founder</a></li>
-            <li><Link href="/card">Founder Card</Link></li>
-            <li><a href={contactHref('Arbiter — Inquiry')}>Contact</a></li>
+            <li><Link href="/card">Contact (card)</Link></li>
           </ul>
         </div>
         <div className="footer__col">
