@@ -32,7 +32,7 @@ export const sectors: Sector[] = [
     id: 'cyber', fig: '03', kicker: 'Cybersecurity & Fraud', stage: 'In development',
     title: 'Tell a real voice from a synthetic one.',
     mission: 'Developing systems that detect cloned and synthetic voices in real time, to stop the fastest-growing fraud of the decade: the scam phone call. The work spans the whole kill-chain — verify the voice is human, defend the call while it is happening, and help victims recover afterward — and runs on the device, so the audio never has to leave it.',
-    target: 'The elderly phone users who are targeted most, and the banks and fintechs that carry the loss.',
+    target: 'Every phone user a scam can reach — starting with the elderly, who are targeted most and recover least — and the banks and fintechs that carry the loss.',
     image: '/img/cyber.jpg',
     products: [
       { name: 'HALO', note: 'On-device defense that shields elders from voice-phishing, in real time.', href: '/halo' },
