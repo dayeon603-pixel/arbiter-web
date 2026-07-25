@@ -37,14 +37,25 @@ export default function TermsPage() {
 
           <h2>1. What this site is</h2>
           <p>
-            This website is an informational presentation of {legal.entity}, a
-            company operated by {legal.operator} in the {legal.jurisdiction}. It
-            describes work across several domains at different stages of maturity.
-            Descriptions of that work are statements of current status, not
-            promises about the future.
+            This website is an informational presentation of {legal.entity}, a brand
+            operated by {legal.registeredEntity}, a business registered in the{' '}
+            {legal.jurisdiction} by {legal.operator} ({legal.representativeKo}),
+            business registration number {legal.registrationNumber}. It describes work
+            across several domains at different stages of maturity. Descriptions of
+            that work are statements of current status, not promises about the future.
           </p>
 
-          <h2>2. Not an offer, and not advice</h2>
+          <h2>2. Definitions</h2>
+          <p>
+            &ldquo;{legal.entity}&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;, and &ldquo;our&rdquo; mean {legal.registeredEntity},
+            the operator of the {legal.entity} brand. &ldquo;Site&rdquo; means this website and
+            its pages. &ldquo;You&rdquo; means anyone who accesses the Site. &ldquo;Content&rdquo; means
+            the text, marks, logos, images, and design presented on the Site. Any
+            software, product, or paid service is governed by its own separate
+            agreement, which prevails over these terms for that software or service.
+          </p>
+
+          <h2>3. Not an offer, and not advice</h2>
           <p>
             Nothing on this site is an offer to sell, a solicitation to buy, or a
             recommendation regarding any product, security, or investment. Nothing
@@ -53,7 +64,7 @@ export default function TermsPage() {
             own situation.
           </p>
 
-          <h2>3. Forward-looking statements</h2>
+          <h2>4. Forward-looking statements</h2>
           <p>
             The site may describe intended features, research directions, and plans.
             These are inherently uncertain and may change or not happen. We make no
@@ -61,17 +72,17 @@ export default function TermsPage() {
             released, or will perform as described.
           </p>
 
-          <h2>4. Intellectual property</h2>
+          <h2>5. Intellectual property</h2>
           <p>
             The name {legal.entity}, the marks and logos, the text, and the design
-            of this site belong to {legal.operator} unless stated otherwise. You may
+            of this site belong to {legal.registeredEntity} unless stated otherwise. You may
             view and share links to the site. You may not copy, republish, or use
             the branding or substantial portions of the content for your own
             purposes without permission. Where open-source code is published under
             its own license, that license governs the code.
           </p>
 
-          <h2>5. Acceptable use</h2>
+          <h2>6. Acceptable use</h2>
           <p>You agree not to:</p>
           <ul>
             <li>use the site in a way that breaks any law or infringes anyone&rsquo;s rights;</li>
@@ -80,14 +91,14 @@ export default function TermsPage() {
             <li>misrepresent your affiliation with {legal.entity} or its operator.</li>
           </ul>
 
-          <h2>6. Third-party links</h2>
+          <h2>7. Third-party links</h2>
           <p>
             The site may link to third-party sites, such as source-code
             repositories. We are not responsible for the content, policies, or
             practices of sites we do not control.
           </p>
 
-          <h2>7. No warranties</h2>
+          <h2>8. No warranties</h2>
           <p>
             The site is provided &ldquo;as is&rdquo; and &ldquo;as available,&rdquo; without warranties of
             any kind, whether express or implied, including fitness for a particular
@@ -95,16 +106,26 @@ export default function TermsPage() {
             uninterrupted, error-free, or free of harmful components.
           </p>
 
-          <h2>8. Limitation of liability</h2>
+          <h2>9. Limitation of liability</h2>
           <p>
-            To the fullest extent permitted by law, {legal.operator} will not be
-            liable for any indirect, incidental, or consequential damages, or for
-            any loss arising from your use of, or inability to use, this website.
-            Nothing in these terms limits liability that cannot be limited under
-            applicable law.
+            To the fullest extent permitted by law, {legal.registeredEntity} will
+            not be liable for any indirect, incidental, or consequential damages, or
+            for any loss arising from your use of, or inability to use, this website.
+            Nothing in these terms limits liability that cannot be limited or excluded
+            under the mandatory law of the {legal.jurisdiction}, including the Act on
+            the Regulation of Terms and Conditions.
           </p>
 
-          <h2>9. Governing law</h2>
+          <h2>10. Term and termination</h2>
+          <p>
+            These terms apply while you use the Site. We may suspend or restrict access
+            to the Site, in whole or in part, if you breach these terms or to protect
+            the Site&rsquo;s security and availability. Provisions that by their nature should
+            survive &mdash; intellectual property, disclaimers, limitation of liability, and
+            governing law &mdash; survive any end of your use of the Site.
+          </p>
+
+          <h2>11. Governing law and disputes</h2>
           <p>
             These terms are governed by the laws of the {legal.jurisdiction}, without
             regard to conflict-of-laws rules. Disputes will be subject to the
@@ -112,14 +133,15 @@ export default function TermsPage() {
             your place of residence provides otherwise.
           </p>
 
-          <h2>10. Changes</h2>
+          <h2>12. Changes</h2>
           <p>
             We may update these terms. The current version, with its effective date,
-            is always the one posted here. Continued use of the site after a change
-            means you accept the updated terms.
+            is always the one posted here, and any material change will be announced on
+            this page in advance of taking effect. Continued use of the site after a
+            change takes effect means you accept the updated terms.
           </p>
 
-          <h2>11. Contact</h2>
+          <h2>13. Contact</h2>
           <p>
             Questions about these terms: <a href={`mailto:${legal.contact}`}>{legal.contact}</a>.
           </p>
@@ -134,7 +156,10 @@ export default function TermsPage() {
       </main>
 
       <footer className="footer">
-        <div className="footer__bar"><div className="wrap"><span>© 2026 {legal.entity}</span><span>Described by mission, not unreleased product names.</span></div></div>
+        <div className="footer__biz"><div className="wrap">
+          <p className="footer__biz-reg">상호 {legal.businessNameKo}({legal.businessNameEn}) · 대표 {legal.representativeKo} · 사업자등록번호 {legal.registrationNumber}{legal.showAddress && <> · {legal.registeredAddress}</>} · 이메일 {legal.contact}</p>
+        </div></div>
+        <div className="footer__bar"><div className="wrap"><span>© 2026 {legal.businessNameEn}. All rights reserved.</span><span>{legal.entity}, a brand of {legal.businessNameEn}.</span></div></div>
       </footer>
     </>
   )

@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import Lenis from 'lenis'
 import GradientCanvas from './GradientCanvas'
 import LogoMark from './LogoMark'
-import { sectors, hero, company, founder, navLinks, contactHref, type Sector } from '@/lib/data'
+import { sectors, hero, company, founder, navLinks, contactHref, legal, type Sector } from '@/lib/data'
 
 const EASE = [0.16, 0.7, 0.18, 1] as const
 
@@ -171,7 +171,22 @@ function Footer() {
           </ul>
         </div>
       </div>
-      <div className="footer__bar"><div className="wrap"><span>© 2026 Arbiter</span><span>Described by mission, not unreleased product names.</span></div></div>
+      <div className="footer__biz">
+        <div className="wrap">
+          <p className="footer__biz-line">
+            <strong>Arbiter</strong> is a brand operated by {legal.businessNameKo}({legal.businessNameEn}),
+            a business registered in the {legal.jurisdiction}.
+          </p>
+          <p className="footer__biz-reg">
+            상호 {legal.businessNameKo}({legal.businessNameEn}) · 대표 {legal.representativeKo} · 사업자등록번호 {legal.registrationNumber}
+            {legal.showAddress && <> · {legal.registeredAddress}</>} · 이메일 {legal.contact}
+          </p>
+          <p className="footer__biz-notice">
+            게시된 이메일 주소가 전자우편 수집 프로그램이나 그 밖의 기술적 장치를 이용하여 무단으로 수집되는 것을 거부하며, 위반 시 정보통신망법에 따라 처벌될 수 있습니다.
+          </p>
+        </div>
+      </div>
+      <div className="footer__bar"><div className="wrap"><span>© 2026 {legal.businessNameEn}. All rights reserved.</span><span>Described by mission, not unreleased product names.</span></div></div>
     </footer>
   )
 }

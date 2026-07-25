@@ -177,6 +177,12 @@
   .footer__col li { list-style: none; margin-bottom: var(--s-2); }
   .footer__col a { color: var(--dim); font-size: 0.86rem; }
   .footer__col a:hover { color: var(--ink); }
+  .footer__biz { border-top: 1px solid var(--line); }
+  .footer__biz > .wrap { padding-block: var(--s-5); display: grid; gap: var(--s-2); }
+  .footer__biz-line { font-size: 0.8rem; color: var(--dim); }
+  .footer__biz-line strong { color: var(--ink); font-weight: 600; }
+  .footer__biz-reg { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.01em; color: var(--faint); line-height: 1.7; }
+  .footer__biz-notice { font-family: var(--font-mono); font-size: 0.62rem; color: var(--faint); opacity: 0.8; line-height: 1.6; }
   .footer__bar { border-top: 1px solid var(--line); }
   .footer__bar div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--s-3); padding-block: var(--s-5); font-family: var(--font-mono); font-size: 0.68rem; color: var(--faint); }
   @media (max-width: 680px) { .footer__grid { grid-template-columns: 1fr; gap: var(--s-6); } }

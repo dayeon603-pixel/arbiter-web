@@ -6,7 +6,7 @@ export type Sector = {
 }
 
 export const hero = {
-  eyebrow: 'Arbiter, Inc.',
+  eyebrow: 'Arbiter',
   title: 'Decision, safety, and infrastructure for the work that has to be right.',
   sub: 'A multi-industry company building across five regulated and high-stakes domains. One operator, building in the open.',
 }
@@ -85,19 +85,23 @@ export const contactHref = (subject = 'Arbiter — Inquiry') =>
  * commercial launch are marked TODO and rendered as a visible placeholder.
  */
 export const legal = {
+  // 'entity' = the public brand this site presents. The legally registered
+  // business behind it is 카라반 (Caravan); Arbiter is a brand it operates.
   entity: 'Arbiter',
-  // The legally registered business behind the Arbiter brand.
   registeredEntity: '카라반 (Caravan)',
+  businessNameKo: '카라반',
+  businessNameEn: 'Caravan',
   operator: 'Dayeon Kang',
+  representativeKo: '강다연',
   contact: founder.contact,
   jurisdiction: 'Republic of Korea',
   registrationNumber: '414-01-72904',
-  // Registered business address. Held back from the public page for now: the
-  // site collects no personal data, so Korean PIPA does not yet require it to be
-  // displayed, and it is a personal address. Set showAddress to true to publish.
-  registeredAddress: '경기도 용인시 처인구 삼가로58번길 17-12, 사무실동 1층',
-  showAddress: false,
-  effectiveDate: 'July 23, 2026',
+  // 사업장 소재지 (business address on the 사업자등록증). Shown in the footer
+  // business-information block, as is conventional for a Korean business site.
+  registeredAddress: '경기도 용인시 처인구 삼가로58번길 17-12, 사무실동 1층 (삼가동)',
+  showAddress: true,
+  openedDate: '2026-06-25',
+  effectiveDate: 'July 24, 2026',
   host: 'Cloudflare, Inc.',
 }
 

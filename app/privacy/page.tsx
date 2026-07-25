@@ -42,13 +42,21 @@ export default function PrivacyPage() {
           <p>
             {legal.entity} is a brand operated by {legal.registeredEntity}, a
             business registered in the {legal.jurisdiction} by {legal.operator}
-            {' '}(business registration number {legal.registrationNumber}). For any
-            privacy question you can reach the operator directly at{' '}
+            {' '}({legal.representativeKo}), business registration number{' '}
+            {legal.registrationNumber}. For any privacy question you can reach the
+            operator directly at{' '}
             <a href={`mailto:${legal.contact}`}>{legal.contact}</a>.
           </p>
           {legal.showAddress && (
             <p>Registered business address: {legal.registeredAddress}.</p>
           )}
+          <p>
+            Under Korea&rsquo;s Personal Information Protection Act (PIPA), the person
+            responsible for personal information at {legal.registeredEntity} is the
+            operator, {legal.operator} ({legal.representativeKo}), acting as the
+            personal-information protection officer (개인정보 보호책임자). You can reach
+            the officer at <a href={`mailto:${legal.contact}`}>{legal.contact}</a>.
+          </p>
 
           <h2>2. What this site collects</h2>
           <p>
@@ -184,7 +192,10 @@ export default function PrivacyPage() {
       </main>
 
       <footer className="footer">
-        <div className="footer__bar"><div className="wrap"><span>© 2026 {legal.entity}</span><span>Described by mission, not unreleased product names.</span></div></div>
+        <div className="footer__biz"><div className="wrap">
+          <p className="footer__biz-reg">상호 {legal.businessNameKo}({legal.businessNameEn}) · 대표 {legal.representativeKo} · 사업자등록번호 {legal.registrationNumber}{legal.showAddress && <> · {legal.registeredAddress}</>} · 이메일 {legal.contact}</p>
+        </div></div>
+        <div className="footer__bar"><div className="wrap"><span>© 2026 {legal.businessNameEn}. All rights reserved.</span><span>{legal.entity}, a brand of {legal.businessNameEn}.</span></div></div>
       </footer>
     </>
   )
