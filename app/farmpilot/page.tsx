@@ -29,7 +29,7 @@ export default function FarmPilotPage() {
           <p className="cv__lead">{farmpilot.lead}</p>
           <p className="cv__hero-links">
             <a href="https://github.com/dayeon603-pixel/farmpilot-mvp" className="btn-link" target="_blank" rel="noopener noreferrer">View the code&nbsp;↗</a>
-            <a href="https://github.com/dayeon603-pixel/farmpilot-mvp#serving-the-demo" className="btn-link" target="_blank" rel="noopener noreferrer">Run the demo&nbsp;↗</a>
+            <a href="/farmpilot/demo/" className="btn-link" target="_blank" rel="noopener noreferrer">Try the live demo&nbsp;↗</a>
           </p>
         </section>
 
@@ -71,7 +71,7 @@ export default function FarmPilotPage() {
         <section className="wrap cv__cta">
           <Link href="/#agriculture" className="btn btn--ghost">← Back to Agriculture</Link>
           <a href="https://github.com/dayeon603-pixel/farmpilot-mvp" className="btn btn--ghost" target="_blank" rel="noopener noreferrer">View the code ↗</a>
-          <a href={contactHref('FarmPilot — Inquiry')} className="btn btn--solid">Get in touch</a>
+          <a href="/farmpilot/demo/" className="btn btn--solid" target="_blank" rel="noopener noreferrer">Try the live demo ↗</a>
         </section>
       </main>
 

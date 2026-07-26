@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0e9e63">
+<title>FarmPilot — Interactive Demo</title>
+<style>
+  :root{
+    --g:#16b277; --g2:#0e9e63; --g3:#0b7d4e; --teal:#22d3b0; --ink:#14311e; --ink2:#33473a;
+    --mut:#6b8a7a; --bg:#eef6f0; --card:#ffffff; --line:#e2ede6; --gold:#e08a00; --danger:#d9743a;
+    --chipbg:#eef8f1; --shadow:0 6px 18px rgba(20,80,50,.08);
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+  html,body{ height:100%; }
+  body{ font-family:-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Apple SD Gothic Neo",sans-serif;
+    background:radial-gradient(120% 120% at 50% 0%, #16351f 0%, #0c2416 60%, #081a10 100%);
+    color:var(--ink); display:flex; align-items:center; justify-content:center; min-height:100%; padding:24px; overflow:hidden; }
+  .device{ width:392px; height:812px; border-radius:52px; background:#0a1610; padding:12px;
+    box-shadow:0 40px 90px -20px rgba(0,0,0,.7), inset 0 0 0 2px rgba(255,255,255,.06); position:relative; flex:none; }
+  .device::before{ content:""; position:absolute; top:12px; left:50%; transform:translateX(-50%);
+    width:150px; height:26px; background:#0a1610; border-radius:0 0 18px 18px; z-index:40; }
+  .app{ width:100%; height:100%; border-radius:40px; overflow:hidden; background:var(--bg); display:flex; flex-direction:column; position:relative; }
+  @media (max-width:520px){ body{ padding:0; } .device{ width:100vw; height:100dvh; border-radius:0; padding:0; box-shadow:none; } .device::before{ display:none; } .app{ border-radius:0; } }
+  .status{ height:44px; display:flex; align-items:flex-end; justify-content:space-between; padding:0 26px 6px; font-size:13.5px; font-weight:700; color:var(--ink); flex:none; }
+  .status .r{ display:flex; gap:6px; align-items:center; } .status svg{ display:block; }
+
+  .screens{ flex:1; position:relative; overflow:hidden; }
+  .screen{ position:absolute; inset:0; display:flex; flex-direction:column; opacity:0; pointer-events:none; transform:translateY(10px) scale(.997); transition:opacity .26s ease, transform .26s ease; }
+  .screen.active{ opacity:1; pointer-events:auto; transform:none; }
+  .hd{ padding:8px 20px 16px; color:#fff; position:relative; flex:none;
+    background:linear-gradient(155deg,#17a56b 0%,#0f8f61 60%,#0b7d55 100%); border-radius:0 0 24px 24px; box-shadow:0 8px 20px rgba(11,120,80,.22); }
+  .hd .eyebrow{ font-size:12px; font-weight:800; letter-spacing:.08em; opacity:.9; text-transform:uppercase; display:flex; align-items:center; gap:6px; }
+  .hd h1{ font-size:23px; font-weight:800; letter-spacing:-.01em; margin-top:3px; }
+  .hd .sub{ font-size:12.5px; opacity:.92; margin-top:2px; }
+  .hd .info,.hd .back{ position:absolute; top:8px; width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,.18); display:grid; place-items:center; font-weight:800; cursor:pointer; }
+  .hd .info{ right:16px; font-size:15px; } .hd .back{ left:14px; font-size:19px; }
+  .hd.withback{ padding-left:52px; }
+  .body{ flex:1; overflow-y:auto; padding:16px 16px 20px; -webkit-overflow-scrolling:touch; }
+  .body::-webkit-scrollbar{ width:0; }
+
+  .card{ background:var(--card); border-radius:16px; padding:15px 16px; box-shadow:var(--shadow); margin-bottom:12px; }
+  .card.tap{ cursor:pointer; transition:transform .12s; } .card.tap:active{ transform:scale(.985); }
+  .row{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .t13{ font-size:14px; font-weight:800; } .t11{ font-size:12px; color:var(--mut); }
+  .pill{ font-size:11px; font-weight:800; padding:4px 10px; border-radius:99px; }
+  .pill.ok{ color:var(--g2); background:#e7fbef; } .pill.warn{ color:#b76e00; background:#fff2df; } .pill.dim{ color:#5b8a74; background:#eef4f0; }
+  .chip{ display:inline-flex; align-items:center; gap:5px; font-size:12px; background:var(--chipbg); border:1px solid #d7ecdf; color:#256b45; font-weight:700; padding:6px 11px; border-radius:9px; margin:6px 6px 0 0; }
+  .btn{ display:flex; align-items:center; justify-content:center; gap:8px; width:100%; border:none; cursor:pointer;
+    background:linear-gradient(150deg,#17a56b,#12b487); color:#fff; font-weight:800; font-size:15px; padding:15px; border-radius:14px; box-shadow:0 8px 18px rgba(20,120,80,.26); transition:transform .12s, filter .12s; margin-bottom:10px; }
+  .btn:last-child{ margin-bottom:0; } .btn:active{ transform:scale(.98); filter:brightness(.97); }
+  .btn.ghost{ background:#fff; color:var(--g3); box-shadow:var(--shadow); border:1px solid var(--line); }
+  .btn.sm{ padding:11px 14px; font-size:13.5px; border-radius:12px; }
+  .sec-title{ font-size:12px; font-weight:800; letter-spacing:.06em; color:var(--mut); text-transform:uppercase; margin:14px 2px 9px; display:flex; align-items:center; justify-content:space-between; }
+  .sec-title:first-child{ margin-top:2px; } .sec-title .add{ color:var(--g2); font-size:12px; cursor:pointer; }
+  .bar{ height:8px; border-radius:99px; background:#e8efe9; overflow:hidden; margin:9px 0 5px; }
+  .bar > i{ display:block; height:100%; border-radius:99px; background:linear-gradient(90deg,var(--g),var(--teal)); width:0; transition:width .9s cubic-bezier(.2,.8,.2,1); }
+
+  /* my crops */
+  .crops{ display:flex; gap:10px; overflow-x:auto; padding-bottom:4px; }
+  .crops::-webkit-scrollbar{ display:none; }
+  .cropcard{ flex:none; width:88px; background:#fff; border-radius:15px; box-shadow:var(--shadow); padding:13px 8px 11px; text-align:center; cursor:pointer; transition:transform .12s; position:relative; }
+  .cropcard:active{ transform:scale(.96); }
+  .cropcard .e{ font-size:30px; } .cropcard .n{ font-size:12px; font-weight:800; margin-top:5px; } .cropcard .s{ font-size:9.5px; margin-top:2px; }
+  .cropadd{ flex:none; width:88px; border:2px dashed #bcd3c4; border-radius:15px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; color:var(--g2); font-weight:800; font-size:12px; cursor:pointer; background:transparent; }
+  .cropadd .p{ font-size:26px; line-height:1; }
+
+  /* function grid */
+  .grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:11px; }
+  .gtile{ background:#fff; border-radius:15px; box-shadow:var(--shadow); padding:13px 6px; text-align:center; cursor:pointer; border:none; transition:transform .12s; }
+  .gtile:active{ transform:scale(.95); }
+  .gtile .ic{ width:42px; height:42px; margin:0 auto 7px; border-radius:12px; display:grid; place-items:center; font-size:20px; background:#eef9f2; }
+  .gtile .l{ font-size:11px; font-weight:700; color:var(--ink2); line-height:1.2; }
+
+  .metrics{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .metric .v{ font-size:22px; font-weight:900; color:var(--g2); } .metric .l{ font-size:11.5px; color:var(--mut); margin-top:2px; }
+  .alert{ background:linear-gradient(135deg,#fff6ec,#fdeede); border:1px solid #f6d9b8; }
+  .task{ display:flex; align-items:center; gap:11px; padding:11px 0; border-bottom:1px solid var(--line); }
+  .task:last-child{ border-bottom:none; } .task .ic{ width:34px; height:34px; border-radius:10px; background:#eef9f2; display:grid; place-items:center; font-size:17px; flex:none; }
+  .task .x{ flex:1; } .task .x b{ font-size:13.5px; } .task .x span{ font-size:11.5px; color:var(--mut); display:block; margin-top:1px; }
+
+  .viewfinder{ height:210px; border-radius:16px; position:relative; overflow:hidden; background:#12251a; display:grid; place-items:center; }
+  .viewfinder img{ width:100%; height:100%; object-fit:cover; }
+  .viewfinder .frame{ position:absolute; inset:26px; border:2px solid rgba(255,255,255,.8); border-radius:14px; }
+  .viewfinder .hint{ position:absolute; bottom:12px; left:0; right:0; text-align:center; color:#fff; font-size:12px; font-weight:700; text-shadow:0 1px 4px rgba(0,0,0,.5); }
+  .viewfinder .scan{ position:absolute; left:8%; right:8%; height:2px; background:linear-gradient(90deg,transparent,#c7ff9a,transparent); box-shadow:0 0 14px #b6f24c; top:20%; opacity:0; }
+  .viewfinder.scanning .scan{ opacity:1; animation:scan 1.1s ease-in-out infinite; }
+  @keyframes scan{ 0%{top:16%} 50%{top:78%} 100%{top:16%} }
+  .samples{ display:flex; gap:9px; margin-top:12px; }
+  .samples img{ width:100%; aspect-ratio:1; object-fit:cover; border-radius:12px; cursor:pointer; border:2px solid transparent; transition:.15s; }
+  .samples img.sel{ border-color:var(--g); }
+  .spinner{ width:20px; height:20px; border:2.5px solid rgba(255,255,255,.4); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg) } }
+
+  .chat{ display:flex; flex-direction:column; gap:9px; padding-bottom:6px; }
+  .bub{ max-width:82%; font-size:13.5px; line-height:1.45; padding:10px 13px; border-radius:16px; }
+  .bub.me{ align-self:flex-end; background:linear-gradient(135deg,#17a56b,#14b487); color:#fff; border-bottom-right-radius:5px; }
+  .bub.ai{ align-self:flex-start; background:#fff; color:var(--ink); border-bottom-left-radius:5px; box-shadow:var(--shadow); }
+  .bub.typing{ display:flex; gap:4px; align-items:center; padding:13px 15px; }
+  .bub.typing span{ width:7px; height:7px; border-radius:50%; background:#b7ccbe; animation:blink 1.2s infinite; }
+  .bub.typing span:nth-child(2){ animation-delay:.2s } .bub.typing span:nth-child(3){ animation-delay:.4s }
+  @keyframes blink{ 0%,60%,100%{opacity:.3} 30%{opacity:1} }
+  .quick{ display:flex; gap:8px; overflow-x:auto; padding:8px 16px 4px; flex:none; } .quick::-webkit-scrollbar{ display:none; }
+  .quick button{ white-space:nowrap; border:1px solid var(--line); background:#fff; color:var(--g3); font-weight:700; font-size:12.5px; padding:8px 13px; border-radius:99px; cursor:pointer; }
+  .composer{ display:flex; align-items:center; gap:9px; padding:10px 14px 14px; flex:none; background:var(--bg); }
+  .composer input{ flex:1; border:1px solid var(--line); background:#fff; border-radius:22px; padding:11px 15px; font-size:14px; outline:none; }
+  .composer .mic,.composer .send{ width:44px; height:44px; border-radius:50%; border:none; flex:none; cursor:pointer; background:linear-gradient(135deg,#17a56b,#14b487); color:#fff; display:grid; place-items:center; }
+  .composer .mic{ background:#fff; color:var(--g3); box-shadow:var(--shadow); }
+
+  .kpis{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .kpi{ background:#fff; border-radius:14px; padding:13px 15px; box-shadow:var(--shadow); }
+  .kpi .v{ font-size:21px; font-weight:900; } .kpi .l{ font-size:11.5px; color:var(--mut); margin-top:2px; }
+  .seg{ display:flex; background:#e6efe9; border-radius:12px; padding:4px; gap:4px; margin-bottom:14px; overflow-x:auto; } .seg::-webkit-scrollbar{ display:none; }
+  .seg button{ flex:1; min-width:74px; border:none; background:transparent; padding:9px; border-radius:9px; font-weight:800; font-size:13px; color:var(--mut); cursor:pointer; white-space:nowrap; }
+  .seg button.on{ background:#fff; color:var(--ink); box-shadow:0 2px 6px rgba(20,80,50,.1); }
+  .rec{ background:linear-gradient(135deg,#17a56b,#12b487); color:#fff; } .rec b{ font-size:16px; } .rec .d{ font-size:12px; opacity:.94; margin-top:3px; }
+
+  /* map */
+  .map{ height:190px; border-radius:16px; background:linear-gradient(135deg,#dcecdf,#eaf6ee); position:relative; overflow:hidden; border:1px solid var(--line); }
+  .map .grid-l{ position:absolute; inset:0; background-image:linear-gradient(#00000008 1px,transparent 1px),linear-gradient(90deg,#00000008 1px,transparent 1px); background-size:26px 26px; }
+  .dot{ position:absolute; border-radius:50%; background:rgba(217,116,58,.7); box-shadow:0 0 0 6px rgba(217,116,58,.18); }
+  .me-dot{ position:absolute; width:16px; height:16px; border-radius:50%; background:var(--g2); border:3px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,.25); }
+
+  .tabbar{ height:66px; display:flex; background:#fff; border-top:1px solid var(--line); flex:none; padding-bottom:env(safe-area-inset-bottom); }
+  .tab{ flex:1; border:none; background:none; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; color:#9db0a4; font-size:10.5px; font-weight:700; cursor:pointer; }
+  .tab svg{ width:23px; height:23px; } .tab.on{ color:var(--g2); }
+
+  .toast{ position:absolute; left:50%; bottom:86px; transform:translate(-50%,20px); background:#14311e; color:#fff; font-size:13px; font-weight:600; padding:11px 16px; border-radius:12px; opacity:0; pointer-events:none; transition:.3s; z-index:70; box-shadow:0 10px 24px rgba(0,0,0,.3); max-width:80%; text-align:center; }
+  .toast.show{ opacity:1; transform:translate(-50%,0); }
+  .sheet-bg{ position:absolute; inset:0; background:rgba(10,25,16,.5); opacity:0; pointer-events:none; transition:.28s; z-index:60; }
+  .sheet-bg.show{ opacity:1; pointer-events:auto; }
+  .sheet{ position:absolute; left:0; right:0; bottom:0; background:#fff; border-radius:22px 22px 0 0; padding:20px 20px 28px; transform:translateY(100%); transition:transform .32s cubic-bezier(.2,.8,.2,1); z-index:61; max-height:82%; overflow-y:auto; }
+  .sheet.show{ transform:none; } .sheet h3{ font-size:18px; font-weight:800; margin-bottom:8px; }
+  .sheet p{ font-size:13.5px; color:var(--ink2); line-height:1.55; margin-bottom:10px; }
+  .sheet .grab{ width:40px; height:4px; background:#dbe6df; border-radius:99px; margin:0 auto 16px; }
+  .search{ width:100%; border:1px solid var(--line); background:var(--bg); border-radius:12px; padding:12px 15px; font-size:15px; outline:none; margin-bottom:12px; }
+  .croplist{ display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+  .cl{ display:flex; align-items:center; gap:9px; background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:10px 12px; font-weight:700; font-size:13.5px; cursor:pointer; }
+  .cl:active{ background:#e3f1e8; } .cl .e{ font-size:20px; } .cl.has{ opacity:.45; }
+  a{ color:var(--g2); }
+</style>
+</head>
+<body>
+<div class="device">
+  <div class="app" id="app">
+    <div class="status">
+      <span id="clock">9:41</span>
+      <span class="r">
+        <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="7" width="3" height="5" rx="1" fill="#14311e"/><rect x="4.5" y="4.5" width="3" height="7.5" rx="1" fill="#14311e"/><rect x="9" y="2" width="3" height="10" rx="1" fill="#14311e"/><rect x="13.5" y="0" width="3" height="12" rx="1" fill="#14311e"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 2.5C10.3 2.5 12.4 3.4 14 4.9L15 3.8C13.1 2 10.7 1 8 1S2.9 2 1 3.8L2 4.9C3.6 3.4 5.7 2.5 8 2.5Z" fill="#14311e"/><path d="M8 5.5C9.4 5.5 10.7 6 11.7 7L8 11 4.3 7C5.3 6 6.6 5.5 8 5.5Z" fill="#14311e"/></svg>
+        <svg width="26" height="12" viewBox="0 0 26 12"><rect x="1" y="1" width="21" height="10" rx="3" fill="none" stroke="#14311e" stroke-opacity=".5"/><rect x="3" y="3" width="16" height="6" rx="1.5" fill="#14311e"/><rect x="23" y="4" width="2" height="4" rx="1" fill="#14311e" fill-opacity=".5"/></svg>
+      </span>
+    </div>
+
+    <div class="screens">
+      <!-- HOME -->
+      <section class="screen active" id="s-home">
+        <div class="hd">
+          <div class="eyebrow"><span>🌱</span> FarmPilot</div>
+          <h1>Good morning, Minjun</h1>
+          <div class="sub">Haenam · Jeollanam-do</div>
+          <div class="info" onclick="openSheet('sheet')">i</div>
+        </div>
+        <div class="body">
+          <div class="sec-title">My crops <span class="add" onclick="openAdd()">+ Add crop</span></div>
+          <div class="crops" id="crops"></div>
+
+          <div class="card alert" style="margin-top:14px">
+            <div class="row"><span class="t13">⚠️ Disease risk today</span><span class="pill warn">High</span></div>
+            <div class="t11" style="margin-top:6px">Humid morning — powdery-mildew conditions building for your barley. Scout and diagnose early signs.</div>
+            <button class="btn sm" style="margin-top:12px" onclick="go('diagnose')">📷 Diagnose a plant now</button>
+          </div>
+
+          <div class="sec-title">Everything FarmPilot does</div>
+          <div class="grid">
+            <button class="gtile" onclick="go('diagnose')"><div class="ic">📷</div><div class="l">AI<br>Diagnosis</div></button>
+            <button class="gtile" onclick="go('advisor')"><div class="ic">🤖</div><div class="l">AI<br>Advisor</div></button>
+            <button class="gtile" onclick="go('market')"><div class="ic">📈</div><div class="l">Sell-<br>timing</div></button>
+            <button class="gtile" onclick="go('calendar')"><div class="ic">📅</div><div class="l">Farm<br>Calendar</div></button>
+            <button class="gtile" onclick="go('map')"><div class="ic">🗺️</div><div class="l">Disease<br>Map</div></button>
+            <button class="gtile" onclick="go('trade')"><div class="ic">🤝</div><div class="l">Trade &amp;<br>Linkage</div></button>
+            <button class="gtile" onclick="go('experts')"><div class="ic">👩‍🌾</div><div class="l">Expert<br>Network</div></button>
+            <button class="gtile" onclick="openAdd()"><div class="ic">➕</div><div class="l">Add<br>a crop</div></button>
+          </div>
+
+          <div class="sec-title">This season</div>
+          <div class="metrics">
+            <div class="card metric" style="margin:0"><div class="v">99.8%</div><div class="l">last diagnosis confidence</div></div>
+            <div class="card metric" style="margin:0"><div class="v">+12%</div><div class="l">expected price if you hold</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DIAGNOSE -->
+      <section class="screen" id="s-diagnose">
+        <div class="hd"><div class="eyebrow"><span>📷</span> AI Diagnosis</div><h1>Point, shoot, diagnose</h1><div class="sub" id="dg-sub">On-device · offline · ~10 seconds</div></div>
+        <div class="body">
+          <div class="viewfinder" id="vf"><img id="vfimg" src="assets/leaf1.jpg" alt="leaf"><div class="frame"></div><div class="scan"></div><div class="hint" id="vfhint">Fill the frame with the affected leaf</div></div>
+          <button class="btn" style="margin-top:12px" id="shutter" onclick="diagnose()">📸 Capture &amp; diagnose</button>
+          <div class="t11" style="margin:6px 2px 4px">Or pick a sample leaf:</div>
+          <div class="samples"><img src="assets/leaf1.jpg" class="sel" onclick="pick(0,this)" alt=""><img src="assets/leaf2.jpg" onclick="pick(1,this)" alt=""><img src="assets/leaf3.jpg" onclick="pick(2,this)" alt=""></div>
+          <div id="result"></div>
+        </div>
+      </section>
+
+      <!-- ADVISOR -->
+      <section class="screen" id="s-advisor">
+        <div class="hd"><div class="eyebrow"><span>🤖</span> AI Advisor</div><h1>Ask anything</h1><div class="sub">Voice &amp; dialect · in any language</div></div>
+        <div class="body" id="chatbody"><div class="chat" id="chat"><div class="bub ai">Hi Minjun 👋 I'm your FarmPilot advisor. Ask me about a disease, spraying, or when to sell.</div></div></div>
+        <div class="quick" id="quick">
+          <button onclick="ask(this.textContent)">There's white powder on my leaves</button>
+          <button onclick="ask(this.textContent)">Should I sell now or wait?</button>
+          <button onclick="ask(this.textContent)">How much fungicide?</button>
+          <button onclick="ask(this.textContent)">When is the sell window?</button>
+        </div>
+        <div class="composer">
+          <button class="mic" onclick="toast('🎙️ Listening… (voice demo)')" aria-label="voice"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M18 12a6 6 0 0 1-12 0H4a8 8 0 0 0 7 7.9V22h2v-2.1A8 8 0 0 0 20 12h-2Z"/></svg></button>
+          <input id="msg" placeholder="Message… (type or tap a chip)" onkeydown="if(event.key==='Enter'){ask(this.value); this.value='';}">
+          <button class="send" onclick="var m=document.getElementById('msg'); ask(m.value); m.value='';" aria-label="send"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 11l18-8-8 18-2-7-8-3Z"/></svg></button>
+        </div>
+      </section>
+
+      <!-- MARKET -->
+      <section class="screen" id="s-market">
+        <div class="hd"><div class="eyebrow"><span>📈</span> Sell-timing</div><h1>When &amp; how to sell</h1><div class="sub" id="mkt-sub">Malting barley · 8-week outlook</div></div>
+        <div class="body">
+          <div class="seg" id="seg"></div>
+          <div class="kpis"><div class="kpi"><div class="v" id="k-price">₩24,800</div><div class="l">current wholesale</div></div><div class="kpi"><div class="v" id="k-exp" style="color:var(--g2)">+12%</div><div class="l">expected in 4 weeks</div></div></div>
+          <div class="card" style="margin-top:12px"><div class="t11" style="margin-bottom:8px" id="chart-cap">Wholesale price · next 8 weeks</div><svg id="chart" viewBox="0 0 300 120" style="width:100%;height:130px"></svg></div>
+          <div class="card rec" id="rec"><b id="rec-title">Hold 4–5 weeks</b><div class="d" id="rec-d">Price is rising toward a peak. Selling now leaves money on the table.</div></div>
+          <button class="btn ghost" onclick="toast('🔔 We will alert you when the window opens')">🔔 Alert me at the optimal window</button>
+        </div>
+      </section>
+
+      <!-- CALENDAR -->
+      <section class="screen" id="s-calendar">
+        <div class="hd withback"><div class="back" onclick="go('home')">‹</div><div class="eyebrow"><span>📅</span> Farm Calendar</div><h1>Auto reminders</h1><div class="sub">Spraying · re-diagnose · sell-timing</div></div>
+        <div class="body">
+          <div class="sec-title">Upcoming</div>
+          <div class="card">
+            <div class="task"><div class="ic">💊</div><div class="x"><b>2nd spray</b><span>Tebuconazole · barley</span></div><span class="pill warn">Today</span></div>
+            <div class="task"><div class="ic">📷</div><div class="x"><b>Re-diagnose</b><span>Check mildew progress</span></div><span class="pill dim">+3d</span></div>
+            <div class="task"><div class="ic">🚚</div><div class="x"><b>Sell window alert</b><span>Wholesale price peak</span></div><span class="pill ok">+4wk</span></div>
+            <div class="task"><div class="ic">🌡️</div><div class="x"><b>Heat check</b><span>Ventilate storage</span></div><span class="pill dim">Daily</span></div>
+          </div>
+          <div class="sec-title">Done this week</div>
+          <div class="card"><div class="task"><div class="ic">✅</div><div class="x"><b>1st spray applied</b><span>Logged 5 days ago</span></div></div><div class="task"><div class="ic">✅</div><div class="x"><b>Field scouted</b><span>2 leaves diagnosed</span></div></div></div>
+          <button class="btn ghost" onclick="toast('📅 Reminder added to your calendar')">＋ Add a task</button>
+        </div>
+      </section>
+
+      <!-- DISEASE MAP -->
+      <section class="screen" id="s-map">
+        <div class="hd withback"><div class="back" onclick="go('home')">‹</div><div class="eyebrow"><span>🗺️</span> Disease Map</div><h1>Your area, live</h1><div class="sub">Haenam · Gangjin · real-time</div></div>
+        <div class="body">
+          <div class="map"><div class="grid-l"></div>
+            <div class="dot" style="width:18px;height:18px;top:32%;left:36%"></div>
+            <div class="dot" style="width:24px;height:24px;top:54%;left:60%"></div>
+            <div class="dot" style="width:13px;height:13px;top:66%;left:30%"></div>
+            <div class="me-dot" style="top:46%;left:47%"></div>
+          </div>
+          <div class="card" style="margin-top:12px"><div class="row"><span class="t13">🔴 Powdery mildew spreading</span><span class="pill warn">3 km</span></div><div class="t11" style="margin-top:6px">12 nearby farms reported it this week. You're inside the spread radius — a preventive spray is recommended.</div><button class="btn sm" style="margin-top:12px" onclick="toast('🛡️ Preventive plan added to Calendar')">🛡️ Get a prevention plan</button></div>
+          <div class="card"><div class="t11">The more farms diagnose, the earlier the alert. Your diagnoses feed the regional model — a data flywheel no single farm could build.</div></div>
+        </div>
+      </section>
+
+      <!-- TRADE -->
+      <section class="screen" id="s-trade">
+        <div class="hd withback"><div class="back" onclick="go('home')">‹</div><div class="eyebrow"><span>🤝</span> Trade &amp; Linkage</div><h1>Turn a diagnosis into money</h1><div class="sub">Matched from your farm data</div></div>
+        <div class="body">
+          <div class="card"><div class="task"><div class="ic">🧪</div><div class="x"><b>Cheapest fungicide</b><span>Tebuconazole · 3 sellers compared</span></div><span class="pill ok">Match</span></div>
+            <div class="task"><div class="ic">🛡️</div><div class="x"><b>Crop insurance</b><span>Based on your disease history</span></div><span class="pill dim">Quote</span></div>
+            <div class="task"><div class="ic">📦</div><div class="x"><b>Buyer / RPC matching</b><span>Grade &amp; price for your barley</span></div><span class="pill ok">Connect</span></div>
+            <div class="task"><div class="ic">📑</div><div class="x"><b>Contract-farming offer</b><span>2 beverage buyers nearby</span></div><span class="pill dim">Review</span></div>
+          </div>
+          <div class="card"><div class="t11">FarmPilot connects your verified farm record to the sellers, insurers, and buyers who want it — the income layer government apps never touch.</div></div>
+        </div>
+      </section>
+
+      <!-- EXPERTS -->
+      <section class="screen" id="s-experts">
+        <div class="hd withback"><div class="back" onclick="go('home')">‹</div><div class="eyebrow"><span>👩‍🌾</span> Expert Network</div><h1>When you need a human</h1><div class="sub">Escalate from AI to people</div></div>
+        <div class="body">
+          <div class="card"><div class="row"><span class="t13">🧑‍🔬 Crop-protection expert</span><span class="pill ok">● Online</span></div><div class="t11" style="margin-top:6px">When the AI is unsure, connect 1:1 with a licensed advisor.</div><button class="btn sm" style="margin-top:12px" onclick="toast('📞 Connecting you to an expert…')">Talk to an expert</button></div>
+          <div class="sec-title">Your community</div>
+          <div class="card"><div class="task"><div class="ic">💬</div><div class="x"><b>Haenam Barley Group</b><span>"Mildew is early this year, watch out"</span></div></div>
+            <div class="task"><div class="ic">📣</div><div class="x"><b>Subsidy alert</b><span>Smart-farm support · applications open</span></div><span class="pill warn">D-7</span></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <nav class="tabbar">
+      <button class="tab on" data-tab="home" onclick="go('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-7 9 7v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</button>
+      <button class="tab" data-tab="diagnose" onclick="go('diagnose')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Diagnose</button>
+      <button class="tab" data-tab="advisor" onclick="go('advisor')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Advisor</button>
+      <button class="tab" data-tab="market" onclick="go('market')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>Market</button>
+    </nav>
+
+    <div class="toast" id="toast"></div>
+    <div class="sheet-bg" id="sheetbg" onclick="closeSheets()"></div>
+
+    <div class="sheet" id="sheet">
+      <div class="grab"></div><h3>About this demo</h3>
+      <p><b>This is a working sample demo</b> of FarmPilot, not the final product UI. Every tab is interactive — diagnose a leaf, chat with the advisor, check sell-timing, add your crops.</p>
+      <p>The diagnosis engine behind it is real: a 6&nbsp;MB on-device CNN at <b>97.8%</b> validation accuracy on public crop-disease data. Voice and price layers are in active development; sample data shown for illustration.</p>
+      <p>FarmPilot · Arbiter &nbsp;·&nbsp; <a href="about.html">About the project →</a></p>
+      <button class="btn" onclick="closeSheets()">Got it</button>
+    </div>
+
+    <div class="sheet" id="addsheet">
+      <div class="grab"></div><h3>Add a crop</h3>
+      <input class="search" id="cropsearch" placeholder="Search crops…" oninput="renderCatalog(this.value)">
+      <div class="croplist" id="croplist"></div>
+    </div>
+
+    <div class="sheet" id="cropsheet">
+      <div class="grab"></div><h3 id="cs-name">Crop</h3>
+      <p id="cs-desc">Jump to a function for this crop.</p>
+      <button class="btn" onclick="cropGo('diagnose')">📷 Diagnose this crop</button>
+      <button class="btn ghost" onclick="cropGo('market')">📈 Sell-timing outlook</button>
+      <button class="btn ghost" onclick="cropGo('calendar')">📅 Farm calendar</button>
+      <button class="btn ghost" style="color:var(--danger); border-color:#f0d3c6" onclick="removeCrop()">Remove from my crops</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function tick(){ var d=new Date(); document.getElementById('clock').textContent = d.getHours()+':'+String(d.getMinutes()).padStart(2,'0'); }
+  tick(); setInterval(tick,10000);
+
+  var TABS={home:1,diagnose:1,advisor:1,market:1};
+  function go(id){
+    document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+    document.getElementById('s-'+id).classList.add('active');
+    var tabId = TABS[id] ? id : 'home';
+    document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('on', t.dataset.tab===tabId); });
+    document.querySelectorAll('.body').forEach(function(b){ b.scrollTop=0; });
+    closeSheets();
+  }
+  var toastT;
+  function toast(msg){ var el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(function(){ el.classList.remove('show'); },2200); }
+  function openSheet(id){ document.getElementById('sheetbg').classList.add('show'); document.getElementById(id).classList.add('show'); }
+  function closeSheets(){ document.getElementById('sheetbg').classList.remove('show'); document.querySelectorAll('.sheet').forEach(function(s){ s.classList.remove('show'); }); }
+
+  /* ---------------- crops ---------------- */
+  var CATALOG=[
+    {n:'Barley',e:'🌾'},{n:'Rice',e:'🌾'},{n:'Potato',e:'🥔'},{n:'Tomato',e:'🍅'},{n:'Cabbage',e:'🥬'},
+    {n:'Pepper',e:'🌶️'},{n:'Apple',e:'🍎'},{n:'Strawberry',e:'🍓'},{n:'Garlic',e:'🧄'},{n:'Onion',e:'🧅'},
+    {n:'Corn',e:'🌽'},{n:'Cucumber',e:'🥒'},{n:'Soybean',e:'🫘'},{n:'Grape',e:'🍇'},{n:'Peach',e:'🍑'},
+    {n:'Lettuce',e:'🥬'},{n:'Sweet potato',e:'🍠'},{n:'Watermelon',e:'🍉'},{n:'Pumpkin',e:'🎃'},{n:'Carrot',e:'🥕'},
+    {n:'Radish',e:'🥕'},{n:'Spinach',e:'🥬'},{n:'Mushroom',e:'🍄'},{n:'Melon',e:'🍈'},{n:'Chili',e:'🌶️'}
+  ];
+  var STATUS={ Barley:'2nd spray due', Rice:'Healthy', Potato:'Watch mildew', Tomato:'Diagnosed' };
+  var myCrops;
+  try{ myCrops=JSON.parse(localStorage.getItem('fp_crops')); }catch(e){}
+  if(!myCrops||!myCrops.length) myCrops=[{n:'Barley',e:'🌾'},{n:'Rice',e:'🌾'}];
+  function saveCrops(){ try{ localStorage.setItem('fp_crops',JSON.stringify(myCrops)); }catch(e){} }
+  function renderCrops(){
+    var el=document.getElementById('crops'); el.innerHTML='';
+    myCrops.forEach(function(c){
+      var st=STATUS[c.n]||'Monitoring'; var warn=/spray|mildew|diagnos/i.test(st);
+      var d=document.createElement('div'); d.className='cropcard';
+      d.innerHTML='<div class="e">'+c.e+'</div><div class="n">'+c.n+'</div><div class="s" style="color:'+(warn?'#b76e00':'var(--g2)')+'">'+st+'</div>';
+      d.onclick=function(){ openCrop(c); }; el.appendChild(d);
+    });
+    var add=document.createElement('button'); add.className='cropadd'; add.innerHTML='<span class="p">＋</span>Add'; add.onclick=openAdd; el.appendChild(add);
+    buildSeg();
+  }
+  function openAdd(){ document.getElementById('cropsearch').value=''; renderCatalog(''); openSheet('addsheet'); }
+  function renderCatalog(f){
+    f=(f||'').toLowerCase(); var el=document.getElementById('croplist'); el.innerHTML='';
+    CATALOG.filter(function(c){ return c.n.toLowerCase().indexOf(f)>-1; }).forEach(function(c){
+      var has=myCrops.some(function(m){ return m.n===c.n; });
+      var b=document.createElement('div'); b.className='cl'+(has?' has':''); b.innerHTML='<span class="e">'+c.e+'</span>'+c.n+(has?' ✓':'');
+      b.onclick=function(){ if(has) return; myCrops.push({n:c.n,e:c.e}); saveCrops(); renderCrops(); closeSheets(); toast('✓ '+c.n+' added to your crops'); };
+      el.appendChild(b);
+    });
+    if(!el.children.length) el.innerHTML='<div class="t11" style="grid-column:1/3; padding:8px">No match. Type a crop name.</div>';
+  }
+  var activeCropObj=null;
+  function openCrop(c){ activeCropObj=c; document.getElementById('cs-name').textContent=c.e+' '+c.n;
+    document.getElementById('cs-desc').textContent='Jump to a function for your '+c.n.toLowerCase()+'.'; openSheet('cropsheet'); }
+  function cropGo(fn){ if(activeCropObj){ activeCrop=activeCropObj.n; if(fn==='market') setCrop(activeCropObj.n);
+    if(fn==='diagnose') document.getElementById('dg-sub').textContent=activeCropObj.n+' · on-device · offline'; } go(fn); }
+  function removeCrop(){ if(!activeCropObj) return; myCrops=myCrops.filter(function(m){ return m.n!==activeCropObj.n; }); saveCrops(); renderCrops(); closeSheets(); toast('Removed '+activeCropObj.n); }
+
+  /* ---------------- diagnose ---------------- */
+  var SAMPLES=[
+    {img:'assets/leaf1.jpg',crop:'Tomato',disease:'Late blight',conf:99.8,healthy:false,rx:['Remove infected plants','Fungicide ×2 / 7 days','No overhead watering'],note:'Fast-spreading. Act within 48 hours to protect the rest of the field.'},
+    {img:'assets/leaf2.jpg',crop:'Potato',disease:'Early blight',conf:100,healthy:false,rx:['Remove lower infected leaves','Chlorothalonil spray','Rotate next season'],note:'Common and manageable if caught early. Keep foliage dry.'},
+    {img:'assets/leaf3.jpg',crop:'Apple',disease:'Healthy',conf:100,healthy:true,rx:['No action needed','Keep monitoring weekly'],note:'Leaf looks healthy. Keep scouting after rain.'}
+  ];
+  var sel=0;
+  function pick(i,el){ sel=i; document.getElementById('vfimg').src=SAMPLES[i].img; document.querySelectorAll('.samples img').forEach(function(s){ s.classList.remove('sel'); }); el.classList.add('sel'); document.getElementById('result').innerHTML=''; }
+  function diagnose(){
+    var vf=document.getElementById('vf'), btn=document.getElementById('shutter'), res=document.getElementById('result');
+    vf.classList.add('scanning'); document.getElementById('vfhint').textContent='Analyzing on-device…';
+    btn.innerHTML='<span class="spinner"></span> Analyzing…'; btn.disabled=true; res.innerHTML='';
+    setTimeout(function(){
+      var d=SAMPLES[sel]; vf.classList.remove('scanning'); document.getElementById('vfhint').textContent='Diagnosis complete';
+      btn.innerHTML='📸 Capture &amp; diagnose'; btn.disabled=false;
+      res.innerHTML='<div class="card" style="margin-top:14px"><div class="row"><span class="t13">'+d.crop+' · '+d.disease+'</span><span class="pill '+(d.healthy?'ok':'warn')+'">'+(d.healthy?'Healthy':'Diagnosed')+'</span></div><div class="bar"><i id="cbar"></i></div><div class="t11">Confidence '+d.conf+'% · on-device, offline</div><div style="margin-top:6px">'+d.rx.map(function(r){return '<span class="chip">✓ '+r+'</span>';}).join('')+'</div><div class="t11" style="margin-top:10px; color:var(--ink2)">'+d.note+'</div><button class="btn sm" style="margin-top:13px" onclick="toast(\'🔊 Playing advice in your language…\')">🔊 Hear this aloud</button></div>';
+      requestAnimationFrame(function(){ document.getElementById('cbar').style.width=d.conf+'%'; });
+      res.scrollIntoView({behavior:'smooth',block:'nearest'});
+    },1500);
+  }
+
+  /* ---------------- advisor ---------------- */
+  function addBub(txt,who){ var c=document.getElementById('chat'); var b=document.createElement('div'); b.className='bub '+who; b.innerHTML=txt; c.appendChild(b); var body=document.getElementById('chatbody'); body.scrollTop=body.scrollHeight; return b; }
+  function reply(q){ q=q.toLowerCase();
+    if(/powder|mildew|white|spot|disease|sick|leaf/.test(q)) return "That sounds like <b>powdery mildew</b>. Snap a photo in the Diagnose tab for a confident read. If it's early, two sprays over 7 days is usually enough — go light, over-spraying wastes money.";
+    if(/fungicide|spray|how much|dose|pesticide/.test(q)) return "For early powdery mildew: tebuconazole at label rate, <b>2 applications, 7 days apart</b>. Don't exceed the residue safety interval before harvest. I can add it to your calendar.";
+    if(/sell|price|wait|hold|market/.test(q)) return "Wholesale barley is <b>rising toward a peak in ~4 weeks</b>. I'd <b>hold 4–5 more days</b> at minimum — check the Market tab for the full outlook.";
+    if(/harvest|window|timing|when/.test(q)) return "Your optimal sell window opens in about <b>4 weeks</b>. Tap 🔔 in the Market tab and I'll alert you at the target price.";
+    if(/hi|hello|hey|thanks|thank/.test(q)) return "Anytime 🙂 Ask me about a disease, spraying, or sell-timing whenever you need.";
+    return "I can help with <b>diagnosis</b>, <b>spraying</b>, and <b>sell-timing</b>. Try the Diagnose tab for a leaf photo, or ask “when should I sell?”";
+  }
+  function ask(q){ q=(q||'').trim(); if(!q) return; addBub(q,'me'); var t=addBub('<span></span><span></span><span></span>','ai typing'); setTimeout(function(){ t.remove(); addBub(reply(q),'ai'); },850); }
+
+  /* ---------------- market ---------------- */
+  var CROP_MARKET={
+    Barley:{price:'₩24,800',exp:'+12%',pts:[52,49,54,46,40,30,20,26,33],title:'Hold 4–5 weeks',d:'Price is rising toward a peak. Selling now leaves money on the table.'},
+    Rice:{price:'₩51,200',exp:'+3%',pts:[46,45,46,44,45,44,45,43,44],title:'Sell steadily',d:'A stored staple with a flat curve — spread sales, no need to time a peak.'},
+    Potato:{price:'₩18,400',exp:'−6%',pts:[30,34,40,46,52,58,62,66,70],title:'Sell soon',d:'Price is sliding as the harvest floods the market. Move volume in 1–2 weeks.'}
+  };
+  function marketFor(name){ if(CROP_MARKET[name]) return CROP_MARKET[name];
+    return {price:'—',exp:'+2%',pts:[46,45,46,45,46,45,46,45,46],title:'Outlook building',d:'We\'re still gathering enough regional price data for '+name.toLowerCase()+'. Add it to a pilot to unlock the full forecast.'}; }
+  var activeCrop='Barley';
+  function buildSeg(){ var seg=document.getElementById('seg'); seg.innerHTML='';
+    myCrops.forEach(function(c){ var b=document.createElement('button'); b.textContent=c.n; b.className=(c.n===activeCrop?'on':''); b.onclick=function(){ setCrop(c.n,b); }; seg.appendChild(b); });
+    if(!myCrops.some(function(c){return c.n===activeCrop;}) && myCrops[0]) setCrop(myCrops[0].n);
+  }
+  function drawChart(pts,down){ var w=300,h=120,pad=8,n=pts.length,dx=(w-pad*2)/(n-1);
+    var pk=down?(n-1):pts.indexOf(Math.min.apply(null,pts));
+    var d=pts.map(function(v,i){ return (i?'L':'M')+(pad+i*dx).toFixed(1)+','+v.toFixed(1); }).join(' ');
+    var col=down?'var(--danger)':'var(--g2)'; var px=(pad+pk*dx).toFixed(1), py=pts[pk].toFixed(1);
+    document.getElementById('chart').innerHTML='<defs><linearGradient id="fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+col+'" stop-opacity=".18"/><stop offset="1" stop-color="'+col+'" stop-opacity="0"/></linearGradient></defs><path d="'+d+' L'+(w-pad)+','+h+' L'+pad+','+h+' Z" fill="url(#fill)"/><path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><line x1="'+px+'" y1="4" x2="'+px+'" y2="'+h+'" stroke="var(--gold)" stroke-width="1.4" stroke-dasharray="3 3"/><circle cx="'+px+'" cy="'+py+'" r="4.5" fill="#fff" stroke="var(--gold)" stroke-width="2.5"/>'; }
+  function setCrop(name,el){ activeCrop=name;
+    document.querySelectorAll('#seg button').forEach(function(b){ b.classList.toggle('on', b.textContent===name); });
+    var c=marketFor(name), down=c.exp.indexOf('−')===0;
+    document.getElementById('mkt-sub').textContent=name+' · 8-week outlook';
+    document.getElementById('k-price').textContent=c.price;
+    var ke=document.getElementById('k-exp'); ke.textContent=c.exp; ke.style.color=down?'var(--danger)':'var(--g2)';
+    document.getElementById('chart-cap').textContent='Wholesale price · '+name.toLowerCase();
+    document.getElementById('rec-title').textContent=c.title; document.getElementById('rec-d').textContent=c.d;
+    document.getElementById('rec').style.background=down?'linear-gradient(135deg,#d9743a,#c85f2c)':'linear-gradient(135deg,#17a56b,#12b487)';
+    drawChart(c.pts,down);
+  }
+
+  renderCrops(); setCrop('Barley');
+</script>
+</body>
+</html>
