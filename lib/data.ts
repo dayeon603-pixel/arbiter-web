@@ -26,7 +26,10 @@ export const sectors: Sector[] = [
     mission: 'Developing solar-powered cold-storage infrastructure for the places the electrical grid does not reach. Up to a third of a smallholder harvest spoils before it can be sold, for want of refrigeration. The work is a pay-as-you-go cold chain at village scale, so a farmer’s crop becomes income instead of waste.',
     target: 'Smallholder farmers in sub-Saharan Africa, and the food-security programs that serve them.',
     image: '/img/agriculture.jpg',
-    product: { name: 'HarvestGuard', note: 'A solar-powered, pay-as-you-go cold chain for smallholder farmers.', href: '/harvestguard' },
+    products: [
+      { name: 'HarvestGuard', note: 'A solar-powered, pay-as-you-go cold chain for smallholder farmers.', href: '/harvestguard' },
+      { name: 'FarmPilot', note: 'An AI copilot that turns a smartphone into a pocket agronomist for smallholders.', href: '/farmpilot' },
+    ],
   },
   {
     id: 'cyber', fig: '03', kicker: 'Cybersecurity & Fraud', stage: 'In development',
@@ -148,6 +151,29 @@ export const harvestguard = {
   status: {
     label: 'Status',
     body: 'HarvestGuard is in development and pre-pilot. The hardware is designed and independently engineer-reviewed, the off-grid power system and the pay-as-you-go data layer are specified, and partnership outreach for a first field pilot is underway. No pods are deployed yet, and no customers, revenue, or funding are claimed anywhere. This page and the overview describe the work at a high level while the first pilot is still ahead.',
+  },
+}
+
+export const farmpilot = {
+  eyebrow: 'A product of Arbiter · Agriculture & Food Security',
+  name: 'FarmPilot',
+  tagline: 'A pocket agronomist and market advisor for the world’s smallest farms.',
+  lead: 'FarmPilot turns an ordinary smartphone into an AI copilot for a smallholder farmer: point the camera at a sick plant and it names the disease and a treatment, on the device and offline; it models when and where to sell so a harvest is not sold on the wrong day; and it answers questions by voice, in the farmer’s own dialect. It is built for the hundreds of millions of sub-one-hectare farms — 73.5% of all farms in Korea — that feed much of Asia on the thinnest margins and the least access to expertise.',
+  problem: {
+    label: 'The problem',
+    body: 'The farms that feed Asia have the least support. A pest caught a week late, or a harvest sold on the wrong day, can erase a season’s income — and climate stress is widening both gaps at once, with unfamiliar pests and more volatile yields and prices. Expert agronomy and market timing exist, but not in the field, not in real time, and rarely in a form a busy farmer can act on. The smartphone the farmer already owns is the only piece of infrastructure that reaches every one of these farms.',
+  },
+  how: {
+    label: 'How it works',
+    points: [
+      { h: 'Diagnose, on the device', p: 'A lightweight vision model identifies the pest or disease from a single photo and suggests a treatment, running on the phone itself so it works offline in the field. The diagnosis engine is a working, tested prototype — a MobileNetV3 classifier fine-tuned on public crop-disease data — with its measured accuracy, and the honest gap between clean lab images and messy field photos, disclosed in the demo itself.' },
+      { h: 'Time the market', p: 'FarmPilot models price trend and volatility to turn market data into a plain recommendation about when and where to sell, instead of a spreadsheet a farmer has to read. For storable crops that means holding for a better window; for perishable ones, grading and negotiation.' },
+      { h: 'Talk, in your own language', p: 'A language model answers questions by voice, in the farmer’s own dialect, carrying the farmer from a diagnosis to a decision without a keyboard or a manual — the layer that makes the other two usable for an ageing, low-connectivity user.' },
+    ],
+  },
+  status: {
+    label: 'Status',
+    body: 'FarmPilot is an early, working prototype — built and tested, but pre-pilot and pre-commercial. The disease-diagnosis engine runs today with a measured validation accuracy and a public demo; the market-timing and voice layers are in development. No customers, revenue, or funding are claimed anywhere, and field accuracy on real-world photos is expected to be lower than the controlled-dataset number, which is stated plainly in the demo. The work is honest about what is real and what is still ahead.',
   },
 }
 
