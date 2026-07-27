@@ -1,11 +1,12 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import Lenis from 'lenis'
 import GradientCanvas from './GradientCanvas'
 import LogoMark from './LogoMark'
+import BusinessCard from './BusinessCard'
 import { sectors, hero, company, founder, navLinks, contactHref, legal, type Sector } from '@/lib/data'
 
 const EASE = [0.16, 0.7, 0.18, 1] as const
@@ -21,7 +22,7 @@ function useLenis() {
   }, [])
 }
 
-function Nav() {
+function Nav({ onContact }: { onContact: () => void }) {
   return (
     <header className="nav">
       <div className="wrap nav__inner">
@@ -32,7 +33,7 @@ function Nav() {
         <nav className="nav__links" aria-label="Primary">
           {navLinks.map((l) => (<a key={l.id} href={`#${l.id}`}>{l.label}</a>))}
           <a href="#company">Company</a>
-          <Link href="/card" className="nav__cta">Contact</Link>
+          <button type="button" className="nav__cta" onClick={onContact}>Contact</button>
         </nav>
       </div>
     </header>
@@ -143,7 +144,7 @@ function Founder() {
   )
 }
 
-function Footer() {
+function Footer({ onContact }: { onContact: () => void }) {
   return (
     <footer className="footer">
       <div className="wrap footer__grid">
@@ -160,7 +161,7 @@ function Footer() {
           <ul>
             <li><a href="#company">About</a></li>
             <li><a href="#founder">Founder</a></li>
-            <li><Link href="/card">Contact</Link></li>
+            <li><button type="button" className="footer__linkbtn" onClick={onContact}>Contact</button></li>
           </ul>
         </div>
         <div className="footer__col">
@@ -191,18 +192,48 @@ function Footer() {
   )
 }
 
+function ContactModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', onKey)
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prevOverflow
+    }
+  }, [open, onClose])
+
+  if (!open) return null
+  return (
+    <div className="contact-modal" role="dialog" aria-modal="true" aria-label="Get in touch — Dayeon Kang, Arbiter">
+      <div className="contact-modal__backdrop" onClick={onClose} />
+      <button type="button" className="contact-modal__close" onClick={onClose} aria-label="Close" autoFocus>
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
+      </button>
+      <div className="contact-modal__dialog">
+        <BusinessCard embed />
+      </div>
+    </div>
+  )
+}
+
 export default function Site() {
   useLenis()
+  const [contactOpen, setContactOpen] = useState(false)
+  const openContact = () => setContactOpen(true)
   return (
     <>
-      <Nav />
+      <Nav onContact={openContact} />
       <main>
         <Hero />
         {sectors.map((s, i) => (<SectorBlock key={s.id} s={s} index={i} />))}
         <Company />
         <Founder />
       </main>
-      <Footer />
+      <Footer onContact={openContact} />
+      <ContactModal open={contactOpen} onClose={() => setContactOpen(false)} />
     </>
   )
 }

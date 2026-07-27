@@ -11,7 +11,7 @@ import { useEffect, useRef } from 'react'
  * matching the marketing site. Click / Enter flips; the pointer adds a subtle
  * parallax tilt. Styles are namespaced under `.bizcard` in globals.css.
  */
-export default function BusinessCard() {
+export default function BusinessCard({ embed = false }: { embed?: boolean }) {
   const cardRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
 
@@ -69,7 +69,7 @@ export default function BusinessCard() {
   )
 
   return (
-    <div className="bizcard">
+    <div className={`bizcard${embed ? ' bizcard--embed' : ''}`}>
       <div className="stage" ref={stageRef}>
         <div
           className="card"

@@ -341,7 +341,7 @@
   background: radial-gradient(120% 80% at 50% -20%, rgba(255,255,255,0.06), transparent 60%);
 }
 .bizcard .face::after {
-  content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0.4; mix-blend-mode: overlay;
+  content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0.22; mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
 }
 
@@ -360,7 +360,7 @@
 .bizcard .bc-name { font-family: var(--bc-sans); font-size: clamp(23px, 7cqw, 31px); font-weight: 600; letter-spacing: -0.02em; line-height: 1.02; color: #fff; text-wrap: balance; }
 .bizcard .bc-title { margin-top: 11px; display: flex; align-items: center; gap: 11px; font-family: var(--bc-mono); font-size: clamp(8.5px, 2.2cqw, 10px); font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--bc-bronze-lift); }
 .bizcard .bc-title__rule { width: 22px; height: 1.5px; background: var(--bc-bronze); border-radius: 2px; flex: none; }
-.bizcard .bc-tag { font-family: var(--bc-sans); font-size: clamp(9.5px, 2.3cqw, 11px); font-weight: 400; line-height: 1.4; color: var(--bc-bone-mut); max-width: 30ch; }
+.bizcard .bc-tag { font-family: var(--bc-sans); font-size: clamp(9.5px, 2.25cqw, 10.5px); font-weight: 400; line-height: 1.45; color: var(--bc-bone-mut); max-width: 28ch; letter-spacing: 0.004em; }
 
 /* BACK */
 .bizcard .back { transform: rotateY(180deg); }
@@ -382,3 +382,29 @@
 .bizcard .hint { font-family: var(--bc-mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--bc-faint); user-select: none; }
 
 @media (prefers-reduced-motion: reduce) { .bizcard .card { transition: transform 0.001s; } }
+
+/* ---- card embedded in the contact modal (no full-page stage) ---- */
+.bizcard.bizcard--embed { min-height: 0; padding: 0; background: none; }
+:root[data-theme="light"] .bizcard.bizcard--embed { background: none; color: var(--bc-faint); }
+
+/* ================================================================ contact modal */
+button.nav__cta { background: none; cursor: pointer; }
+.footer__col button.footer__linkbtn { background: none; border: 0; padding: 0; cursor: pointer; font: inherit; color: var(--dim); }
+.footer__col button.footer__linkbtn:hover { color: var(--ink); }
+
+.contact-modal { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; padding: 6vw; }
+.contact-modal__backdrop { position: absolute; inset: 0; background: rgba(6,6,8,0.74); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); animation: cm-fade 0.28s ease both; }
+.contact-modal__dialog { position: relative; z-index: 1; display: grid; justify-items: center; gap: clamp(14px, 3vh, 20px); animation: cm-rise 0.44s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.contact-modal__close {
+  position: fixed; top: clamp(16px, 3vw, 26px); right: clamp(16px, 3vw, 26px); z-index: 2;
+  width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%;
+  background: rgba(233,230,223,0.06); border: 1px solid rgba(233,230,223,0.16); color: #E9E6DF;
+  cursor: pointer; transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.contact-modal__close:hover { border-color: #b5821e; color: #cf9a2f; background: rgba(181,130,30,0.1); }
+.contact-modal__close:focus-visible { outline: 2px solid #b5821e; outline-offset: 3px; }
+@keyframes cm-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes cm-rise { from { opacity: 0; transform: translateY(12px) scale(0.98); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .contact-modal__backdrop, .contact-modal__dialog { animation: none; }
+}
