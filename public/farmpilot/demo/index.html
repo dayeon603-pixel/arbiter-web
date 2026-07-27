@@ -110,11 +110,11 @@
   /* calendar */
   .cal-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
   .cal-top b{ font-size:15px; } .cal-nav{ display:flex; gap:8px; } .cal-nav button{ width:32px; height:32px; border-radius:9px; border:1px solid var(--line); background:#fff; color:var(--g3); cursor:pointer; display:grid; place-items:center; } .cal-nav svg{ width:15px; height:15px; }
-  .cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
-  .cal-dow{ text-align:center; font-size:10px; font-weight:800; color:var(--mut); padding:2px 0; }
-  .cal-day{ aspect-ratio:1; border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:13px; font-weight:700; color:var(--ink2); cursor:pointer; position:relative; background:#f4f9f5; }
-  .cal-day.empty{ background:transparent; cursor:default; } .cal-day.today{ background:var(--g2); color:#fff; } .cal-day.sel{ outline:2px solid var(--g2); }
-  .cal-day .evd{ display:flex; gap:2px; margin-top:3px; height:5px; } .cal-day .evd i{ width:5px; height:5px; border-radius:50%; }
+  .cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+  .cal-dow{ text-align:center; font-size:10px; font-weight:800; color:var(--mut); padding:1px 0 3px; }
+  .cal-day{ height:42px; border-radius:11px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; font-size:13px; font-weight:600; color:var(--ink2); cursor:pointer; position:relative; background:#f4f9f5; }
+  .cal-day.empty{ background:transparent; cursor:default; } .cal-day.today{ background:var(--g2); color:#fff; box-shadow:0 3px 9px rgba(14,158,99,.32); } .cal-day.sel:not(.today){ outline:2px solid var(--g2); outline-offset:-2px; }
+  .cal-day .evd{ display:flex; gap:3px; height:5px; align-items:center; } .cal-day .evd i{ width:5px; height:5px; border-radius:50%; }
   .dt-spray{ background:#d9743a } .dt-diagnose{ background:#0e9e63 } .dt-sell{ background:#e0a800 } .dt-water{ background:#2f9bd6 } .dt-fert{ background:#8a6bd6 } .dt-harvest{ background:#b5401a } .dt-custom{ background:#6b8a7a }
 
   .map-wrap{ border-radius:16px; overflow:hidden; border:1px solid var(--line); box-shadow:var(--shadow); }
