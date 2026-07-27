@@ -1,4 +1,4 @@
-var C='fp-demo-v3';
+var C='fp-demo-v4';
 var ASSETS=['./','index.html','manifest.json','assets/leaf1.jpg','assets/leaf2.jpg','assets/leaf3.jpg','icon-192.png','icon-512.png'];
 self.addEventListener('install',function(e){ e.waitUntil(caches.open(C).then(function(c){ return c.addAll(ASSETS).catch(function(){}); })); self.skipWaiting(); });
 self.addEventListener('activate',function(e){ e.waitUntil(caches.keys().then(function(ks){ return Promise.all(ks.map(function(k){ if(k!==C) return caches.delete(k); })); })); self.clients.claim(); });

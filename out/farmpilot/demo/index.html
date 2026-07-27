@@ -396,7 +396,7 @@
   /* ================= i18n ================= */
   var LANGS=[{c:'en',n:'English'},{c:'ko',n:'한국어'},{c:'vi',n:'Tiếng Việt'}];
   var T={
-    en:{}, /* English = keys as written in data-i18n defaults; en filled below from DOM */
+    en:{tab_home:'Home',tab_overview:'Overview',tab_me:'Me'}, /* JS-only keys seeded; rest filled from DOM by captureEn */
     ko:{ tab_home:'홈',tab_overview:'현황',tab_me:'내 정보',mycrops:'내 작물',add_crop:'+ 작물 추가',add:'+ 추가',
       risk_today:'오늘의 병해 위험',high:'높음',risk_msg:'습한 아침입니다. 보리에 흰가루병 조건이 형성되고 있어요. 초기 증상을 살펴 진단하세요.',diagnose_now:'지금 진단하기',
       everything:'FarmPilot 전체 기능',season:'이번 시즌',m_conf:'최근 진단 신뢰도',m_hold:'보유 시 예상 가격',
@@ -803,7 +803,11 @@
   buildTabs(); buildGrid(); applyI18n();
   renderCrops(); setCrop('Barley'); renderProfile(); renderCal(); renderQuick(); renderChatIntro();
   renderTradeChannels(); fillTradeCrops(); renderCommunity(); renderShareNear(); renderOverview();
-  if('serviceWorker' in navigator){ window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); }); }
+  if('serviceWorker' in navigator){
+    var _refreshing=false;
+    navigator.serviceWorker.addEventListener('controllerchange', function(){ if(_refreshing) return; _refreshing=true; location.reload(); });
+    window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js', {updateViaCache:'none'}).then(function(reg){ reg.update(); }).catch(function(){}); });
+  }
 </script>
 </body>
 </html>
