@@ -81,6 +81,23 @@
   .nav__cta:hover { border-color: color-mix(in srgb, var(--ink) 40%, transparent); }
   @media (max-width: 880px) { .nav__links { display: none; } }
 
+
+  /* stat band (Stripe-style, gradient-tinted figures below the hero) */
+  .statband { border-bottom: 1px solid var(--line); }
+  .statband__grid { display: grid; grid-template-columns: repeat(4, 1fr); padding-block: clamp(3rem, 2rem + 4vw, 5rem); }
+  .statband__cell { padding-inline: clamp(0.6rem, 2vw, 1.9rem); border-left: 1px solid var(--line); }
+  .statband__cell:first-child { border-left: 0; padding-left: 0; }
+  .statband__n {
+    font-weight: 800; font-size: clamp(2.4rem, 1.6rem + 4vw, 3.8rem); letter-spacing: -0.045em; line-height: 0.98;
+    background: linear-gradient(118deg, #ff8a3d 0%, #f65a9e 38%, #7b5cff 72%, #4b7bff 100%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .statband__l { margin-top: var(--s-3); color: var(--dim); font-size: 0.86rem; line-height: 1.45; max-width: 20ch; }
+  @media (max-width: 720px) {
+    .statband__grid { grid-template-columns: repeat(2, 1fr); gap: var(--s-6) 0; }
+    .statband__cell:nth-child(3) { border-left: 0; padding-left: 0; }
+  }
+
   /* hero */
   .hero { position: relative; padding-block: clamp(8rem, 6rem + 8vw, 12rem) var(--s-9); border-bottom: 1px solid var(--line); overflow: hidden; }
   .hero__canvas { position: absolute; inset: 0; z-index: 0; pointer-events: none; }

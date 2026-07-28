@@ -121,6 +121,35 @@ function SectorBlock({ s, index }: { s: Sector; index: number }) {
   )
 }
 
+function StatBand() {
+  const numProducts = sectors.reduce((n, s) => n + (s.product ? 1 : 0) + (s.products?.length ?? 0), 0)
+  const stats = [
+    { n: String(sectors.length), l: 'regulated & high-stakes domains' },
+    { n: String(numProducts), l: 'products in development' },
+    { n: '1', l: 'operator, building in the open' },
+    { n: 'Open', l: 'every repository public' },
+  ]
+  return (
+    <section className="statband" aria-label="Arbiter at a glance">
+      <div className="wrap statband__grid">
+        {stats.map((s, i) => (
+          <motion.div
+            key={i}
+            className="statband__cell"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-12%' }}
+            transition={{ duration: 0.6, delay: i * 0.07, ease: EASE }}
+          >
+            <div className="statband__n">{s.n}</div>
+            <div className="statband__l">{s.l}</div>
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
 function Company() {
   return (
     <section id="company" className="band">
@@ -238,6 +267,7 @@ export default function Site() {
       <Nav onContact={openContact} />
       <main>
         <Hero />
+        <StatBand />
         {sectors.map((s, i) => (<SectorBlock key={s.id} s={s} index={i} />))}
         <Company />
         <Founder />
