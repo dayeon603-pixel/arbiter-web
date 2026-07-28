@@ -11,6 +11,9 @@ import { sectors, hero, company, founder, navLinks, contactHref, legal, type Sec
 
 const EASE = [0.16, 0.7, 0.18, 1] as const
 
+const heroStagger = { hidden: {}, show: { transition: { staggerChildren: 0.09, delayChildren: 0.06 } } }
+const heroItem = { hidden: { opacity: 0, y: 18 }, show: { opacity: 1, y: 0, transition: { duration: 0.85, ease: EASE } } }
+
 function useLenis() {
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
@@ -44,18 +47,15 @@ function Hero() {
   return (
     <section id="top" className="hero hero--center">
       <GradientCanvas />
-      <motion.div
-        className="wrap hero__inner"
-        initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: EASE }}
-      >
-        <LogoMark size={62} className="hero__mark" />
-        <p className="eyebrow eyebrow--plain">{hero.eyebrow}</p>
-        <h1 className="hero__title">{hero.title}</h1>
-        <p className="hero__sub">{hero.sub}</p>
-        <div className="hero__actions">
+      <motion.div className="wrap hero__inner" variants={heroStagger} initial="hidden" animate="show">
+        <motion.div variants={heroItem}><LogoMark size={62} className="hero__mark" /></motion.div>
+        <motion.p variants={heroItem} className="eyebrow eyebrow--plain">{hero.eyebrow}</motion.p>
+        <motion.h1 variants={heroItem} className="hero__title">{hero.title}</motion.h1>
+        <motion.p variants={heroItem} className="hero__sub">{hero.sub}</motion.p>
+        <motion.div variants={heroItem} className="hero__actions">
           <a href={`#${sectors[0].id}`} className="btn btn--solid">See the work</a>
           <a href="#company" className="btn-link">About the company&nbsp;→</a>
-        </div>
+        </motion.div>
       </motion.div>
     </section>
   )

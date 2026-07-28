@@ -28,6 +28,10 @@ export default function CaravanPage() {
           <h1 className="cv__name">{caravan.name}</h1>
           <p className="cv__tagline">{caravan.tagline}</p>
           <p className="cv__lead">{caravan.lead}</p>
+          <div className="cv__actions">
+            <a href={caravan.links.app} target="_blank" rel="noopener noreferrer" className="btn btn--solid">Open the live app&nbsp;→</a>
+            <a href={caravan.links.demo} target="_blank" rel="noopener noreferrer" className="btn-link">Offline-verifiable demo</a>
+          </div>
         </section>
 
         <section className="wrap cv__block">

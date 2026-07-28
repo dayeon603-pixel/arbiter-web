@@ -129,6 +129,10 @@ export const caravan = {
     label: 'Status',
     body: 'Caravan runs today as working, tested software, not a slide or a concept. It is solo-built and pre-commercial: no customers, revenue, or funding are claimed anywhere. This page describes what Caravan does and why it matters, deliberately at a high level — the internal mechanics, models, and the specific trade lanes it targets are kept off the public page while the product is still being hardened.',
   },
+  links: {
+    app: 'https://caravan-app.dayeon603.workers.dev',
+    demo: 'https://caravan-demo-d8d.pages.dev',
+  },
 }
 
 export const harvestguard = {
