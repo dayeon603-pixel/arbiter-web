@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>골든타임 IR — 제8회 부산 B-스타트업챌린지</title>
+<style>
+/* ============================================================
+   골든타임(Goldentime) IR 덱 — 제8회 부산 창업투자경진대회 B-스타트업챌린지
+   회사: 아비터(Arbiter) · 대표 강다연
+   1280x720 (16:9) 슬라이드, Chrome --print-to-pdf 로 PDF 출력.
+   수치: canonical_numbers.md · 테스트=485(2026-07-27 실측).
+   ============================================================ */
+:root{
+  --gold:#F5B301; --gold2:#ffca3a; --navy:#15273f; --navy-d:#0e1a2d; --dark:#121722;
+  --ink:#141b26; --ink-2:#42536a; --muted:#8593a6; --paper:#ffffff; --line:#e4e8ef;
+  --sans:"Pretendard","Apple SD Gothic Neo","Segoe UI",system-ui,-apple-system,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#3a4150}
+body{font-family:var(--sans);-webkit-font-smoothing:antialiased;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.slide{position:relative;width:1280px;height:720px;overflow:hidden;background:var(--paper);color:var(--ink);
+  margin:18px auto;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.slide.navy{background:var(--navy);color:#eef3f9}
+.slide.dark{background:var(--dark);color:#eef3f9}
+.pad{position:absolute;inset:0;padding:64px 72px}
+/* chrome */
+.logo{display:flex;align-items:center;gap:11px;position:absolute;top:44px;left:72px;z-index:5}
+.logo .mk{width:26px;height:26px;border-radius:50%;background:var(--gold);position:relative;flex:none;
+  box-shadow:0 0 0 5px rgba(245,179,1,.18)}
+.logo .mk::after{content:"";position:absolute;inset:7px;border-radius:50%;background:var(--navy-d)}
+.slide.navy .logo .mk::after,.slide.dark .logo .mk::after{background:var(--navy)}
+.logo .wm{font-weight:800;font-size:18px;letter-spacing:-.01em}
+.slide.navy .logo .wm,.slide.dark .logo .wm{color:#fff}
+.pg{position:absolute;top:40px;right:72px;font-size:13px;font-weight:700;color:var(--muted);z-index:5}
+.foot{position:absolute;left:72px;right:72px;bottom:40px;font-size:12.5px;color:var(--muted);z-index:5}
+.foot .r{position:absolute;left:auto;right:0;text-align:right;white-space:nowrap}
+.slide.navy .foot,.slide.dark .foot{color:#7f90a6}
+/* type */
+.eyebrow{font-size:15px;font-weight:800;color:var(--gold);letter-spacing:.02em;margin-bottom:14px}
+h1.hero{font-size:120px;font-weight:900;letter-spacing:-.04em;line-height:.95}
+h2.title{font-size:56px;font-weight:900;letter-spacing:-.03em;line-height:1.08}
+h2.title.c{text-align:center}
+.lead{font-size:26px;font-weight:600;color:var(--ink-2);line-height:1.5}
+.slide.navy .lead,.slide.dark .lead{color:#c4d1e0}
+.sub{font-size:19px;color:var(--ink-2);line-height:1.6}
+.slide.navy .sub,.slide.dark .sub{color:#aebccd}
+.hl{color:var(--gold);font-weight:800}
+.wt{color:#fff}
+b{font-weight:800}
+/* cards */
+.row{display:flex;gap:20px}
+.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:26px 28px;flex:1}
+.slide.navy .card{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.09)}
+.slide.dark .card{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08)}
+.card.gold{background:var(--gold);border-color:transparent;color:var(--navy-d)}
+.card.navy{background:var(--navy);border-color:transparent;color:#eef3f9}
+.card .n{font-size:44px;font-weight:900;line-height:1;margin-bottom:14px;opacity:.9}
+.card .ct{font-size:22px;font-weight:800;margin-bottom:8px;line-height:1.3}
+.card .cd{font-size:18px;line-height:1.55;color:var(--ink-2)}
+.card.gold .cd,.card.navy .cd{color:inherit;opacity:.92}
+.slide.navy .card .cd,.slide.dark .card .cd{color:#aebccd}
+/* stat */
+.stat{font-size:64px;font-weight:900;letter-spacing:-.02em;line-height:1}
+.stat.g{color:var(--gold)}
+.statlbl{font-size:17px;font-weight:700;margin-top:6px}
+.statd{font-size:16px;color:var(--ink-2);margin-top:8px;line-height:1.5}
+.slide.dark .statd,.slide.navy .statd{color:#aebccd}
+/* misc */
+.pill{display:inline-block;background:var(--gold);color:var(--navy-d);font-weight:800;font-size:15px;padding:7px 16px;border-radius:30px}
+.kbd{font-family:var(--mono);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:3px 10px;font-size:15px}
+.slide:not(.navy):not(.dark) .kbd{background:#f0f3f8;border-color:var(--line);color:var(--ink)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px 40px}
+.gt{display:flex;align-items:center;gap:11px}
+.gitem .gt{font-size:21px;font-weight:800}
+.gitem .gd{font-size:16px;color:var(--ink-2);margin-top:6px;line-height:1.5}
+.slide.dark .gitem .gd,.slide.navy .gitem .gd{color:#aebccd}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--gold);display:inline-block}
+/* timeline */
+.tl{display:flex;align-items:center;justify-content:space-between;margin-top:20px}
+.tl .node{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:17px;flex:none}
+.tl .node.w{background:#fff;color:var(--navy-d)}
+.tl .node.g{background:var(--gold);color:var(--navy-d)}
+.tl .seg{flex:1;height:2px;border-top:2px dashed rgba(255,255,255,.28);margin:0 6px}
+.tlabels{display:flex;justify-content:space-between;margin-top:16px}
+.tlabels div{width:202px;font-size:14px;line-height:1.55;text-align:left;color:#d5e0ec;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:16px 18px;min-height:186px}
+.tlabels div b{color:#fff;display:block;font-size:16px;margin-bottom:9px}
+/* bars */
+.bars{display:flex;align-items:flex-end;gap:34px;height:300px;padding:0 20px}
+.bar{width:110px;border-radius:12px 12px 0 0;position:relative;text-align:center}
+.bar .v{position:absolute;top:-34px;left:0;right:0;font-weight:900;font-size:24px}
+.bar .x{position:absolute;bottom:-34px;left:0;right:0;font-size:16px;color:var(--muted)}
+/* url box */
+.urlbox{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:22px 26px}
+.urlbox .u{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--gold2)}
+.urlbox .ul{font-size:16px;color:#aebccd;margin-bottom:6px}
+.dframe{border:1px solid rgba(255,255,255,.14);border-radius:12px;overflow:hidden;background:#0b1220;box-shadow:0 10px 34px rgba(0,0,0,.4)}
+.dbar{background:#1a2436;padding:7px 12px;display:flex;align-items:center;gap:6px;border-bottom:1px solid rgba(255,255,255,.08)}
+.dd{width:9px;height:9px;border-radius:50%}
+.daddr{margin-left:8px;font-family:var(--mono);font-size:12px;color:#aebccd;background:rgba(255,255,255,.06);border-radius:20px;padding:3px 12px;flex:1;white-space:nowrap;overflow:hidden}
+.dimg{height:298px;overflow:hidden;display:flex;justify-content:center}
+.dimg.dark{background:#0b1220;align-items:flex-start}
+.dimg.light{background:#eef2f7;align-items:flex-start}
+.dimg.dark img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+.dimg.light img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+.dcap{font-size:15px;color:#dfe9f3;font-weight:700;margin-top:9px;text-align:center}
+/* detailed roadmap (roadmap-style: node spine + arrow) */
+.rmwrap{position:absolute;top:172px;left:72px;right:72px}
+.rmspine{position:absolute;top:31px;left:182px;right:182px;height:3px;border-radius:2px;z-index:0;
+  background:linear-gradient(90deg,rgba(245,179,1,.30),var(--gold))}
+.rmspine::after{content:"";position:absolute;right:-3px;top:-6px;
+  border-left:12px solid var(--gold);border-top:7.5px solid transparent;border-bottom:7.5px solid transparent}
+.rmrow{position:relative;display:flex;gap:22px;z-index:1;align-items:stretch}
+.rmphase{flex:1;display:flex;flex-direction:column;align-items:center}
+.tnode{height:64px;min-width:64px;padding:0 16px;border-radius:32px;display:grid;place-items:center;
+  font-weight:900;font-size:17px;background:var(--gold);color:var(--navy-d);
+  box-shadow:0 0 0 6px rgba(245,179,1,.14);margin-bottom:18px;flex:none;white-space:nowrap}
+.rmcol{width:100%;flex:1;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.14);
+  border-radius:18px;padding:18px 22px 16px;position:relative}
+.rmcol::before{content:"";position:absolute;top:-18px;left:50%;transform:translateX(-50%);width:2px;height:18px;background:rgba(245,179,1,.55)}
+.rmcol .pd{font-size:14px;color:#dbe5f0;font-weight:800;margin:0 0 13px;text-align:center;padding-bottom:11px;border-bottom:1px solid rgba(255,255,255,.09)}
+.rrow{display:flex;gap:9px;margin-bottom:10px;font-size:14px;line-height:1.45;color:#dbe4ee}
+.rrow .tag{flex:none;font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:6px;height:fit-content;margin-top:1px;
+  background:rgba(245,179,1,.16);color:var(--gold2);white-space:nowrap;min-width:52px;text-align:center}
+.rrow .tag.reg{background:rgba(120,160,255,.16);color:#a5c0ff}
+.rrow .tag.kpi{background:rgba(80,210,150,.15);color:#7fe0b0}
+.rrow b{color:#fff}
+/* polish: section title accent + card depth + title deco */
+h2.title::after{content:"";display:block;width:60px;height:5px;border-radius:3px;background:var(--gold);margin-top:16px}
+h2.title.c::after{margin-left:auto;margin-right:auto}
+.slide:not(.navy):not(.dark) .card{box-shadow:none}
+.deco{position:absolute;border-radius:50%;pointer-events:none;z-index:0}
+.coverstat{flex:1;background:#f6f8fb;border:1px solid var(--line);border-radius:16px;padding:18px 22px}
+.coverstat .csn{font-size:34px;font-weight:900;letter-spacing:-.02em;color:var(--navy)}
+.coverstat .csl{font-size:14px;color:var(--ink-2);margin-top:4px;font-weight:600}
+.coverstat.gold{background:var(--gold);border-color:transparent}
+.coverstat.gold .csn{color:var(--navy-d)}
+.coverstat.gold .csl{color:var(--navy-d);opacity:.85}
+/* pitch-deck depth: 다크/네이비 슬라이드 배경 글로우 + 콘텐츠 상위 레이어 */
+.slide.navy,.slide.dark{position:relative}
+.slide.navy::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(900px 520px at 90% -8%,rgba(245,179,1,.11),transparent 60%),radial-gradient(760px 520px at -6% 112%,rgba(90,140,220,.12),transparent 60%)}
+.slide.dark::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(900px 540px at 92% -10%,rgba(245,179,1,.09),transparent 60%),radial-gradient(760px 540px at -6% 114%,rgba(120,150,210,.09),transparent 60%)}
+.slide .pad{z-index:1}
+.slide .logo,.slide .pg,.slide .foot{z-index:5}
+/* pitch polish: 카드 라운드/보더, 통계 강조 */
+.card{border-radius:18px}
+.stat{font-size:66px}
+.rfill .card{display:flex;flex-direction:column;justify-content:center}
+.card.gold,.card.navy{border:none!important;box-shadow:none!important}
+@media print{ html,body{background:#fff} .slide{margin:0;box-shadow:none;page-break-after:always;break-after:page} }
+@page{ size:1280px 720px; margin:0 }
+</style>
+</head>
+<body>
+
+<!-- 01 TITLE -->
+<section class="slide">
+  <div class="pad">
+    <div class="deco" style="top:-190px;right:-150px;width:580px;height:580px;background:radial-gradient(circle,rgba(245,179,1,.17),transparent 66%)"></div>
+    <div class="deco" style="bottom:-230px;left:-140px;width:540px;height:540px;background:radial-gradient(circle,rgba(21,39,63,.06),transparent 66%)"></div>
+    <div class="logo"><div class="mk"></div><div class="wm">골든타임</div></div>
+    <div class="pg">2026</div>
+    <div style="position:absolute;top:40px;bottom:96px;left:72px;right:72px;display:flex;flex-direction:column;justify-content:center">
+      <div class="eyebrow">AI 보이스피싱 사기대응 · 금융 인프라</div>
+      <h1 class="hero">골든타임</h1>
+      <div class="lead" style="font-size:31px;color:var(--ink);font-weight:700;margin-top:20px">피해 직후 <span class="hl">30분</span>, 회복을 자동화하는 <span class="hl">은행 임베드</span> 인프라</div>
+      <div class="sub" style="margin-top:18px;font-size:18px"><b>아비터(Arbiter)</b> · 대표 강다연 &nbsp;|&nbsp; 제8회 부산 창업투자경진대회 <b>B-스타트업챌린지</b> with FLY ASIA</div>
+    </div>
+    <div style="position:absolute;left:72px;right:72px;bottom:60px;display:flex;gap:16px">
+      <div class="coverstat"><div class="csn">8,545억</div><div class="csl">연 피해 · 경찰청 2024 (역대 최고)</div></div>
+      <div class="coverstat"><div class="csn">33.2%</div><div class="csl">공식 환급률 · 67%는 회수 실패</div></div>
+      <div class="coverstat gold"><div class="csn">19조 / 년</div><div class="csl">회수 공백 = 글로벌 시장 (한·일·미)</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 PROBLEM -->
+<section class="slide navy">
+  <div class="pad">
+    <div class="logo"><div class="mk"></div><div class="wm">골든타임</div></div>
+    <div class="pg">01 / 16</div>
+    <div class="eyebrow" style="position:absolute;top:104px;left:72px">문제 · 사기 피해 회복 공백</div>
+    <h2 class="title" style="position:absolute;top:134px;left:72px;color:#fff;font-size:50px">현재 피해 현황 및 <span class="hl">회복 공백</span></h2>
+    <div class="row" style="position:absolute;top:290px;left:72px;right:72px">
+      <div class="card"><div class="stat g" style="font-size:42px">8,545억</div><div class="statd">2024 연간 피해액 · 경찰청 (역대 최고)</div></div>
+      <div class="card"><div class="stat" style="font-size:42px;color:#fff">19,972건</div><div class="statd">연간 피해 건수 · 건당 평균 4,276만원</div></div>
+      <div class="card"><div class="stat g" style="font-size:42px">33.2%</div><div class="statd">공식 환급률 · 금감원 2023</div></div>
+      <div class="card" style="border:2px solid var(--gold)"><div class="stat" style="font-size:42px;color:#fff">~5,700억</div><div class="statd">매년 회수 실패 (피해액의 67%)</div></div>
+    </div>
+    <div style="position:absolute;top:508px;left:72px;right:72px">
+      <div style="display:flex;align-items:center;gap:4px">
+        <div style="width:210px;height:12px;border-radius:8px;background:var(--gold)"></div>
+        <div style="flex:1;height:12px;border-radius:8px;background:rgba(255,255,255,.14)"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:16px;margin-top:12px">
+        <span><b class="wt">피해 발생 · 0분</b></span>
+        <span class="hl" style="font-weight:800">← 30분 골든타임 = 회수 가능 구간</span>
+        <span style="color:#7f90a6">2~4개월 후 환급 · 전액 보전 안 됨</span>
+      </div>
+    </div>
+    <div style="position:absolute;bottom:58px;left:72px;right:72px;font-size:19px;color:#d5e0ec;line-height:1.6">
+      돈이 없어서가 아니라 <b class="wt">패닉 상태의 첫 30분을 놓쳐서</b>다. 사후 채널(112·1332)은 전화 기반·운영시간 제약으로 그 순간을 잡지 못한다.
+    </div>
+    <div class="foot">골든타임 · 사기 피해 회복 금융 인프라</div>
+  </div>
+</section>
+
+<!-- 03 WHY RECOVERY -->
+<section class="slide">
+  <div class="pad">
+    <div class="logo"><div class="mk"></div><div class="wm">골든타임</div></div>
+    <div class="pg">02 / 16</div>
+    <h2 class="title" style="position:absolute;top:150px;left:72px">모두가 '<span class="hl">예방</span>'을 만들 때,<br>우리는 '<span style="color:var(--navy)">회복</span>'의 공백을 봤다.</h2>
+    <div class="row rfill" style="position:absolute;top:342px;left:72px;right:72px;min-height:262px">
+      <div class="card gold"><div class="n">01.</div><div class="ct">사전 · 모바일<br>(포화)</div><div class="cd">통신사 필터·백신·T전화 등 사전탐지 앱이 이미 포화 상태</div></div>
+      <div class="card navy"><div class="n">02.</div><div class="ct">사후 · 전화<br>(존재하나 불편)</div><div class="cd">112·1332 존재하나 전화 기반, 운영시간 제약, 모바일 단계 가이드 0개</div></div>
+      <div class="card gold"><div class="n">03.</div><div class="ct">사후 · 모바일<br>→ 골든타임</div><div class="cd">사후 회복을 모바일에서 단계별로 안내하는 서비스 = 빈칸 → 골든타임이 채운다</div></div>
+    </div>
+    <div class="foot">골든타임 · 사기 피해 회복 금융 인프라</div>
+  </div>
+</section>
+
+<!-- 04 SOLUTION / ARCHITECTURE -->
+<section class="slide navy">
+  <div class="pad">
+    <div class="logo"><div class="mk"></div><div class="wm">골든타임</div></div>
+    <div class="pg">03 / 16</div>
+    <h2 class="title" style="position:absolute;top:130px;left:72px;color:#fff">서비스 구조 및 작동 방식</h2>
+    <div class="row rfill" style="position:absolute;top:300px;left:72px;right:72px;min-height:300px">
+      <div class="card"><div class="n" style="color:var(--gold)">01</div><div class="ct wt">7-Step 상태머신</div><div class="cd">상황진단 → 지급정지 → 1332 신고 → 사이버수사대 → 송금처 위험분석 → 가족 알림 → 보험·법적 패킷</div></div>
+      <div class="card"><div class="n" style="color:var(--gold)">02</div><div class="ct wt">LLM은 해석·요약만</div><div class="cd">AI는 진술을 분류하고 안내 초안만 작성. 정적 레지스트리 기반 검증. 환각 가드레일.</div></div>
+      <div class="card"><div class="n" style="color:var(--gold)">03</div><div class="ct wt">돈·번호·법은 결정론</div><div class="cd">번호·점수·긴급도·법적 절차는 규칙 엔진. 사용자 확인·감사 가능. 신뢰의 핵심 원칙.</div></div>
+    </div>
+    <div class="foot">골든타임 · 사기 피해 회복 금융 인프라</div>
+  </div>
+</section>
+
+<!-- 05 USER INSIGHT -->
+<section class="slide navy">
+  <div class="pad">
+    <div class="logo"><div class="mk"></div><div class="wm">골든타임</div></div>
+    <div class="pg">04 / 16</div>
+    <h2 class="title c" style="position:absolute;top:104px;left:72px;right:72px;color:#fff">사용자 인사이트</h2>
+    <div style="position:absolute;top:204px;left:72px;right:72px;text-align:center;color:var(--gold);font-weight:800;font-size:15px">성인 11명 심층 인터뷰 · 사전 조사 기반</div>
+    <div class="sub" style="position:absolute;top:236px;left:72px;right:72px;text-align:center;font-size:22px;color:#d5e0ec">① 무엇을 먼저 할지 모름 &nbsp;②&nbsp; 은행·기관 번호를 못 찾음 &nbsp;③&nbsp; 혼자 처리하다 골든타임 놓침</div>
+    <div class="row rfill" style="position:absolute;top:326px;left:72px;right:72px;min-height:278px">
+      <div class="card"><div class="ct wt">현장 관찰</div><div class="cd">피해자 다수가 지급정지를 먼저 떠올리지 못하고 112로 달려간다. 지급정지 신청법을 모른다.</div></div>
+      <div class="card navy" style="text-align:center"><div class="ct" style="color:var(--gold)">페르소나</div><div class="cd" style="color:#eef3f9;font-size:21px">58세 · 농협 500만원<br>송금 직후 10분<br><br>"무엇을 먼저 눌러야 할지<br>몰라 10분을 흘려보냈다"</div></div>
+      <div class="card"><div class="ct wt">신뢰를 빌려온다</div><div class="cd">"낯선 앱은 피싱 같아 못 믿는다"는 반응 → 별도 앱이 아니라 <b class="wt">은행의 검증된 앱에 임베드 (B2B2C)</b>. + 결정론·감사가능.</div></div>
+    </div>
+    <div class="foot">골든타임 · 사기 피해 회복 금융 인프라</div>
+  </div>
+</section>
+
+<!-- 06 PRODUCT FEATURES -->
+<section class="slide">
+  <div class="pad">
+    <div class="logo"><div class="mk"></div><div class="wm">골든타임</div></div>
+    <div class="pg">05 / 16</div>
+    <h2 class="title" style="position:absolute;top:110px;left:72px">현재 서버의 기능</h2>
+    <div class="sub" style="position:absolute;top:212px;left:72px;right:72px;font-size:19px">음성을 넣으면 3초 안에 상황이 분류되고, 계좌를 넣으면 위험도가 뜨고, 가족에게 실제 문자가 나갑니다. 네 개의 라이브 엔드포인트가 실제로 동작합니다.</div>
+    <div class="grid2" style="position:absolute;top:286px;left:72px;right:72px;gap:20px 22px">
+      <div class="card"><div class="gt" style="font-size:23px"><span class="dot"></span>상황진단 <span class="kbd">/triage</span></div><div class="cd" style="margin-top:12px">음성 → Whisper STT → Claude 구조화 추출. <b>3초 이내</b> 상황 분류. 패닉 상태에서 무엇을 먼저 눌러야 할지 자동 판단해 다음 행동 하나만 제시.</div></div>
+      <div class="card"><div class="gt" style="font-size:23px"><span class="dot"></span>위험분석 <span class="kbd">/risk</span></div><div class="cd" style="margin-top:12px">의심계좌·송금처를 <b>결정론 레지스트리</b>로 조회해 위험도 점수 산출. AI는 설명만 생성하고, 점수·긴급도는 규칙 엔진이 계산.</div></div>
+      <div class="card"><div class="gt" style="font-size:23px"><span class="dot"></span>가족알림 <span class="kbd">/notify</span></div><div class="cd" style="margin-top:12px">보호자에게 <b>SMS 실발송</b>. 피해자가 패닉이거나 고령이어도 가족이 즉시 상황을 인지하고 대신 개입할 수 있게 함.</div></div>
+      <div class="card"><div class="gt" style="font-size:23px"><span class="dot"></span>리포트 패킷 <span class="kbd">/report</span></div><div class="cd" style="margin-top:12px">은행·보험·경찰 인입용 <b>구조화 산출물</b> 자동 생성. PII scrypt 마스킹 + 해시 서명으로 그대로 제출 가능한 증빙 패킷.</div></div>
+    </div>
+    <div style="position:absolute;bottom:56px;left:72px;right:72px;text-align:center;font-size:16px;color:var(--muted)">네 기능 모두 <b class="wt" style="color:var(--navy)">라이브 백엔드(485 테스트)</b> 위에서 실제 동작 · 데모는 전부 합성·마스킹 데이터</div>
+    <div class="foot">골든타임 · 사기 피해 회복 금융 인프라 <span class="r">2. 실용성 · 05</span></div>
+  </div>
+</section>
+
+<!-- 07 TECH VALIDATION -->
+<section class="slide">
+  <div class="pad">
+    <div class="logo"><div class="mk"></div><div class="wm">골든타임</div></div>
+    <div class="pg">06 / 16</div>
+    <h2 class="title c" style="position:absolute;top:120px;left:72px;right:72px">기술 검증 현황</h2>
+    <div class="grid2" style="position:absolute;top:234px;left:72px;right:72px;gap:18px 22px">
+      <div class="card"><div class="stat g" style="font-size:52px">485개</div><div class="statlbl">테스트 통과 <span style="font-weight:600;color:var(--muted)">(13 skip)</span></div><div class="statd">기능·보안·퍼징·공격매트릭스, 2026-07-27 실측</div></div>
+      <div class="card"><div class="stat g" style="font-size:52px">0건</div><div class="statlbl">pip-audit 취약점</div><div class="statd">의존성 보안 취약점 제로 · 락파일 관리</div></div>
+      <div class="card"><div class="stat" style="font-size:52px">15건</div><div class="statlbl">자체 레드팀 수정 완료</div><div class="statd">발견 취약점 전량 수정. 외부 침투테스트는 실증 착수 시 발주</div></div>
+      <div class="card"><div class="stat" style="font-size:52px">100%</div><div class="statlbl">돈·법적행위 결정론 처리</div><div class="statd">LLM 출력 아님 · 스키마 검증 실패 시 수동 폴백</div></div>
+    </div>
+    <div style="position:absolute;bottom:60px;left:72px;right:72px;text-align:center;background:#fff7e0;border-radius:14px;padding:14px;font-size:16px;font-weight:700;color:#8a6d10">PII scrypt 해시 · HMAC 감사체인(fail-closed) · 개인정보보호법/신용정보법/금융실명법 매트릭스</div>
+    <div class="foot" style="color:var(--muted)">골든타임 · 사기 피해 회복 금융 인프라</div>
+  </div>
+</section>
+
+<!-- 08 LIVE DEMO -->
+<section class="slide dark">
+  <div class="pad">
+    <div class="logo"><div class="mk"></div><div class="wm">골든타임</div></div>
+    <div class="pg">07 / 16</div>
+    <div class="pill" style="position:absolute;top:106px;left:72px">지금 클릭하면 작동합니다</div>
+    <h2 class="title" style="position:absolute;top:148px;left:72px;color:#fff;font-size:48px">라이브 데모 · 배포 완료</h2>
+    <div style="position:absolute;top:254px;left:72px;right:72px;display:flex;gap:40px;align-items:flex-start">
+      <div style="flex:1;min-width:0">
+        <div class="dframe"><div class="dbar"><span class="dd" style="background:#ff5f57"></span><span class="dd" style="background:#febc2e"></span><span class="dd" style="background:#28c840"></span><span class="daddr">goldentime-console.dayeon603.workers.dev</span></div><div class="dimg dark"><img src="console.png"></div></div>
+        <div class="dcap">은행 관제 콘솔 (B2B) · 실시간 대시보드</div>
+      </div>
+      <div style="width:178px;flex:none">
+        <div class="dframe"><div class="dbar"><span class="dd" style="background:#ff5f57"></span><span class="dd" style="background:#febc2e"></span><span class="dd" style="background:#28c840"></span><span class="daddr">…/app</span></div><div class="dimg light"><img src="phone.png"></div></div>
+        <div class="dcap">고객 화면 (B2B2C)</div>
+      </div>
+    </div>
+    <div style="position:absolute;bottom:40px;left:72px;right:72px;text-align:center;font-size:15px;color:#aebccd">Cloudflare 배포 · GitHub 공개 백업 · 전부 합성·마스킹 데이터 · 단순 mockup이 아니라 <b class="wt">라이브 백엔드(485 테스트)</b> 위에서 동작</div>
+  </div>
+</section>
+
+<!-- 09 BNK STRATEGIC (THE ONE THING) -->
+<section class="slide navy">
+  <div class="pad">
+    <div class="logo"><div class="mk"></div><div class="wm">골든타임</div></div>
+    <div class="pg">08 / 16</div>
+    <div class="pill" style="position:absolute;top:118px;left:72px">왜 BNK부산은행인가</div>
+    <h2 class="title" style="position:absolute;top:162px;left:72px;color:#fff">재무 수익률이 아니라, <span class="hl">전략 자산</span>입니다.</h2>
+    <div class="row" style="position:absolute;top:330px;left:72px;right:72px">
+      <div class="card"><div class="n" style="color:var(--gold)">01</div><div class="ct wt">지방은행 최초 레일</div><div class="cd">사후회복은 아무도 안 하는 공백. BNK가 <b class="wt">지방은행 최초의 사후회복 레일</b>을 선점한다.</div></div>
+      <div class="card"><div class="n" style="color:var(--gold)">02</div><div class="ct wt">규제 대응 내재화</div><div class="cd">통신사기피해환급법(8·28)이 부과한 피해의심거래 탐지·기록·보고 의무를 자동화하는 산출물.</div></div>
+      <div class="card"><div class="n" style="color:var(--gold)">03</div><div class="ct wt">부산 고령층 보호</div><div class="cd">부산=특광역시 최초 초고령사회. 피해의 <b class="wt">53%가 50대+</b>. 지역 금융소비자 보호에 직결.</div></div>
+    </div>
+    <div style="position:absolute;bottom:70px;left:72px;right:72px;background:var(--gold);color:var(--navy-d);border-radius:14px;padding:15px 22px;font-size:18px;font-weight:800;text-align:center">본 투자 = BNK부산은행과의 <span style="text-decoration:underline">90일 실증(PoC)</span> 착수 자본. "투자가 곧 첫 파일럿이다."</div>
+    <div class="foot">골든타임 · 사기 피해 회복 금융 인프라</div>
+  </div>
+</section>
+
+<!-- 10 MARKET -->
+<section class="slide dark">
+  <div class="pad">
+    <div class="logo"><div class="mk"></div><div class="wm">골든타임</div></div>
+    <div class="pg">09 / 16</div>
+    <h2 class="title c" style="position:absolute;top:110px;left:72px;right:72px;color:#fff">시장 규모 및 임팩트</h2>
+    <div class="row" style="position:absolute;top:230px;left:72px;right:72px">
+      <div class="card"><div class="stat" style="font-size:42px">한국 8,545억</div><div class="statd">연 피해 · 경찰청 2024</div></div>
+      <div class="card"><div class="stat" style="font-size:42px">일본 ~6,500억</div><div class="statd">警察庁 특수사기 · 동일 救済法 구조</div></div>
+      <div class="card"><div class="stat" style="font-size:42px">미국 ~17.5조</div><div class="statd">FTC 신고 사기 2024</div></div>
+    </div>
+    <div class="row" style="position:absolute;top:430px;left:72px;right:72px">
+      <div class="card"><div class="ct wt" style="color:var(--gold)">국내 교두보 TAM</div><div class="stat" style="font-size:40px;margin-top:6px">4.6억</div><div class="statd">보수적 bottom-up · 여기서 검증 후 확장</div></div>
+      <div class="card navy" style="border:2px solid var(--gold)"><div class="ct" style="color:var(--gold)">글로벌 문제 규모</div><div class="stat g" style="font-size:40px;margin-top:6px">~19조 / 년</div><div class="statd" style="color:#d5e0ec">한·일·미 합산 · 회수 공백은 글로벌 공통</div></div>
+      <div class="card"><div class="ct wt">확장 옵션</div><div class="statd" style="margin-top:8px">한국=PoC 교두보 → 일본 진입 LOI. 미 상무부 <b class="wt">SelectUSA 파트너십 논의 진행</b>. 이식비용 낮음.</div></div>
+    </div>
+    <div class="foot" style="color:#7f90a6">회수 공백은 글로벌 공통 — 한국은 교두보.</div>
+  </div>
+</section>
+
+<!-- 11 REVENUE -->
+<section class="slide dark">
+  <div class="pad">
+    <div class="logo"><div class="mk"></div><div class="wm">골든타임</div></div>
+    <div class="pg">10 / 16</div>
+    <h2 class="title" style="position:absolute;top:110px;left:72px;color:#fff">수익 모델 및 매출 전망</h2>
+    <div style="position:absolute;top:228px;left:96px">
+      <div class="sub" style="font-size:16px;color:#aebccd;margin-bottom:20px">예상 매출 램프 · ARR (백만원)</div>
+      <div class="bars" style="height:250px">
+        <div class="bar" style="height:8px;background:#5a6373"><div class="v" style="color:#8593a6">0</div><div class="x">Y1</div></div>
+        <div class="bar" style="height:104px;background:var(--gold)"><div class="v hl">20M</div><div class="x">Y2</div></div>
+        <div class="bar" style="height:244px;background:var(--gold)"><div class="v hl">47M</div><div class="x">Y3</div></div>
+      </div>
+      <div style="margin-top:44px;font-weight:800;color:var(--gold);font-size:17px">흑자전환 Y4 · pre-seed 1억 목표 · GPM 90%+</div>
+    </div>
+    <div style="position:absolute;top:210px;left:660px;right:72px">
+      <div class="sub" style="font-size:17px;line-height:1.9;color:#d5e0ec;margin-bottom:20px">
+        건당 한계비용 <b class="wt">~128원 → ~71원</b>(규모) · GPM <b class="wt">90%+</b><br>
+        LTV/CAC <b class="wt">4.8~9.6x</b>(band) · CAC 회수 ~13개월<br>
+        3년 누적손실 ~6천만원 · 흑자전환 Y4
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="card" style="padding:16px 20px"><div class="ct wt" style="font-size:18px">은행 B2B2C SaaS <span class="hl" style="font-size:15px">주력</span></div><div class="cd">인터넷은행 20M → 시중은행 40M/년. 인입비용↓ 환급률↑ 규제KPI</div></div>
+        <div class="card" style="padding:16px 20px"><div class="ct wt" style="font-size:18px">B2G 지자체 라이선스</div><div class="cd">광역지자체 어르신복지 7M/년. 공공 레퍼런스</div></div>
+      </div>
+    </div>
+    <div class="foot" style="color:#7f90a6">골든타임 · 사기 피해 회복 금융 인프라</div>
+  </div>
+</section>
+
+<!-- 12 IMPACT -->
+<section class="slide dark">
+  <div class="pad">
+    <div class="logo"><div class="mk"></div><div class="wm">골든타임</div></div>
+    <div class="pg">11 / 16</div>
+    <h2 class="title c" style="position:absolute;top:104px;left:72px;right:72px;color:#fff;font-size:46px">사회적 임팩트</h2>
+    <div class="sub" style="position:absolute;top:200px;left:72px;right:72px;text-align:center;font-size:18px;color:#aebccd">골든타임 도입 시 <b class="wt">매년 피해자에게 추가로 회수되는 금액</b> · 회사 매출이 아닌 사회적 성과 (모델·보수 기준)</div>
+    <div class="row" style="position:absolute;top:290px;left:72px;right:72px">
+      <div class="card navy" style="border:2px solid var(--gold)"><div class="ct" style="color:var(--gold)">Bear (발표 기준 하한)</div><div class="stat g" style="margin-top:8px">+10억</div><div class="statd" style="color:#d5e0ec">채택 4% · 1h내 50% · 환급률 +6%p</div></div>
+      <div class="card"><div class="ct wt">Base</div><div class="stat" style="margin-top:8px">+44억</div><div class="statd">채택 8% · 1h내 65% · 환급률 +10%p</div></div>
+      <div class="card"><div class="ct wt">Bull</div><div class="stat" style="margin-top:8px">+144억</div><div class="statd">채택 15% · 1h내 75% · 환급률 +15%p</div></div>
+    </div>
+    <div style="position:absolute;bottom:80px;left:72px;right:72px;border:1.5px solid rgba(255,255,255,.16);border-radius:14px;padding:16px 22px;text-align:center;font-size:16.5px;color:#aebccd">
+      도출식 = 8,545억 × 채택률 × 1시간내 대응 × 환급률 개선 · 채택 8%는 60대+ 스마트폰 보급률 94%에 근거 · 강제규정 없이 민간 가이드로 끌어올리는 <b class="wt">첫 시도</b>를 보수적으로 모델링
+    </div>
+    <div class="foot" style="color:#7f90a6">골든타임 · 사기 피해 회복 금융 인프라</div>
+  </div>
+</section>
+
+<!-- 13 ROADMAP + CLOSING -->
+<section class="slide navy">
+  <div class="pad">
+    <div class="logo"><div class="mk"></div><div class="wm">골든타임</div></div>
+    <div class="pg">12 / 16</div>
+    <h2 class="title c" style="position:absolute;top:96px;left:72px;right:72px;color:#fff">향후 배포·실행 로드맵</h2>
+    <div style="position:absolute;top:250px;left:72px;right:72px">
+      <div class="tl">
+        <div class="node w">M0</div><div class="seg"></div>
+        <div class="node g">M3</div><div class="seg"></div>
+        <div class="node w">M6</div><div class="seg"></div>
+        <div class="node g">M12</div><div class="seg"></div>
+        <div class="node w">Y3~4</div>
+      </div>
+      <div class="tlabels" style="margin-top:30px">
+        <div><b>수상·투자 직후 · 0~1개월</b>BNK 90일 실증(PoC) 착수, 수상 후 1개월 내 법인 전환, 프로덕션 배포 및 외부 침투테스트 발주.</div>
+        <div><b>실증 · 1~3개월</b>자행 앱 임베드 실증. 초동대응 시간·환급 신청 완결률·규제기록 자동생성률을 실사건으로 측정.</div>
+        <div><b>확산 준비 · 3~6개월</b>금융규제 지정대리인 샌드박스 신청, 인터넷전문은행 파일럿 영업 개시 → LOI 확보.</div>
+        <div><b>첫 상용화 · 6~12개월</b>인터넷은행 1차 유상 계약으로 Y2 첫 매출, 부산 고령층 보호 B2G 레퍼런스 확보.</div>
+        <div><b>흑자·글로벌 · Y3~4</b>계약 3건 스케일(ARR 47M)·흑자 근접(BEP), 일본 진입 LOI와 미 SelectUSA 파트너십(진행).</div>
+      </div>
+    </div>
+    <div class="foot">아비터(Arbiter) · 골든타임 · 대표 강다연 · dayeon603@gmail.com</div>
+  </div>
+</section>
+
+<!-- 14 ROADMAP DETAIL (M0/M3/M6) -->
+<section class="slide dark">
+  <div class="pad">
+    <div class="logo"><div class="mk"></div><div class="wm">골든타임</div></div>
+    <div class="pg">13 / 16</div>
+    <h2 class="title c" style="position:absolute;top:74px;left:72px;right:72px;color:#fff;font-size:44px">M0 · M3 · M6 상세 실행 계획</h2>
+    <div class="rmwrap">
+      <div class="rmspine"></div>
+      <div class="rmrow">
+        <div class="rmphase"><div class="tnode">M0</div>
+          <div class="rmcol"><div class="pd">수상·투자 직후 · 0~1개월</div>
+            <div class="rrow"><span class="tag">법인·자본</span><span>수상 후 <b>1개월 내 법인 전환 등기</b>(정관·자본금·법정대리인 동의) + BNK 우선주 지분투자 집행·cap table 정리</span></div>
+            <div class="rrow"><span class="tag">계약</span><span>BNK부산은행 <b>90일 PoC 계약 체결</b> — 범위·성공지표·역할(당사=제품/은행=채널) 확정</span></div>
+            <div class="rrow"><span class="tag">기술</span><span>프로덕션 env(API키·해시 salt·감사 HMAC) 세팅, Redis 레이트리밋, <b>외부 침투테스트 발주</b></span></div>
+            <div class="rrow"><span class="tag">팀</span><span>은행 영업(BD) 채용 착수 + 규제 자문 계약</span></div>
+            <div class="rrow"><span class="tag kpi">지표</span><span>법인 등기 완료 · PoC 계약 체결 · 프로덕션 배포</span></div>
+          </div>
+        </div>
+        <div class="rmphase"><div class="tnode">M3</div>
+          <div class="rmcol"><div class="pd">실증 진행 · 1~3개월</div>
+            <div class="rrow"><span class="tag">제품</span><span>BNK 자행 앱 <b>임베드/co-branded 파일럿</b> 개발 · SSO·테넌트 격리 연동</span></div>
+            <div class="rrow"><span class="tag">기능</span><span>1332 폼 자동화 · RAG 안내 · <b>PASS 인증 연동</b></span></div>
+            <div class="rrow"><span class="tag">데이터</span><span>실사건 코호트로 <b>초동대응 시간·환급 신청 완결률·규제기록 자동생성률</b> 측정</span></div>
+            <div class="rrow"><span class="tag reg">규제</span><span>개인정보 영향평가(PIA) · 보안성심의 준비 착수</span></div>
+            <div class="rrow"><span class="tag kpi">지표</span><span>PoC 1차 성과 리포트 · 내부 KPI 대시보드 가동</span></div>
+          </div>
+        </div>
+        <div class="rmphase"><div class="tnode">M6</div>
+          <div class="rmcol"><div class="pd">확산 준비 · 3~6개월</div>
+            <div class="rrow"><span class="tag reg">샌드박스</span><span>금융규제 <b>지정대리인 샌드박스 신청서 제출</b>(은행 임베드 합법 래퍼)</span></div>
+            <div class="rrow"><span class="tag">영업</span><span>인터넷전문은행 1곳 <b>파일럿 영업 개시 → LOI 확보</b></span></div>
+            <div class="rrow"><span class="tag">전환</span><span>BNK PoC → <b>유상 계약 협상</b></span></div>
+            <div class="rrow"><span class="tag">제품</span><span>메신저피싱 모듈 · <b>은행 임베드 SDK v1</b></span></div>
+            <div class="rrow"><span class="tag reg">인증</span><span>ISMS-P 준비 · 침투테스트 결과 반영</span></div>
+            <div class="rrow"><span class="tag kpi">지표</span><span>샌드박스 접수 · 파일럿 LOI 1건 · PoC 유상 전환 논의</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="position:absolute;bottom:62px;left:72px;right:72px;text-align:center;font-size:15px;color:#8593a6">
+      ▶ 다음 페이지 — <b class="wt" style="color:#cdd9e6">M12 · Y2~Y3 · Y3~Y4(글로벌)</b> 상세 실행 계획
+    </div>
+    <div class="foot">골든타임 · 사기 피해 회복 금융 인프라 <span class="r">Part 1/2</span></div>
+  </div>
+</section>
+
+<!-- 15 ROADMAP DETAIL (M12 → GLOBAL) -->
+<section class="slide dark">
+  <div class="pad">
+    <div class="logo"><div class="mk"></div><div class="wm">골든타임</div></div>
+    <div class="pg">14 / 16</div>
+    <h2 class="title c" style="position:absolute;top:74px;left:72px;right:72px;color:#fff;font-size:44px">M12 · Y2~Y3 · Y3~Y4 상세 실행 계획</h2>
+    <div class="rmwrap">
+      <div class="rmspine"></div>
+      <div class="rmrow">
+        <div class="rmphase"><div class="tnode">M12</div>
+          <div class="rmcol"><div class="pd">첫 상용화 · 6~12개월</div>
+            <div class="rrow"><span class="tag">영업</span><span>인터넷전문은행 <b>1차 유상 계약 체결</b>(ACV 2,000만원/년)</span></div>
+            <div class="rrow"><span class="tag">매출</span><span><b>Y2 첫 매출 인식</b> · 유상 SaaS 운영 개시</span></div>
+            <div class="rrow"><span class="tag">B2G</span><span>부산 광역지자체 <b>어르신복지 레퍼런스 파일럿</b>(고령층 보호)</span></div>
+            <div class="rrow"><span class="tag">제품</span><span>SLA·모니터링 운영 안정화 · 일본 언어팩 착수</span></div>
+            <div class="rrow"><span class="tag reg">인증</span><span>ISMS-P 인증 취득 추진 · 개인정보 정기점검</span></div>
+            <div class="rrow"><span class="tag kpi">지표</span><span>유상계약 1건 · Y2 ARR 20M · 부산 B2G 레퍼런스</span></div>
+          </div>
+        </div>
+        <div class="rmphase"><div class="tnode">Y2~Y3</div>
+          <div class="rmcol"><div class="pd">스케일 · 12~36개월</div>
+            <div class="rrow"><span class="tag">영업</span><span>시중은행 영업 착수(18개월 조달 대비 조기 진입) + <b>인터넷은행 2호 계약</b></span></div>
+            <div class="rrow"><span class="tag">매출</span><span>Y3 누계 <b>ARR 47M(계약 3건)</b> · GPM 90%+</span></div>
+            <div class="rrow"><span class="tag">팀</span><span>BD 2인 · 규제·CS 확충</span></div>
+            <div class="rrow"><span class="tag">제품</span><span>위험분석 고도화(축적 <b>사기계좌·패턴 데이터</b>) · 임베드 SDK v2</span></div>
+            <div class="rrow"><span class="tag reg">데이터</span><span>사기 인텔리전스 데이터셋 구축(개보법 게이트 준수)</span></div>
+            <div class="rrow"><span class="tag kpi">지표</span><span>계약 3건 · SAM 30% 침투 · Y3 ARR 47M</span></div>
+          </div>
+        </div>
+        <div class="rmphase"><div class="tnode">Y3~Y4+</div>
+          <div class="rmcol"><div class="pd">흑자·글로벌 · 36개월~</div>
+            <div class="rrow"><span class="tag">재무</span><span>Y4 시중은행 1건 추가 → <b>ARR 87M 흑자 근접(BEP)</b></span></div>
+            <div class="rrow"><span class="tag reg">글로벌</span><span><b>일본 진입 LOI</b>(振り込め詐欺救済法 동일구조) = 밸류 트리거</span></div>
+            <div class="rrow"><span class="tag reg">글로벌</span><span>미 상무부 <b>SelectUSA 파트너십(진행)</b> → 미국 진입 검토</span></div>
+            <div class="rrow"><span class="tag">제품</span><span>언어팩·채널 레지스트리 교체로 저비용 이식</span></div>
+            <div class="rrow"><span class="tag">투자</span><span>Series A / 글로벌 확장 자금 유치</span></div>
+            <div class="rrow"><span class="tag kpi">지표</span><span>흑자 전환 · 해외 1개국 진입 · ARR 2~3배</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="position:absolute;bottom:62px;left:72px;right:72px;text-align:center;font-size:15px;color:#8593a6">
+      검증(한국 교두보) → 상용화 → 글로벌 이식. <b class="wt" style="color:var(--gold2)">막는 회사는 많다. 회복시키는 회사는 우리가 처음이다.</b>
+    </div>
+    <div class="foot">골든타임 · 사기 피해 회복 금융 인프라 <span class="r">Part 2/2</span></div>
+  </div>
+</section>
+
+<!-- 16 INVESTMENT POINTS (why invest / risk response) -->
+<section class="slide navy">
+  <div class="pad">
+    <div class="logo"><div class="mk"></div><div class="wm">골든타임</div></div>
+    <div class="pg">15 / 16</div>
+    <div class="pill" style="position:absolute;top:118px;left:72px">투자 포인트</div>
+    <h2 class="title" style="position:absolute;top:162px;left:72px;color:#fff">왜 지금, <span class="hl">BNK가 투자</span>하는가</h2>
+    <div class="grid2" style="position:absolute;top:258px;left:72px;right:72px;gap:18px 22px">
+      <div class="card"><div class="ct wt">① 재무 IRR이 아니라 전략 자산</div><div class="cd">지방은행 최초 사후회복 레일 선점 · 통신사기피해환급법 규제 대응 산출물 내재화 · 부산 고령 금융소비자 보호. BNK가 <b class="wt">저가에 선점</b>하는 전략 자산.</div></div>
+      <div class="card"><div class="ct wt">② 글로벌 전환 레버가 구체적</div><div class="cd">일본 진입 1건이 밸류의 <b class="wt">약 70%</b>를 결정. 振り込め詐欺救済法이 한국법과 동일 구조 → 언어팩·채널 교체만으로 저비용 이식 → <b class="wt">IRR 35% VC급</b>.</div></div>
+      <div class="card"><div class="ct wt">③ 다운사이드가 보호됨</div><div class="cd">3년 누적 소요 6,600만원·대표 급여 0 = <b class="wt">극저 번레이트</b>. 국내 단독으로도 Y4 흑자 근접(BEP). 자본을 태워 없애는 이진법 도박이 아님.</div></div>
+      <div class="card"><div class="ct wt">④ 비대칭 베팅</div><div class="cd">작은 수표(pre-seed 1억) + <b class="wt">이미 배포된 제품</b>(485 테스트) → R&D 아닌 시장 진입에 투입. 하방은 제한, 상방은 <b class="wt">글로벌 19조원</b> 문제.</div></div>
+    </div>
+    <div style="position:absolute;bottom:64px;left:72px;right:72px;background:var(--gold);color:var(--navy-d);border-radius:14px;padding:14px 22px;font-size:16px;font-weight:800;text-align:center">"14.7%"는 국내만·재무만 볼 때의 숫자. 전략 가치·글로벌 레버·저번레이트를 넣으면 그림이 바뀐다.</div>
+    <div class="foot">골든타임 · 사기 피해 회복 금융 인프라</div>
+  </div>
+</section>
+
+</body>
+</html>

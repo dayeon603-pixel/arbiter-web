@@ -66,7 +66,8 @@ export default function GoldentimePage() {
 
         <section className="wrap cv__cta">
           <Link href="/#cyber" className="btn btn--ghost">← Back to Cybersecurity</Link>
-          <a href={`mailto:${founder.contact}`} className="btn btn--solid">Get in touch</a>
+          <a href="/goldentime/deck/" className="btn btn--ghost" target="_blank" rel="noopener noreferrer">View the deck ↗</a>
+          <a href="/goldentime/demo/" className="btn btn--solid" target="_blank" rel="noopener noreferrer">Try the live demo ↗</a>
         </section>
       </main>
 
