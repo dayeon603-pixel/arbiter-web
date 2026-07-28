@@ -100,6 +100,16 @@
   /* animated headline: per-word clip-mask reveal */
   .hero__title--anim .hw-mask { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.14em; margin-bottom: -0.14em; }
   .hero__title--anim .hw-word { display: inline-block; will-change: transform; }
+  /* one-time light sheen sweeping across the headline after it reveals */
+  .hero__title--anim { position: relative; }
+  .hero__title--anim::after {
+    content: ""; position: absolute; inset: -0.12em -0.35em; pointer-events: none;
+    background: linear-gradient(105deg, transparent 42%, rgba(255,255,255,0.9) 50%, transparent 58%);
+    transform: translateX(-135%); mix-blend-mode: screen;
+    animation: heroShine 2.3s cubic-bezier(0.2,0.7,0.2,1) 1.15s 1 forwards;
+  }
+  @keyframes heroShine { to { transform: translateX(135%); } }
+
   .hero__title { font-weight: 800; font-size: var(--step-h1); line-height: 1.0; letter-spacing: -0.035em; max-width: 20ch; text-wrap: balance; }
   .hero__sub { color: var(--dim); font-size: var(--step-lede); margin-top: var(--s-5); max-width: 58ch; text-wrap: pretty; }
   .hero__actions { display: flex; flex-wrap: wrap; gap: var(--s-4); margin-top: var(--s-7); }
@@ -360,6 +370,14 @@
   padding: clamp(26px, 7cqw, 40px);
 }
 .bizcard .brandrow { display: flex; align-items: center; gap: 11px; }
+/* slow specular sheen drifting across the card front (premium life) */
+.bizcard .front__sheen {
+  position: absolute; inset: -30%; z-index: 0; pointer-events: none;
+  background: linear-gradient(115deg, transparent 44%, rgba(255,255,255,0.11) 50%, transparent 56%);
+  transform: translateX(-45%); animation: bcSheen 6.5s ease-in-out infinite;
+}
+@keyframes bcSheen { 0%, 100% { transform: translateX(-45%); } 50% { transform: translateX(45%); } }
+
 .bizcard .bc-wordmark { font-family: var(--bc-sans); font-size: clamp(10px, 2.6cqw, 12px); font-weight: 700; letter-spacing: 0.34em; color: var(--bc-bone); }
 .bizcard .id { align-self: center; }
 .bizcard .bc-name { font-family: var(--bc-sans); font-size: clamp(23px, 7cqw, 31px); font-weight: 600; letter-spacing: -0.02em; line-height: 1.02; color: #fff; text-wrap: balance; }

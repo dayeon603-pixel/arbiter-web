@@ -12,10 +12,9 @@ const vertex = /* glsl */ `
   }
 `
 
-/* Cinematic "silk gradient": twice domain-warped fbm flow of layered brand tints
-   over white, with a slow drift, a cursor-following light bloom, moving light
-   streaks, a soft vignette, and filmic grain. Kept low-contrast in the centre so
-   dark hero type stays legible above it. */
+/* Stripe-style flowing "silk" gradient: a vivid orange -> pink -> purple -> blue
+   flow field, bold toward the top/right/edges and clean-white behind the centred
+   hero type. Cursor-reactive light bloom, moving sheen streaks, vignette + grain. */
 const fragment = /* glsl */ `
   precision highp float;
   varying vec2 vUv;
@@ -38,46 +37,48 @@ const fragment = /* glsl */ `
 
   void main() {
     vec2 uv = vUv;
-    vec2 m  = uMouseSm * 0.35;
-    vec2 p  = vec2(uv.x * uAspect, uv.y) * 1.55 + m;
-    float t = uTime * 0.028;
+    vec2 m  = uMouseSm * 0.30;
+    vec2 p  = vec2(uv.x * uAspect, uv.y) * 1.4 + m;
+    float t = uTime * 0.030;
 
-    // two-stage domain warp -> silk-like depth
-    vec2 w1 = vec2(fbm(p + vec2(t, t * 0.7)), fbm(p + vec2(4.3 - t * 0.5, 1.7 + t * 0.4)));
-    vec2 w2 = vec2(fbm(p + w1 * 1.2 + vec2(-t * 0.3, t * 0.25)), fbm(p * 1.1 + w1 - vec2(t * 0.2)));
-    float n  = fbm(p + w2 * 0.9);
-    float n2 = fbm(p * 1.7 - w1 * 0.6 + vec2(t * 0.5));
+    // flowing silk field
+    vec2 w1 = vec2(fbm(p + vec2(t, t * 0.6)), fbm(p + vec2(5.2 - t * 0.4, 2.1 + t * 0.3)));
+    float flow = fbm(p + w1 * 1.3 + vec2(-t * 0.3, t * 0.2));
+    flow = flow * 0.72 + (uv.x + (1.0 - uv.y)) * 0.18; // diagonal warm(top-right) -> cool(bottom-left)
 
-    vec3 white  = vec3(1.0);
-    vec3 amber  = vec3(0.972, 0.890, 0.742);
-    vec3 cool   = vec3(0.858, 0.910, 0.972);
-    vec3 violet = vec3(0.902, 0.882, 0.972);
+    // vivid Stripe palette ramp
+    vec3 orange = vec3(1.00, 0.58, 0.23);
+    vec3 pink   = vec3(0.98, 0.36, 0.62);
+    vec3 purple = vec3(0.55, 0.40, 1.00);
+    vec3 blue   = vec3(0.28, 0.52, 1.00);
+    vec3 grad = orange;
+    grad = mix(grad, pink,   smoothstep(0.22, 0.46, flow));
+    grad = mix(grad, purple, smoothstep(0.46, 0.66, flow));
+    grad = mix(grad, blue,   smoothstep(0.66, 0.92, flow));
 
-    vec3 col = white;
-    col = mix(col, amber,  smoothstep(0.40, 0.80, n) * 0.62);
-    col = mix(col, cool,   smoothstep(0.38, 0.76, 1.0 - n) * 0.52);
-    col = mix(col, violet, smoothstep(0.55, 0.92, n2) * 0.30);
+    // intensity: bold at top/right/edges, clean white behind centred text
+    float dc   = distance(uv, vec2(0.5, 0.5));
+    float edge = smoothstep(0.14, 0.62, dc);
+    float tr   = smoothstep(-0.1, 1.2, uv.x + uv.y);       // top-right bias
+    float band = smoothstep(0.35, 0.90, flow) * 0.5 + 0.5;
+    float intensity = clamp(edge * mix(0.55, 1.12, tr) * band, 0.0, 1.0);
 
-    // moving diagonal light streaks (subtle sheen)
-    float streak = sin((uv.x * uAspect + uv.y) * 6.0 - uTime * 0.5 + n * 3.0);
-    col += vec3(0.03, 0.028, 0.04) * smoothstep(0.86, 1.0, streak);
+    vec3 white = vec3(1.0);
+    vec3 col = mix(white, grad, intensity * 0.9);
 
-    // cursor-following soft light bloom
-    vec2 mp = (uMouseSm * 0.5 + 0.5);
-    float glow = 1.0 - smoothstep(0.0, 0.55, distance(uv, mp));
-    col += vec3(0.05, 0.05, 0.06) * glow;
+    // cursor-following light bloom
+    vec2 mp = uMouseSm * 0.5 + 0.5;
+    col += (grad * 0.30 + 0.05) * (1.0 - smoothstep(0.0, 0.5, distance(uv, mp))) * 0.4;
 
-    // keep the centre (hero type zone) cleaner
-    float clean = smoothstep(0.0, 0.9, distance(uv, vec2(0.5, 0.52)));
-    col = mix(col, white, (1.0 - clean) * 0.55);
+    // moving sheen streaks (subtle)
+    float streak = sin((uv.x * uAspect - uv.y) * 7.0 - uTime * 0.6 + flow * 4.0);
+    col += vec3(0.045) * smoothstep(0.9, 1.0, streak) * intensity;
 
-    // top fade into the page + soft vignette
-    col = mix(white, col, smoothstep(0.0, 0.5, uv.y) * 0.85 + 0.15);
-    float vig = smoothstep(1.15, 0.35, distance(uv, vec2(0.5)));
-    col *= mix(0.965, 1.0, vig);
-
-    // filmic grain
-    float g = hash(uv * 900.0 + uTime) - 0.5;
+    // top fade + soft vignette + filmic grain
+    col = mix(white, col, smoothstep(0.0, 0.35, uv.y) * 0.85 + 0.15);
+    float vig = smoothstep(1.2, 0.35, dc);
+    col *= mix(0.975, 1.0, vig);
+    float g = hash(uv * 920.0 + uTime) - 0.5;
     col += g * 0.012;
 
     gl_FragColor = vec4(col, 1.0);
@@ -101,7 +102,6 @@ function GradientPlane() {
     u.uTime.value = state.clock.elapsedTime
     u.uAspect.value = state.size.width / Math.max(1, state.size.height)
     ;(u.uMouse.value as THREE.Vector2).set(state.pointer.x, state.pointer.y)
-    // ease the pointer for a fluid, expensive feel
     ;(u.uMouseSm.value as THREE.Vector2).lerp(u.uMouse.value as THREE.Vector2, 0.045)
   })
   return (
@@ -113,8 +113,6 @@ function GradientPlane() {
 }
 
 export default function GradientCanvas() {
-  // Mount WebGL only if the browser supports it and motion is allowed;
-  // otherwise render nothing -> clean white hero, never a white-screen crash.
   const [ready, setReady] = useState(false)
   useEffect(() => {
     try {

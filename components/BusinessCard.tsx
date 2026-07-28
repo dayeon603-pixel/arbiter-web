@@ -80,6 +80,7 @@ export default function BusinessCard({ embed = false }: { embed?: boolean }) {
         >
           {/* FRONT — identity */}
           <div className="face front">
+            <span className="front__sheen" aria-hidden="true" />
             <div className="front__grid">
               <div className="brandrow">
                 <Mark className="brandmark" />
