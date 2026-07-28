@@ -13,6 +13,9 @@ const EASE = [0.16, 0.7, 0.18, 1] as const
 
 const heroStagger = { hidden: {}, show: { transition: { staggerChildren: 0.09, delayChildren: 0.06 } } }
 const heroItem = { hidden: { opacity: 0, y: 18 }, show: { opacity: 1, y: 0, transition: { duration: 0.85, ease: EASE } } }
+// Headline: each word rises from behind a clip-mask, staggered (premium reveal).
+const heroHeadline = { hidden: {}, show: { transition: { staggerChildren: 0.058, delayChildren: 0.04 } } }
+const heroWord = { hidden: { y: '118%', opacity: 0 }, show: { y: '0%', opacity: 1, transition: { duration: 0.72, ease: EASE } } }
 
 function useLenis() {
   useEffect(() => {
@@ -50,7 +53,14 @@ function Hero() {
       <motion.div className="wrap hero__inner" variants={heroStagger} initial="hidden" animate="show">
         <motion.div variants={heroItem}><LogoMark size={62} className="hero__mark" /></motion.div>
         <motion.p variants={heroItem} className="eyebrow eyebrow--plain">{hero.eyebrow}</motion.p>
-        <motion.h1 variants={heroItem} className="hero__title">{hero.title}</motion.h1>
+        <motion.h1 variants={heroHeadline} className="hero__title hero__title--anim">
+          {hero.title.split(' ').flatMap((word, i) => [
+            <span key={i} className="hw-mask">
+              <motion.span className="hw-word" variants={heroWord}>{word}</motion.span>
+            </span>,
+            ' ',
+          ])}
+        </motion.h1>
         <motion.p variants={heroItem} className="hero__sub">{hero.sub}</motion.p>
         <motion.div variants={heroItem} className="hero__actions">
           <a href={`#${sectors[0].id}`} className="btn btn--solid">See the work</a>

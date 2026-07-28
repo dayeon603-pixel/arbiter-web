@@ -96,6 +96,10 @@
   .eyebrow::before { content: ""; width: 2rem; height: 1px; background: var(--accent); }
   .eyebrow--plain { color: var(--faint); letter-spacing: 0.3em; }
   .eyebrow--plain::before { display: none; }
+
+  /* animated headline: per-word clip-mask reveal */
+  .hero__title--anim .hw-mask { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.14em; margin-bottom: -0.14em; }
+  .hero__title--anim .hw-word { display: inline-block; will-change: transform; }
   .hero__title { font-weight: 800; font-size: var(--step-h1); line-height: 1.0; letter-spacing: -0.035em; max-width: 20ch; text-wrap: balance; }
   .hero__sub { color: var(--dim); font-size: var(--step-lede); margin-top: var(--s-5); max-width: 58ch; text-wrap: pretty; }
   .hero__actions { display: flex; flex-wrap: wrap; gap: var(--s-4); margin-top: var(--s-7); }
