@@ -48,25 +48,41 @@ function Nav({ onContact }: { onContact: () => void }) {
 
 function Hero() {
   return (
-    <section id="top" className="hero hero--center">
+    <section id="top" className="hero hero--split">
       <GradientCanvas />
-      <motion.div className="wrap hero__inner" variants={heroStagger} initial="hidden" animate="show">
-        <motion.div variants={heroItem}><LogoMark size={62} className="hero__mark" /></motion.div>
-        <motion.p variants={heroItem} className="eyebrow eyebrow--plain">{hero.eyebrow}</motion.p>
-        <motion.h1 variants={heroHeadline} className="hero__title hero__title--anim">
-          {hero.title.split(' ').flatMap((word, i) => [
-            <span key={i} className="hw-mask">
-              <motion.span className="hw-word" variants={heroWord}>{word}</motion.span>
-            </span>,
-            ' ',
-          ])}
-        </motion.h1>
-        <motion.p variants={heroItem} className="hero__sub">{hero.sub}</motion.p>
-        <motion.div variants={heroItem} className="hero__actions">
-          <a href={`#${sectors[0].id}`} className="btn btn--solid">See the work</a>
-          <a href="#company" className="btn-link">About the company&nbsp;→</a>
+      <div className="wrap hero__grid">
+        <motion.div className="hero__lead" variants={heroStagger} initial="hidden" animate="show">
+          <motion.p variants={heroItem} className="eyebrow">{hero.eyebrow}</motion.p>
+          <motion.h1 variants={heroHeadline} className="hero__title hero__title--anim">
+            {hero.title.split(' ').flatMap((word, i) => [
+              <span key={i} className="hw-mask">
+                <motion.span className="hw-word" variants={heroWord}>{word}</motion.span>
+              </span>,
+              ' ',
+            ])}
+          </motion.h1>
+          <motion.p variants={heroItem} className="hero__sub">{hero.sub}</motion.p>
+          <motion.div variants={heroItem} className="hero__actions">
+            <a href={`#${sectors[0].id}`} className="btn btn--solid">See the work</a>
+            <a href="#company" className="btn-link">About the company&nbsp;→</a>
+          </motion.div>
         </motion.div>
-      </motion.div>
+        <motion.aside
+          className="hero__index"
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.55, ease: EASE }}
+        >
+          <div className="hero__index-head">The work</div>
+          {sectors.map((s) => (
+            <a key={s.id} href={`#${s.id}`} className="hero__index-row">
+              <span className="hero__index-fig">{s.fig}</span>
+              <span className="hero__index-name">{s.kicker}</span>
+              <span className="hero__index-stage">{s.stage}</span>
+            </a>
+          ))}
+        </motion.aside>
+      </div>
     </section>
   )
 }
