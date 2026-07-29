@@ -196,11 +196,27 @@ function Footer({ onContact }: { onContact: () => void }) {
           <ul>{navLinks.map((l) => (<li key={l.id}><a href={`#${l.id}`}>{l.label}</a></li>))}</ul>
         </div>
         <div className="footer__col">
+          <h4>Products</h4>
+          <ul>
+            {sectors.flatMap((s) => (s.product ? [s.product] : (s.products ?? []))).map((p) => (
+              <li key={p.href}><Link href={p.href}>{p.name}</Link></li>
+            ))}
+          </ul>
+        </div>
+        <div className="footer__col">
           <h4>Company</h4>
           <ul>
             <li><a href="#company">About</a></li>
             <li><a href="#founder">Founder</a></li>
             <li><button type="button" className="footer__linkbtn" onClick={onContact}>Contact</button></li>
+          </ul>
+        </div>
+        <div className="footer__col">
+          <h4>Connect</h4>
+          <ul>
+            <li><a href="https://github.com/dayeon603-pixel" target="_blank" rel="noopener">GitHub</a></li>
+            <li><a href="https://www.linkedin.com/in/dayeon-kang-309a333a9" target="_blank" rel="noopener">LinkedIn</a></li>
+            <li><a href={`mailto:${legal.contact}`}>Email</a></li>
           </ul>
         </div>
         <div className="footer__col">
