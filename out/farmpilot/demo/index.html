@@ -117,6 +117,8 @@
   .cal-day .evd{ display:flex; gap:3px; height:5px; align-items:center; } .cal-day .evd i{ width:5px; height:5px; border-radius:50%; }
   .dt-spray{ background:#d9743a } .dt-diagnose{ background:#0e9e63 } .dt-sell{ background:#e0a800 } .dt-water{ background:#2f9bd6 } .dt-fert{ background:#8a6bd6 } .dt-harvest{ background:#b5401a } .dt-custom{ background:#6b8a7a }
 
+  .heat{ display:grid; grid-template-columns:repeat(8,1fr); gap:3px; margin-top:8px; } .heat i{ aspect-ratio:1; border-radius:4px; }
+  .zone{ display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); font-size:13px; font-weight:600; color:var(--ink2); } .zone:last-child{ border-bottom:none; } .zone .n{ width:22px; height:22px; border-radius:7px; background:#eef9f2; color:var(--g2); display:grid; place-items:center; font-weight:800; font-size:12px; flex:none; }
   .map-wrap{ border-radius:16px; overflow:hidden; border:1px solid var(--line); box-shadow:var(--shadow); }
   .map-wrap iframe{ display:block; width:100%; height:210px; border:0; }
   .legend{ display:flex; gap:12px; flex-wrap:wrap; margin-top:6px; } .legend span{ font-size:11px; color:var(--mut); display:flex; align-items:center; gap:5px; } .legend i{ width:9px; height:9px; border-radius:50%; }
@@ -164,7 +166,7 @@
         <div class="body">
           <div class="sec-title"><span data-i18n="mycrops">My crops</span> <span class="add" onclick="openAdd()" data-i18n="add_crop">+ Add crop</span></div>
           <div class="crops" id="crops"></div>
-          <div class="card alert" style="margin-top:14px"><div class="row"><span class="t13" id="ic-risk"><span data-i18n="risk_today">Disease risk today</span></span><span class="pill warn" data-i18n="high">High</span></div><div class="t11" style="margin-top:6px" data-i18n="risk_msg">Humid morning — powdery-mildew conditions building for your barley. Scout and diagnose early signs.</div><button class="btn sm" style="margin-top:12px" onclick="go('diagnose')" id="ic-dgnow"><span data-i18n="diagnose_now">Diagnose a plant now</span></button></div>
+          <div class="card alert" style="margin-top:14px"><div class="row"><span class="t13" id="ic-risk"><span data-i18n="risk_today">Disease risk today</span></span><span class="pill warn" data-i18n="high">High</span></div><div class="t11" style="margin-top:6px" data-i18n="risk_msg">Warm, humid nights and two leaf-wetness windows are forecast in 48 hours. Powdery mildew is favored on your barley.</div><button class="btn sm" style="margin-top:12px" onclick="go('fieldscan')" id="ic-dgnow"><span data-i18n="alert_scout">Scout my field now</span></button></div>
           <div class="sec-title" data-i18n="everything">Everything FarmPilot does</div>
           <div class="grid" id="home-grid"></div>
           <div class="sec-title" data-i18n="season">This season</div>
@@ -189,6 +191,19 @@
           <div class="samples"><img src="assets/leaf1.jpg" onclick="diagnoseSample(0)" alt=""><img src="assets/leaf2.jpg" onclick="diagnoseSample(1)" alt=""><img src="assets/leaf3.jpg" onclick="diagnoseSample(2)" alt=""></div>
           <canvas id="cvs" style="display:none"></canvas>
           <div id="result"></div>
+        </div>
+      </section>
+
+      <!-- FIELD SCAN -->
+      <section class="screen" id="s-fieldscan">
+        <div class="hd withback"><div class="back" id="ic-back8" onclick="go('home')"></div><div class="eyebrow" id="ic-fs"><span data-i18n="fn_fieldscan">Field Scan</span></div><h1 data-i18n="fs_title">Cover the whole field</h1><div class="sub" data-i18n="fs_sub">Weather-directed scouting, not plant-by-plant</div></div>
+        <div class="body">
+          <div class="card alert"><div class="row"><span class="t13" id="ic-fsrisk"><span data-i18n="fs_risk">Today's infection risk</span></span><span class="pill warn" id="fs-risklv">High</span></div><div class="t11" style="margin-top:6px" id="fs-riskmsg"></div></div>
+          <div class="sec-title" data-i18n="fs_scout">Where to scout</div>
+          <div class="card"><div class="t11" style="margin-bottom:4px" data-i18n="fs_scout_msg">Disease clusters, so a few checks at the right spots represent the whole field. Scan these zones:</div><div id="fs-zones"></div></div>
+          <button class="btn" onclick="startFieldScan()" id="fs-btn"><span data-i18n="fs_scan">Scan a row (video sweep)</span></button>
+          <div id="fs-result"></div>
+          <div class="t11" style="text-align:center;margin-top:4px" data-i18n="fs_note">Demo: production samples video frames on-device and fuses weather and satellite (AlphaEarth) risk. You never photograph every plant.</div>
         </div>
       </section>
 
@@ -376,6 +391,7 @@
     mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
     send:'<path d="M4 12l16-8-6 16-3-6-7-2z"/>',
     camera:'<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
+    scan:'<path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M4 12h16"/>',
     upload:'<path d="M12 15V3m0 0l-4 4m4-4l4 4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>',
     chev:'<path d="M9 6l6 6-6 6"/>',
     spray:'<path d="M9 5h4v4H9z"/><path d="M13 6h3l2 3M11 9v11M8 20h6"/><circle cx="18" cy="5" r="1"/><circle cx="20" cy="7" r="1"/>',
@@ -402,7 +418,11 @@
     en:{tab_home:'Home',tab_overview:'Overview',tab_me:'Me',
       mem_title:'What FarmPilot remembers',mem_farmer:'Farmer',mem_region:'Region',mem_crops:'Crops',mem_lastdx:'Last diagnosis',mem_lang:'Language',mem_none:'none yet',mem_note:'Stored on your device. The advisor uses this to personalize its answers.',
       cm_experts:'Experts available',expert_pathologist:'Plant pathologist',expert_professor:'Professor, Crop Science',expert_scientist:'Research scientist (RDA)',expert_advisor:'Crop-protection advisor',expert_extension:'Extension officer',expert_soil:'Soil & fertility scientist',
-      st_online:'Available now',st_outreach:'Open to outreach',st_busy:'Busy',act_message:'Message',act_outreach:'Request'}, /* JS-only keys seeded; rest filled from DOM by captureEn */
+      st_online:'Available now',st_outreach:'Open to outreach',st_busy:'Busy',act_message:'Message',act_outreach:'Request',
+      fs_riskmsg:'Warm, humid nights and two leaf-wetness windows in 48h favor mildew and blight. Best scouted early morning.',
+      fs_scanning:'Scanning {n} plants...',fs_result:'Field result',fs_infrate:'plants show early disease',fs_heat:'Infection heatmap',fs_hotmsg:'Infection is clustered in the north-east corner, not spread evenly.',fs_spotwin:'Spot-spraying just that corner treats the disease while cutting agrochemical use across the rest of the field.',fs_addtask:'Add spot-spray to Calendar',
+      z_corner:'Low, shaded corner',z_center:'Dense center rows',z_edge:'Windward field edge',
+      dg_severity:'Severity',dg_decision:'Spray decision',dec_below:'Below threshold, monitor only',dec_spot:'At threshold, spot-spray the affected zone',dec_spot_d:'Only the infected patch needs it, which cuts chemical use.',dec_treat:'Above threshold, treat now to protect yield',dec_pls:'Check the pre-harvest interval (PLS) before spraying.'}, /* JS-only keys seeded; rest filled from DOM by captureEn */
     ko:{ tab_home:'홈',tab_overview:'현황',tab_me:'내 정보',mycrops:'내 작물',add_crop:'+ 작물 추가',add:'+ 추가',
       risk_today:'오늘의 병해 위험',high:'높음',risk_msg:'습한 아침입니다. 보리에 흰가루병 조건이 형성되고 있어요. 초기 증상을 살펴 진단하세요.',diagnose_now:'지금 진단하기',
       everything:'FarmPilot 전체 기능',season:'이번 시즌',m_conf:'최근 진단 신뢰도',m_hold:'보유 시 예상 가격',
@@ -424,7 +444,11 @@
       edit_profile:'프로필 수정',f_name:'이름',f_farm:'농장 이름',f_region:'지역',save:'저장',
       choose_lang:'언어 선택',search_lang:'언어 검색…',more_lang:'+ 더 많은 언어',
       share_h:'내 프로필 공유',share_p:'가까운 농가에 AirDrop처럼 FarmPilot ID를 보내거나 카카오톡에 복사하세요.',share_near:'근처, 눌러서 전송',share_copy:'내 ID 복사',
-      addid_h:'ID로 추가',addid_p:'농가 또는 전문가 ID(예: @jiwoo_gangjin)를 입력해 네트워크에 추가하세요.',addid_btn:'네트워크에 추가' },
+      addid_h:'ID로 추가',addid_p:'농가 또는 전문가 ID(예: @jiwoo_gangjin)를 입력해 네트워크에 추가하세요.',addid_btn:'네트워크에 추가',
+      fn_fieldscan:'필드 스캔',fs_title:'밭 전체를 커버',fs_sub:'개별 진단이 아닌 날씨 기반 예찰',fs_risk:'오늘의 감염 위험',fs_scout:'어디를 살필까',fs_scout_msg:'병해는 군집으로 나타나므로 요지 몇 곳만 확인해도 밭 전체를 대표합니다. 이 구역을 스캔하세요:',fs_scan:'이랑 스캔 (영상 스윕)',fs_note:'데모: 실제 제품은 온디바이스로 영상 프레임을 샘플링하고 날씨·위성(AlphaEarth) 위험을 결합합니다. 모든 주를 촬영할 필요가 없습니다.',alert_scout:'내 밭 예찰하기',risk_msg:'앞으로 48시간 동안 따뜻하고 습한 밤과 두 번의 잎 젖음 구간이 예보됩니다. 보리에 흰가루병이 유리합니다.',
+      fs_riskmsg:'48시간 내 따뜻·습한 밤과 두 번의 잎 젖음 구간이 흰가루·마름병에 유리합니다. 이른 아침 예찰이 좋습니다.',fs_scanning:'{n}주 스캔 중...',fs_result:'밭 결과',fs_infrate:'주에서 초기 병해 발현',fs_heat:'감염 히트맵',fs_hotmsg:'감염이 북동쪽 모서리에 군집되어 있고 고르게 퍼지지 않았습니다.',fs_spotwin:'그 모서리만 부분 방제하면 병해를 잡으면서 나머지 밭의 농약 사용을 줄일 수 있습니다.',fs_addtask:'부분 방제를 캘린더에 추가',
+      z_corner:'낮고 그늘진 모서리',z_center:'빽빽한 중앙 이랑',z_edge:'바람받이 밭 가장자리',
+      dg_severity:'심각도',dg_decision:'방제 결정',dec_below:'임계 이하, 관찰만',dec_spot:'임계 도달, 발병 구역만 부분 방제',dec_spot_d:'감염된 부분만 방제하면 되어 농약을 줄입니다.',dec_treat:'임계 초과, 수량 보호를 위해 즉시 방제',dec_pls:'방제 전 안전사용기간(PLS)을 확인하세요.' },
     vi:{ tab_home:'Trang chủ',tab_overview:'Tổng quan',tab_me:'Tôi',mycrops:'Cây trồng của tôi',add_crop:'+ Thêm cây',add:'+ Thêm',
       risk_today:'Nguy cơ bệnh hôm nay',high:'Cao',risk_msg:'Sáng ẩm, điều kiện cho bệnh phấn trắng trên lúa mạch đang hình thành. Hãy kiểm tra và chẩn đoán sớm.',diagnose_now:'Chẩn đoán ngay',
       everything:'Tất cả tính năng FarmPilot',season:'Mùa vụ này',m_conf:'độ tin cậy chẩn đoán gần nhất',m_hold:'giá dự kiến nếu giữ hàng',
@@ -446,7 +470,11 @@
       edit_profile:'Sửa hồ sơ',f_name:'Tên',f_farm:'Tên nông trại',f_region:'Khu vực',save:'Lưu',
       choose_lang:'Chọn ngôn ngữ',search_lang:'Tìm ngôn ngữ…',more_lang:'+ Thêm ngôn ngữ',
       share_h:'Chia sẻ hồ sơ',share_p:'Gửi ID FarmPilot cho nông dân gần đó như AirDrop, hoặc sao chép vào KakaoTalk.',share_near:'Gần đây, chạm để gửi',share_copy:'Sao chép ID',
-      addid_h:'Thêm bằng ID',addid_p:'Nhập ID nông dân hoặc chuyên gia (ví dụ @jiwoo_gangjin) để thêm vào mạng lưới.',addid_btn:'Thêm vào mạng lưới' }
+      addid_h:'Thêm bằng ID',addid_p:'Nhập ID nông dân hoặc chuyên gia (ví dụ @jiwoo_gangjin) để thêm vào mạng lưới.',addid_btn:'Thêm vào mạng lưới',
+      fn_fieldscan:'Quét đồng',fs_title:'Phủ cả cánh đồng',fs_sub:'Trinh sát theo thời tiết, không từng cây',fs_risk:'Nguy cơ nhiễm hôm nay',fs_scout:'Nơi cần trinh sát',fs_scout_msg:'Bệnh mọc thành cụm, nên vài điểm kiểm tra đúng chỗ đại diện cả ruộng. Quét các vùng này:',fs_scan:'Quét một hàng (video)',fs_note:'Demo: sản phẩm thật lấy mẫu khung hình video trên thiết bị và kết hợp rủi ro thời tiết + vệ tinh (AlphaEarth). Bạn không cần chụp mọi cây.',alert_scout:'Trinh sát ruộng của tôi',risk_msg:'48 giờ tới dự báo đêm ấm ẩm và hai đợt ướt lá, thuận lợi cho bệnh phấn trắng trên lúa mạch.',
+      fs_riskmsg:'Trong 48 giờ, đêm ấm ẩm và hai đợt ướt lá thuận lợi cho phấn trắng và mốc sương. Nên trinh sát sáng sớm.',fs_scanning:'Đang quét {n} cây...',fs_result:'Kết quả ruộng',fs_infrate:'cây có bệnh sớm',fs_heat:'Bản đồ nhiệt lây nhiễm',fs_hotmsg:'Lây nhiễm tụ ở góc đông bắc, không đều khắp ruộng.',fs_spotwin:'Chỉ phun điểm góc đó vừa trị bệnh vừa giảm thuốc trên phần còn lại.',fs_addtask:'Thêm phun điểm vào Lịch',
+      z_corner:'Góc thấp, râm',z_center:'Hàng giữa dày',z_edge:'Rìa ruộng đón gió',
+      dg_severity:'Mức độ',dg_decision:'Quyết định phun',dec_below:'Dưới ngưỡng, chỉ theo dõi',dec_spot:'Đến ngưỡng, phun điểm vùng nhiễm',dec_spot_d:'Chỉ cần phun mảng nhiễm, giảm hóa chất.',dec_treat:'Trên ngưỡng, xử lý ngay để bảo vệ năng suất',dec_pls:'Kiểm tra thời gian cách ly trước thu hoạch (PLS).' }
   };
   /* dynamic toast strings */
   var TD={
@@ -476,7 +504,7 @@
     var map={home:'home',overview:'overview',profile:'profile'}; var tabId=map[id]||null;
     document.querySelectorAll('.tab').forEach(function(tt){ tt.classList.toggle('on', tabId && tt.dataset.tab===(id==='profile'?'profile':id)); });
     document.querySelectorAll('.body').forEach(function(b){ b.scrollTop=0; }); if(id!=='diagnose') stopCam(); closeSheets();
-    if(id==='overview') renderOverview(); if(id==='market') { buildSeg(); }
+    if(id==='overview') renderOverview(); if(id==='market') { buildSeg(); } if(id==='fieldscan'){ renderZones(); renderFsRisk(); }
   }
   var toastT; function toast(msg){ var el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(function(){ el.classList.remove('show'); },2400); }
   function openSheet(id){ document.getElementById('sheetbg').classList.add('show'); document.getElementById(id).classList.add('show'); }
@@ -518,7 +546,7 @@
     if(!el.children.length) el.innerHTML='<div class="t11" style="grid-column:1/3;padding:8px">No match.</div>';
   }
   function setLang(c){ if(!T[c]) return; LANG=c; try{ localStorage.setItem('fp_lang',c); }catch(e){} applyI18n();
-    /* re-render dynamic content */ buildTabs(); renderCrops(); renderProfile(); buildSeg(); setCrop(activeCrop); renderCal(); renderQuick(); renderChatIntro(); renderTradeChannels(); fillTradeCrops(); renderCommunity(); renderExperts(); renderShareNear(); renderOverview(); closeSheets(); toast(t('done')); }
+    /* re-render dynamic content */ buildTabs(); renderCrops(); renderProfile(); buildSeg(); setCrop(activeCrop); renderCal(); renderQuick(); renderChatIntro(); renderTradeChannels(); fillTradeCrops(); renderCommunity(); renderExperts(); renderShareNear(); renderOverview(); renderZones(); renderFsRisk(); closeSheets(); toast(t('done')); }
   function moreLangs(){ toast(t('lang_more')); }
 
   /* ================= crops ================= */
@@ -558,22 +586,29 @@
   function removeCrop(){ if(!activeCropObj) return; myCrops=myCrops.filter(function(m){return m.n!==activeCropObj.n;}); saveCrops(); renderCrops(); closeSheets(); toast(t('removed')); }
 
   /* ================= home grid ================= */
-  var GRID=[{fn:'diagnose',ic:'diagnosis',k:'fn_diagnosis'},{fn:'advisor',ic:'advisor',k:'fn_advisor'},{fn:'market',ic:'sell',k:'fn_sell'},{fn:'calendar',ic:'calendar',k:'fn_calendar'},{fn:'map',ic:'map',k:'fn_map'},{fn:'trade',ic:'trade',k:'fn_trade'},{fn:'experts',ic:'community',k:'fn_community'},{fn:'overview',ic:'overview',k:'fn_overview'}];
+  var GRID=[{fn:'diagnose',ic:'diagnosis',k:'fn_diagnosis'},{fn:'fieldscan',ic:'scan',k:'fn_fieldscan'},{fn:'advisor',ic:'advisor',k:'fn_advisor'},{fn:'market',ic:'sell',k:'fn_sell'},{fn:'calendar',ic:'calendar',k:'fn_calendar'},{fn:'map',ic:'map',k:'fn_map'},{fn:'trade',ic:'trade',k:'fn_trade'},{fn:'experts',ic:'community',k:'fn_community'},{fn:'overview',ic:'overview',k:'fn_overview'}];
   function buildGrid(){ var g=document.getElementById('home-grid'); g.innerHTML=''; GRID.forEach(function(x){ var b=document.createElement('button'); b.className='gtile'; b.innerHTML='<div class="ic">'+svg(x.ic)+'</div><div class="l" data-i18n="'+x.k+'">'+t(x.k)+'</div>'; b.onclick=function(){ go(x.fn); }; g.appendChild(b); }); }
 
   /* ================= diagnose ================= */
   var SAMPLES=[
-    {img:'assets/leaf1.jpg',title:'Tomato · Late blight',conf:99.8,healthy:false,rx:['Remove infected plants','Fungicide x2 / 7 days','No overhead watering'],note:'Fast-spreading. Act within 48 hours to protect the rest of the field.'},
-    {img:'assets/leaf2.jpg',title:'Potato · Early blight',conf:100,healthy:false,rx:['Remove lower infected leaves','Chlorothalonil spray','Rotate next season'],note:'Common and manageable if caught early. Keep foliage dry.'},
-    {img:'assets/leaf3.jpg',title:'Apple · Healthy',conf:100,healthy:true,rx:['No action needed','Keep monitoring weekly'],note:'Leaf looks healthy. Keep scouting after rain.'}
+    {img:'assets/leaf1.jpg',title:'Tomato · Late blight',conf:99.8,healthy:false,sev:34,rx:['Remove infected plants','Fungicide x2 / 7 days','No overhead watering'],note:'Fast-spreading. Act within 48 hours to protect the rest of the field.'},
+    {img:'assets/leaf2.jpg',title:'Potato · Early blight',conf:100,healthy:false,sev:11,rx:['Remove lower infected leaves','Chlorothalonil spray','Rotate next season'],note:'Common and manageable if caught early. Keep foliage dry.'},
+    {img:'assets/leaf3.jpg',title:'Apple · Healthy',conf:100,healthy:true,sev:0,rx:['No action needed','Keep monitoring weekly'],note:'Leaf looks healthy. Keep scouting after rain.'}
   ];
+  function economicDecision(sev){ if(sev<5) return {label:t('dec_below'),detail:t('dec_pls'),col:'#5b8a74',bg:'#eef4f0'};
+    if(sev<20) return {label:t('dec_spot'),detail:t('dec_spot_d')+' '+t('dec_pls'),col:'#b76e00',bg:'#fff2df'};
+    return {label:t('dec_treat'),detail:t('dec_pls'),col:'#b5401a',bg:'#fde7dc'}; }
   function setImg(src){ var i=document.getElementById('vfimg'), v=document.getElementById('vfvid'); i.src=src; i.style.display=''; v.style.display='none'; }
   function startAnalyze(done){ var vf=document.getElementById('vf'); vf.classList.add('scanning'); document.getElementById('vfhint').textContent='Analyzing on-device…'; document.getElementById('result').innerHTML='';
     setTimeout(function(){ vf.classList.remove('scanning'); document.getElementById('vfhint').textContent='Diagnosis complete'; done(); },1400); }
   function showResult(d){
     try{ lastDx={title:d.title, conf:d.conf, healthy:d.healthy}; localStorage.setItem('fp_lastdx',JSON.stringify(lastDx)); }catch(e){}
     var res=document.getElementById('result');
-    res.innerHTML='<div class="card" style="margin-top:14px"><div class="row"><span class="t13">'+d.title+'</span><span class="pill '+(d.healthy?'ok':'warn')+'">'+(d.healthy?'Healthy':'Diagnosed')+'</span></div><div class="bar"><i id="cbar"></i></div><div class="t11">Confidence '+d.conf+'% · on-device, offline</div><div style="margin-top:6px">'+d.rx.map(function(r){return '<span class="chip">'+svg('check')+r+'</span>';}).join('')+'</div><div class="t11" style="margin-top:10px; color:var(--ink2)">'+d.note+'</div><div class="btnrow" style="margin-top:13px"><button class="btn sm" onclick="toast(\'Playing advice aloud…\')">Hear it</button><button class="btn ghost sm" onclick="addSprayTask();toast(t(\'task_added\'))">Add task</button></div></div>';
+    var extra='';
+    if(!d.healthy){ var sev=(d.sev==null?15:d.sev); var dec=economicDecision(sev);
+      extra='<div class="row" style="margin-top:12px"><span class="t11" style="font-weight:800">'+t('dg_severity')+'</span><span class="t11">'+sev+'%</span></div><div class="bar"><i style="width:'+sev+'%;background:linear-gradient(90deg,#e0a800,#d9743a)"></i></div>'
+        +'<div style="margin-top:10px;padding:11px 13px;border-radius:12px;border:1px solid var(--line);background:'+dec.bg+'"><b style="font-size:13px;color:'+dec.col+'">'+t('dg_decision')+': '+dec.label+'</b><div class="t11" style="margin-top:3px">'+dec.detail+'</div></div>'; }
+    res.innerHTML='<div class="card" style="margin-top:14px"><div class="row"><span class="t13">'+d.title+'</span><span class="pill '+(d.healthy?'ok':'warn')+'">'+(d.healthy?'Healthy':'Diagnosed')+'</span></div><div class="bar"><i id="cbar"></i></div><div class="t11">Confidence '+d.conf+'% · on-device, offline</div><div style="margin-top:6px">'+d.rx.map(function(r){return '<span class="chip">'+svg('check')+r+'</span>';}).join('')+'</div><div class="t11" style="margin-top:10px; color:var(--ink2)">'+d.note+'</div>'+extra+'<div class="btnrow" style="margin-top:13px"><button class="btn sm" onclick="toast(\'Playing advice aloud…\')">Hear it</button><button class="btn ghost sm" onclick="addSprayTask();toast(t(\'task_added\'))">Add task</button></div></div>';
     requestAnimationFrame(function(){ document.getElementById('cbar').style.width=d.conf+'%'; }); res.scrollIntoView({behavior:'smooth',block:'nearest'});
   }
   function diagnoseSample(i){ stopCam(); setImg(SAMPLES[i].img); startAnalyze(function(){ showResult(SAMPLES[i]); }); }
@@ -593,8 +628,8 @@
   function stopCam(){ if(stream){ stream.getTracks().forEach(function(tk){ tk.stop(); }); stream=null; } camOn=false;
     var v=document.getElementById('vfvid'); if(v){ v.srcObject=null; v.style.display='none'; } var b=document.getElementById('cambtn'); if(b) b.innerHTML=svg('camera')+'<span>'+t('camera')+'</span>'; }
   function clampC(c){ return Math.round(Math.min(99.3, Math.max(87, c))*10)/10; }
-  function mkDisease(name,conf){ var rx=/mildew/i.test(name)?['Improve airflow','Sulfur / tebuconazole spray','Remove affected leaves']:/blight/i.test(name)?['Remove infected leaves','Copper fungicide','Avoid overhead watering']:['Remove affected leaves','Targeted fungicide','Monitor spread'];
-    return {title:'Detected · '+name, conf:clampC(conf), healthy:false, rx:rx, note:'Likely '+name.toLowerCase()+'. Camera results use an on-image heuristic in this demo; the production CNN targets 92%+ on field photos.'}; }
+  function mkDisease(name,conf,sev){ var rx=/mildew/i.test(name)?['Improve airflow','Sulfur / tebuconazole spray','Remove affected leaves']:/blight/i.test(name)?['Remove infected leaves','Copper fungicide','Avoid overhead watering']:['Remove affected leaves','Targeted fungicide','Monitor spread'];
+    return {title:'Detected · '+name, conf:clampC(conf), healthy:false, sev:Math.max(4,Math.min(55,Math.round(sev==null?15:sev))), rx:rx, note:'Likely '+name.toLowerCase()+'. Camera results use an on-image heuristic in this demo; the production CNN targets 92%+ on field photos.'}; }
   function mkHealthy(conf){ return {title:'Looks healthy', conf:clampC(conf), healthy:true, rx:['No action needed','Keep scouting weekly'], note:'No disease signal detected. Keep monitoring, especially after rain.'}; }
   function analyzeImage(src){ var img=new Image(); img.onload=function(){
       var s=48, c=document.createElement('canvas'); c.width=s; c.height=s; var ctx=c.getContext('2d'); ctx.drawImage(img,0,0,s,s);
@@ -605,9 +640,9 @@
         else if(r>=g && (r+g)/2 > b+16 && g<190) brown++;
         if(r>170&&g>150&&b>150) pale++; }
       var gr=green/tot, br=brown/tot, pr=pale/tot, res;
-      if(pr>0.16 && br<0.35) res=mkDisease('Powdery mildew', 89+pr*24);
-      else if(br>0.24) res=mkDisease('Leaf blight', 88+br*22);
-      else if(br>0.11) res=mkDisease('Early leaf spot', 87+br*30);
+      if(pr>0.16 && br<0.35) res=mkDisease('Powdery mildew', 89+pr*24, pr*120);
+      else if(br>0.24) res=mkDisease('Leaf blight', 88+br*22, br*90);
+      else if(br>0.11) res=mkDisease('Early leaf spot', 87+br*30, br*80);
       else res=mkHealthy(92+gr*7);
       showResult(res);
     }; img.onerror=function(){ showResult(mkDisease('Leaf blight',92)); }; img.src=src; }
@@ -730,6 +765,30 @@
   function addTaskForSelected(){ var selIso=iso(calSel); (EVENTS[selIso]=EVENTS[selIso]||[]).unshift({id:'c'+Date.now(),type:'custom',t:(LANG==='ko'?'새 작업':LANG==='vi'?'Việc mới':'New task'),s:(LANG==='ko'?'눌러서 완료':LANG==='vi'?'Chạm để hoàn thành':'Tap to complete'),done:false}); saveEvents(); renderCal(); toast(t('task_added')); }
   function addSprayTask(){ var d=iso(addDays(new Date(),0)); (EVENTS[d]=EVENTS[d]||[]).unshift({id:'s'+Date.now(),type:'spray',t:'Spray (from diagnosis)',s:'Auto-added',done:false}); saveEvents(); }
   function addPrevention(){ var d=iso(addDays(new Date(),1)); (EVENTS[d]=EVENTS[d]||[]).unshift({id:'p'+Date.now(),type:'spray',t:'Preventive spray',s:'Nearby outbreak',done:false}); saveEvents(); toast(t('prev_added')); }
+  function addSpotSpray(){ var d=iso(addDays(new Date(),0)); (EVENTS[d]=EVENTS[d]||[]).unshift({id:'ss'+Date.now(),type:'spray',t:'Spot-spray north-east zone',s:'From field scan',done:false}); saveEvents(); }
+
+  /* ================= field scan ================= */
+  var ZONES=['z_corner','z_center','z_edge'];
+  function renderZones(){ var el=document.getElementById('fs-zones'); if(!el) return; el.innerHTML=''; ZONES.forEach(function(z,i){ var d=document.createElement('div'); d.className='zone'; d.innerHTML='<span class="n">'+(i+1)+'</span><span>'+t(z)+'</span>'; el.appendChild(d); }); }
+  function renderFsRisk(){ var lv=document.getElementById('fs-risklv'), msg=document.getElementById('fs-riskmsg'); if(!lv) return; lv.textContent=t('high'); lv.className='pill warn'; msg.textContent=t('fs_riskmsg'); }
+  function startFieldScan(){ var btn=document.getElementById('fs-btn'), res=document.getElementById('fs-result'); if(!btn) return; btn.disabled=true; var total=240, n=0;
+    res.innerHTML='<div class="card"><div class="t11" id="fs-count">'+t('fs_scanning').replace('{n}','0')+'</div><div class="bar"><i id="fs-bar" style="width:0"></i></div></div>';
+    var bar=document.getElementById('fs-bar'), cnt=document.getElementById('fs-count');
+    var iv=setInterval(function(){ n+=Math.round(total/15); if(n>total) n=total; cnt.textContent=t('fs_scanning').replace('{n}',n); bar.style.width=Math.round(n/total*100)+'%';
+      if(n>=total){ clearInterval(iv); setTimeout(function(){ showFieldResult(total); btn.disabled=false; },350); } },110);
+  }
+  function showFieldResult(total){ var infPct=8, infected=Math.round(total*infPct/100), sev=Math.round(infPct*1.6);
+    var cells=''; for(var i=0;i<32;i++){ var col=i%8, row=Math.floor(i/8); var hot=(col>=6&&row<=1), mid=(col>=5&&row<=2); var c=hot?'#d9743a':mid?'#e0a800':'#bfe6cd'; cells+='<i style="background:'+c+'"></i>'; }
+    var dec=economicDecision(sev);
+    document.getElementById('fs-result').innerHTML=
+      '<div class="card"><div class="row"><span class="t13">'+t('fs_result')+'</span><span class="pill warn">'+infPct+'%</span></div>'
+      +'<div class="t11" style="margin-top:4px">'+infected+' / '+total+' '+t('fs_infrate')+'</div>'
+      +'<div class="t11" style="margin-top:11px;font-weight:800;color:var(--ink2)">'+t('fs_heat')+'</div><div class="heat">'+cells+'</div>'
+      +'<div class="t11" style="margin-top:7px">'+t('fs_hotmsg')+'</div>'
+      +'<div style="margin-top:11px;padding:11px 13px;border-radius:12px;border:1px solid var(--line);background:'+dec.bg+'"><b style="font-size:13px;color:'+dec.col+'">'+dec.label+'</b><div class="t11" style="margin-top:3px">'+t('fs_spotwin')+'</div></div>'
+      +'<button class="btn sm" style="margin-top:12px" onclick="addSpotSpray();toast(t(\'task_added\'))">'+t('fs_addtask')+'</button></div>';
+    document.getElementById('fs-result').scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
 
   /* ================= trade ================= */
   function fillTradeCrops(){ var s=document.getElementById('td-crop'); if(!s) return; s.innerHTML=''; myCrops.forEach(function(c){ var o=document.createElement('option'); o.value=c.n; o.textContent=cropName(c.n); s.appendChild(o); }); }
@@ -838,8 +897,8 @@
 
   /* ================= boot ================= */
   setIcon('ic-brand','brand'); setIcon('ic-info','info'); setIcon('ic-ov','overview');
-  ['ic-back1','ic-back2','ic-back3','ic-back4','ic-back5','ic-back6','ic-back7'].forEach(function(i){ setIcon(i,'back'); });
-  setIcon('ic-dg','diagnosis'); setIcon('ic-ad','advisor'); setIcon('ic-mk','sell'); setIcon('ic-cl','calendar'); setIcon('ic-mp','map'); setIcon('ic-td','trade'); setIcon('ic-cm','community'); setIcon('ic-pf','me');
+  ['ic-back1','ic-back2','ic-back3','ic-back4','ic-back5','ic-back6','ic-back7','ic-back8'].forEach(function(i){ setIcon(i,'back'); });
+  setIcon('ic-dg','diagnosis'); setIcon('ic-ad','advisor'); setIcon('ic-mk','sell'); setIcon('ic-cl','calendar'); setIcon('ic-mp','map'); setIcon('ic-td','trade'); setIcon('ic-cm','community'); setIcon('ic-pf','me'); setIcon('ic-fs','scan'); setIcon('ic-fsrisk','risk');
   setIcon('ic-risk','risk'); setIcon('ic-mildew','risk'); setIcon('ic-group','users');
   document.getElementById('cal-prev').innerHTML=svg('back'); document.getElementById('cal-next').innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+IC.chev+'</svg>';
   document.getElementById('ic-mic').innerHTML=svg('mic'); document.getElementById('ic-send').innerHTML=svg('send');
@@ -851,7 +910,7 @@
   captureEn();
   buildTabs(); buildGrid(); applyI18n();
   renderCrops(); setCrop('Barley'); renderProfile(); renderCal(); renderQuick(); renderChatIntro();
-  renderTradeChannels(); fillTradeCrops(); renderCommunity(); renderExperts(); renderShareNear(); renderOverview();
+  renderTradeChannels(); fillTradeCrops(); renderCommunity(); renderExperts(); renderShareNear(); renderOverview(); renderZones(); renderFsRisk();
   if('serviceWorker' in navigator){
     var _refreshing=false;
     navigator.serviceWorker.addEventListener('controllerchange', function(){ if(_refreshing) return; _refreshing=true; location.reload(); });
