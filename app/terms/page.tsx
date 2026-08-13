@@ -37,8 +37,8 @@ export default function TermsPage() {
 
           <h2>1. What this site is</h2>
           <p>
-            This website is an informational presentation of {legal.entity}, a brand
-            operated by {legal.registeredEntity}, a business registered in the{' '}
+            This website is an informational presentation of {legal.registeredEntity},
+            a business registered in the{' '}
             {legal.jurisdiction} by {legal.operator} ({legal.representativeKo}),
             business registration number {legal.registrationNumber}. It describes work
             across several domains at different stages of maturity. Descriptions of
@@ -48,7 +48,7 @@ export default function TermsPage() {
           <h2>2. Definitions</h2>
           <p>
             &ldquo;{legal.entity}&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;, and &ldquo;our&rdquo; mean {legal.registeredEntity},
-            the operator of the {legal.entity} brand. &ldquo;Site&rdquo; means this website and
+            the registered operating entity. &ldquo;Site&rdquo; means this website and
             its pages. &ldquo;You&rdquo; means anyone who accesses the Site. &ldquo;Content&rdquo; means
             the text, marks, logos, images, and design presented on the Site. Any
             software, product, or paid service is governed by its own separate
@@ -159,7 +159,7 @@ export default function TermsPage() {
         <div className="footer__biz"><div className="wrap">
           <p className="footer__biz-reg">상호 {legal.businessNameKo}({legal.businessNameEn}) · 대표 {legal.representativeKo} · 사업자등록번호 {legal.registrationNumber}{legal.showAddress && <> · {legal.registeredAddress}</>} · 이메일 {legal.contact}</p>
         </div></div>
-        <div className="footer__bar"><div className="wrap"><span>© 2026 {legal.businessNameEn}. All rights reserved.</span><span>{legal.entity}, a brand of {legal.businessNameEn}.</span></div></div>
+        <div className="footer__bar"><div className="wrap"><span>© 2026 {legal.businessNameEn}. All rights reserved.</span><span>Registered in the {legal.jurisdiction}.</span></div></div>
       </footer>
     </>
   )

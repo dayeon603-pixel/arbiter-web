@@ -40,8 +40,8 @@ export default function PrivacyPage() {
 
           <h2>1. Who is responsible</h2>
           <p>
-            {legal.entity} is a brand operated by {legal.registeredEntity}, a
-            business registered in the {legal.jurisdiction} by {legal.operator}
+            {legal.registeredEntity} is a business registered in the{' '}
+            {legal.jurisdiction} by {legal.operator}
             {' '}({legal.representativeKo}), business registration number{' '}
             {legal.registrationNumber}. For any privacy question you can reach the
             operator directly at{' '}
@@ -195,7 +195,7 @@ export default function PrivacyPage() {
         <div className="footer__biz"><div className="wrap">
           <p className="footer__biz-reg">상호 {legal.businessNameKo}({legal.businessNameEn}) · 대표 {legal.representativeKo} · 사업자등록번호 {legal.registrationNumber}{legal.showAddress && <> · {legal.registeredAddress}</>} · 이메일 {legal.contact}</p>
         </div></div>
-        <div className="footer__bar"><div className="wrap"><span>© 2026 {legal.businessNameEn}. All rights reserved.</span><span>{legal.entity}, a brand of {legal.businessNameEn}.</span></div></div>
+        <div className="footer__bar"><div className="wrap"><span>© 2026 {legal.businessNameEn}. All rights reserved.</span><span>Registered in the {legal.jurisdiction}.</span></div></div>
       </footer>
     </>
   )
