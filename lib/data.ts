@@ -92,12 +92,15 @@ export const contactHref = (subject = 'Arbiter — Inquiry') =>
  * commercial launch are marked TODO and rendered as a visible placeholder.
  */
 export const legal = {
-  // 'entity' = the public brand this site presents. The legally registered
-  // business behind it is 카라반 (Caravan); Arbiter is a brand it operates.
+  // Arbiter is the registered ROK business entity itself. The entity was
+  // renamed to 아비터 (Arbiter) from its original registration as 카라반
+  // (Caravan); the registration number did not change. Caravan is now a
+  // product name, not the operating entity, so 'entity' and
+  // 'registeredEntity' are the same name.
   entity: 'Arbiter',
-  registeredEntity: '카라반 (Caravan)',
-  businessNameKo: '카라반',
-  businessNameEn: 'Caravan',
+  registeredEntity: 'Arbiter',
+  businessNameKo: '아비터',
+  businessNameEn: 'Arbiter',
   operator: 'Dayeon Kang',
   representativeKo: '강다연',
   contact: founder.contact,
@@ -129,6 +132,18 @@ export const caravan = {
       { h: 'A human stays in the loop', p: 'Nothing executes on a machine’s say-so alone. A person reviews and approves each high-stakes decision before it takes effect, and that approval is itself signed and recorded — so the trail shows not just what was decided, but who stood behind it and when.' },
     ],
   },
+  twoSided: {
+    label: 'Two-sided by design',
+    body: 'Caravan is referenced by the importer or broker on one side and the customs authority on the other. Any feature only one side of the transaction can see is a step away from the rail position. Both parties must be able to verify the same record independently, without asking Caravan to vouch for it.',
+  },
+  pricing: {
+    label: 'How it is priced',
+    body: 'Caravan is priced as a ladder rather than a seat. The entry rung is a flat fee per certified decision: an unproven, independent rail is not handed basis points on a counterparty’s flow on day one, so the flat fee buys the right to become load-bearing in that process. Once the record is load-bearing, pricing converts to basis points on the attested flow itself. The rung after that is a data network, where the corpus of signed decisions prices something no single counterparty could price alone. Arbiter does not sell seats at any rung: the engine is deterministic and near zero marginal cost per attestation, and seat pricing would discard that advantage.',
+  },
+  northStar: {
+    label: 'The aim',
+    body: 'The company’s aim is stated plainly: the neutral, cryptographically-attested decision rail for regulated money-movement and risk-transfer, metering basis points on every bind, payment, and credit decision that must be proven rather than trusted. Caravan is one rail toward that aim, built for cross-border trade.',
+  },
   status: {
     label: 'Status',
     body: 'Caravan runs today as working, tested software, not a slide or a concept. It is solo-built and pre-commercial: no customers, revenue, or funding are claimed anywhere. This page describes what Caravan does and why it matters, deliberately at a high level — the internal mechanics, models, and the specific trade lanes it targets are kept off the public page while the product is still being hardened.',
@@ -155,6 +170,18 @@ export const tollgate = {
       { h: 'A receipt that verifies itself', p: 'Each decision is emitted as a signed, hash-chained receipt. Anyone holding it can re-derive the canonical bytes, check the signature, and re-walk the chain in a plain browser with no network calls and no account. Change a single byte anywhere in the record and verification fails visibly.' },
       { h: 'Read-only, next to what you already run', p: 'Tollgate observes rather than intervenes. It sits alongside the incumbent screener in shadow mode, never becoming the block-of-record, so adopting it requires no rip-and-replace and does not pull Tollgate into the firm’s own compliance program.' },
     ],
+  },
+  twoSided: {
+    label: 'Two-sided by design',
+    body: 'Tollgate is referenced by the PPSI or VASP compliance team on one side and the examiner or regulator on the other. Any feature only one side of the transaction can see is a step away from the rail position. Both parties must be able to verify the same record independently, without asking Tollgate to vouch for it.',
+  },
+  pricing: {
+    label: 'How it is priced',
+    body: 'Tollgate is priced as a ladder rather than a seat. The entry rung is a flat fee per certified decision: an unproven, independent rail is not handed basis points on a firm’s flow on day one, so the flat fee buys the right to become load-bearing in the firm’s own compliance program. Once the record is load-bearing, pricing converts to basis points on the attested flow itself. The rung after that is a data network, where the corpus of signed decisions prices something no single firm could price alone. Arbiter does not sell seats at any rung: the engine is deterministic and near zero marginal cost per attestation, and seat pricing would discard that advantage.',
+  },
+  northStar: {
+    label: 'The aim',
+    body: 'The company’s aim is stated plainly: the neutral, cryptographically-attested decision rail for regulated money-movement and risk-transfer, metering basis points on every bind, payment, and credit decision that must be proven rather than trusted. Tollgate is one rail toward that aim, built for sanctions and AML evidence.',
   },
   status: {
     label: 'Status',

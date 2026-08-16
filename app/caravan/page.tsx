@@ -68,6 +68,33 @@ export default function CaravanPage() {
           <div className="cv__block-head">
             <span className="sector__fig">FIG. 03</span>
             <span className="sector__rule" />
+            {caravan.twoSided.label}
+          </div>
+          <p className="cv__body">{caravan.twoSided.body}</p>
+        </section>
+
+        <section className="wrap cv__block">
+          <div className="cv__block-head">
+            <span className="sector__fig">FIG. 04</span>
+            <span className="sector__rule" />
+            {caravan.pricing.label}
+          </div>
+          <p className="cv__body">{caravan.pricing.body}</p>
+        </section>
+
+        <section className="wrap cv__block">
+          <div className="cv__block-head">
+            <span className="sector__fig">FIG. 05</span>
+            <span className="sector__rule" />
+            {caravan.northStar.label}
+          </div>
+          <p className="cv__body">{caravan.northStar.body}</p>
+        </section>
+
+        <section className="wrap cv__block">
+          <div className="cv__block-head">
+            <span className="sector__fig">FIG. 06</span>
+            <span className="sector__rule" />
             {caravan.status.label}
           </div>
           <p className="cv__body">{caravan.status.body}</p>
