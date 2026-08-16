@@ -8,7 +8,7 @@ export type Sector = {
 export const hero = {
   eyebrow: 'Arbiter',
   title: 'Decision, safety, and infrastructure for the work that has to be right.',
-  sub: 'A multi-industry company building across five regulated and high-stakes domains. One operator, building in the open.',
+  sub: 'A multi-industry company building decision, safety, and compliance infrastructure across five regulated and high-stakes domains.',
 }
 
 export const sectors: Sector[] = [
@@ -18,7 +18,10 @@ export const sectors: Sector[] = [
     mission: 'Building neutral trust and compliance infrastructure for money, autonomous agents, and cross-border trade — wherever a high-stakes call must be made and later proven. Each decision produces a signed, tamper-evident record an examiner can verify independently: who decided what, on whose authority, and that the record has not changed since.',
     target: 'Stablecoin issuers, banks, operators of autonomous AI agents, cross-border traders, and the regulators who audit them.',
     image: '/img/finance.jpg',
-    product: { name: 'Caravan', note: 'A neutral trust rail for cross-border trade.', href: '/caravan' },
+    products: [
+      { name: 'Caravan', note: 'A neutral trust rail for cross-border trade.', href: '/caravan' },
+      { name: 'Tollgate', note: 'Sanctions screening decisions an examiner can replay offline.', href: '/tollgate' },
+    ],
   },
   {
     id: 'agriculture', fig: '02', kicker: 'Agriculture & Food Security', stage: 'In development',
@@ -60,20 +63,21 @@ export const sectors: Sector[] = [
 
 export const company = {
   kicker: 'The company',
-  title: 'One operator. Five domains. Built in the open.',
+  title: 'Five domains. One standard of proof.',
   body: [
     'Arbiter builds decision, safety, and infrastructure for regulated and high-stakes domains: places where being wrong is expensive and someone is required to be right.',
-    'It is solo-operated. No revenue, funding, or customers are claimed anywhere. Each domain is described by what it does, plainly and without overclaiming.',
+    'Every product is held to the same standard. It has to work under scrutiny, hold up when the record is examined years later, and state plainly what it can and cannot prove.',
+    'The company was registered in 2026, after the work was already underway. Each product was researched, engineered, and tested as working software before there was an entity to hold it. Nothing here began as a business plan waiting for a build.',
     'The unifying idea is the same in every domain. Take an ambiguous input, apply the rules, make the call, and keep proof a third party can check.',
   ],
 }
 
 export const founder = {
-  kicker: 'The operator',
+  kicker: 'Leadership',
   name: 'Dayeon Kang',
   lines: [
-    'I’m the founder and sole operator of Arbiter — a developer, quantitative researcher, and civic-technology builder. I design, build, and ship across all five domains myself, from the cold-chain hardware thesis to the cryptographic trust rails to the AI-safety research.',
-    'My method is the same everywhere: I find a place where a high-stakes decision is made badly or slowly, build the system that makes it well, and keep proof it was right. I work in the open and ship one venture at a time, honest about what is real and what is still being built.',
+    'I’m the founder of Arbiter, a developer, quantitative researcher, and civic-technology builder. I lead design, engineering, and delivery across all five domains, from the cold-chain hardware thesis to the cryptographic trust rails to the AI-safety research.',
+    'My method is the same everywhere: find a place where a high-stakes decision is made badly or slowly, build the system that makes it well, and keep proof it was right.',
   ],
   contact: 'dayeon603@gmail.com',
 }
@@ -132,6 +136,32 @@ export const caravan = {
   links: {
     app: 'https://caravan-app.dayeon603.workers.dev',
     demo: 'https://caravan-demo-d8d.pages.dev',
+  },
+}
+
+export const tollgate = {
+  eyebrow: 'A product of Arbiter · Finance',
+  name: 'Tollgate',
+  tagline: 'Sanctions screening decisions an examiner can replay offline.',
+  lead: 'Tollgate is the evidence layer for sanctions and AML screening at stablecoin issuers and virtual-asset service providers. It runs read-only alongside the screening system a firm already uses, and turns each screening decision into a signed, tamper-evident receipt pinned to the sanctions list exactly as it stood at that moment. Months later, an examiner can take that receipt and re-derive the same verdict on their own machine, offline, without calling back to Arbiter and without taking any vendor’s word for it. The scope today is the exact-match path; fuzzy-match reproducibility is out of scope and is labelled as such everywhere the product is described.',
+  problem: {
+    label: 'The problem',
+    body: 'A new class of regulated entity is entering bank-secrecy supervision for the first time, and it is inheriting an evidentiary standard it cannot yet meet. When an examiner asks a firm to show why a particular counterparty was blocked six months ago, the honest answer is usually that the sanctions list has changed since, the screening vendor’s system has been updated since, and the decision can no longer be reproduced. An audit export records what a system said it did. It does not let anyone independently re-derive that decision from the inputs that produced it. So a firm’s evidence is only ever as strong as its vendor’s word, held in the vendor’s format, checkable only by asking the vendor. Tollgate exists so that the record stands on its own.',
+  },
+  how: {
+    label: 'How it works',
+    points: [
+      { h: 'The list is pinned to the decision', p: 'Every screening decision is recorded against a specific, hash-identified snapshot of the sanctions list rather than against whatever the list happens to say today. The exact state of the world at decision time becomes part of the evidence, so a later re-check compares like with like instead of quietly drifting.' },
+      { h: 'A receipt that verifies itself', p: 'Each decision is emitted as a signed, hash-chained receipt. Anyone holding it can re-derive the canonical bytes, check the signature, and re-walk the chain in a plain browser with no network calls and no account. Change a single byte anywhere in the record and verification fails visibly.' },
+      { h: 'Read-only, next to what you already run', p: 'Tollgate observes rather than intervenes. It sits alongside the incumbent screener in shadow mode, never becoming the block-of-record, so adopting it requires no rip-and-replace and does not pull Tollgate into the firm’s own compliance program.' },
+    ],
+  },
+  status: {
+    label: 'Status',
+    body: 'Tollgate is early and deliberately narrow. The offline verifier is live and can be exercised right now, including its tamper toggle, which is the whole claim demonstrated rather than asserted. The engine underneath is working, tested software, and the product is pre-commercial: no customers, revenue, or funding are claimed anywhere. Reproducibility is offered only on the exact-match path, and that limit is stated on the verifier itself rather than buried, because a confident green check over a match the system cannot actually reproduce would defeat the point of the product.',
+  },
+  links: {
+    verifier: '/verify.html',
   },
 }
 
