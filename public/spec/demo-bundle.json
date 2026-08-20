@@ -45,7 +45,13 @@
         "signature": "9f4304c8a7639a119439e2f6722c74f6651bde360ffac2438e2d58591d3dfc05a3e4c2fc6002b06e0ee185a530f7d82e35826943e4be1fca30b9cc99369a9d03",
         "name": "Independent monitor (demo)"
       }
-    ]
+    ],
+    "witness_policy": {
+      "quorum_k": 3,
+      "pinned": [],
+      "operator_key": "29acbae141bccaf0b22e1a94d34d0bc7361e526d0bfe12c89794bc9322966dd7",
+      "note": "Every cosignature below was produced by a demonstration key that Arbiter itself holds, so it evidences the mechanism and not independence. Independent witnesses are counted only when a party other than the log operator holds the key; today that count is zero."
+    }
   },
   "receipts": [
     {

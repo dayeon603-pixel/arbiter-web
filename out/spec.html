@@ -48,12 +48,12 @@ footer a{color:inherit}
   <p class="lede">An open format for records of automated decisions that a third party can verify without trusting whoever produced them. Published so that more than one vendor can emit it — an evidence format only you can produce is not evidence, it is a lock-in.</p>
   <div class="panel">
     <div class="grid">
-      <div class="stat"><div class="v">30</div><div class="l">Vector objects</div></div>
-      <div class="stat"><div class="v">194</div><div class="l">Assertions they carry</div></div>
+      <div class="stat"><div class="v">39</div><div class="l">Vector objects</div></div>
+      <div class="stat"><div class="v">203</div><div class="l">Assertions they carry</div></div>
       <div class="stat"><div class="v">144</div><div class="l">Inclusion + consistency proofs</div></div>
-      <div class="stat"><div class="v" style="color:var(--accent)">7</div><div class="l">Receipts you MUST reject</div></div>
+      <div class="stat"><div class="v" style="color:var(--accent)">14</div><div class="l">Cases you MUST reject</div></div>
     </div>
-    <p style="margin-top:1rem;font-size:.9rem"><strong>The arithmetic, so it can be checked:</strong> 30 vector objects — 10 canonicalisation cases, 10 Merkle trees, 3 receipts that must verify, 7 that must be rejected — carrying 194 assertions: each canonicalisation case is checked for both canonical bytes and digest (20), each tree for both leaf hashes and root (20), plus 72 inclusion proofs, 72 consistency proofs, and the 10 receipts. Conformance is decidable by a machine, not asserted by a vendor. An implementation that accepts any of the 7 <code>must_reject</code> receipts does not conform — it is a verifier that will accept forged evidence.</p>
+    <p style="margin-top:1rem;font-size:.9rem"><strong>The arithmetic, so it can be checked:</strong> 39 vector objects — 10 canonicalisation cases, 10 Merkle trees, 3 receipts that must verify, 7 that must be rejected, 2 tree heads that must verify and 7 that must be rejected — carrying 203 assertions: each canonicalisation case is checked for both canonical bytes and digest (20), each tree for both leaf hashes and root (20), plus 72 inclusion proofs, 72 consistency proofs, and the 10 receipts. Conformance is decidable by a machine, not asserted by a vendor. An implementation that accepts any of the 7 <code>must_reject</code> receipts does not conform — it is a verifier that will accept forged evidence.</p>
     <div class="btns">
       <a class="btn solid" href="/spec/conformance-vectors.json">Download vectors (JSON)</a>
       <a class="btn" href="/adaptive-risk">See it verify live</a>
@@ -65,8 +65,9 @@ Arbiter Decision Attestation Format v0.1 — conformance
   [PASS] Canonical JSON             20/20
   [PASS] Merkle roots and proofs    164/164
   [PASS] Receipt verification       10/10
+  [PASS] Tree heads and witnesses   9/9
 
-CONFORMING — all 194 checks passed</pre>
+CONFORMING — all 203 checks passed</pre>
   </div>
 </div>
 <div class="wrap cols"><nav><a href="#scope-and-motivation">Scope and motivation</a>

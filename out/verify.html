@@ -92,9 +92,9 @@
   <div id="receipts"></div>
 
   <div class="foot">
-    <p>Five checks per receipt, all performed locally: the Ed25519 signature over the signed verdict; the SHA-256 receipt hash re-derived from the pinned inputs; the hash-chain link to the receipt before it; the recorded outcome re-derived by re-applying the pinned thresholds to the pinned score; and a Merkle inclusion proof placing the receipt in the published log. Flip a single byte and three of the five fail on that receipt: its hash no longer re-derives, its outcome no longer follows from the inputs pinned beside it, and it is no longer the receipt the log committed to at that position. The link into the next receipt is severed at the same time, which cuts everything after it off from the genesis record. The signature stays valid, and that is itself worth seeing — it covers the signed verdict, so an edit to the recorded inputs is caught by the hash and the log rather than by the signature. No single check is sufficient alone.</p>
-    <p style="margin-top:.7rem">The inclusion proof is what makes disclosure possible without exposure: it proves one decision belongs to the log using only the sibling hashes on its path, revealing nothing about any other customer. The consistency proof above is the other half &mdash; it demonstrates the log was only ever appended to, so a publisher cannot quietly rewrite history and re-anchor. Both follow RFC 6962, the construction behind Certificate Transparency. Neither, on its own, shows that everyone was shown the same log: an operator holding one key can sign one root for the auditor and another for the regulator, and every proof above verifies against both. That is why the head is countersigned. Each witness endorses a head only after checking it extends the last one it endorsed, so serving two versions of history requires every witness to sign twice — and the attempt is what gets caught, producing two conflicting heads under the operator's own signature. Trust rests on the witnesses not all colluding rather than on the operator being honest, which is the only arrangement that scales past the people you already know.</p>
-    <p style="margin-top:.7rem">This verifier is the reference implementation of an <a href="/spec">open specification</a>, published under Apache-2.0 with its patent grant. Anyone may implement it, including competitors &mdash; an evidence format only one vendor can produce is not evidence. Conformance is decided by <a href="/spec/conformance-vectors.json">194 published assertions</a>, 7 of which are receipts a conforming verifier must <em>reject</em>.</p>
+    <p>Five checks per receipt and three over the log itself, all performed locally. Per receipt: the Ed25519 signature over the signed verdict; the SHA-256 receipt hash re-derived from the pinned inputs; the hash-chain link to the receipt before it; the recorded outcome re-derived by re-applying the pinned thresholds to the pinned score; and a Merkle inclusion proof placing the receipt in the published log. Over the log: that it only ever grew, that its head is signed, and how many independent parties have endorsed that head. Flip a single byte and three of the five fail on that receipt: its hash no longer re-derives, its outcome no longer follows from the inputs pinned beside it, and it is no longer the receipt the log committed to at that position. The link into the next receipt is severed at the same time, which cuts everything after it off from the genesis record. The signature stays valid, and that is itself worth seeing — it covers the signed verdict, so an edit to the recorded inputs is caught by the hash and the log rather than by the signature. No single check is sufficient alone.</p>
+    <p style="margin-top:.7rem">The inclusion proof is what makes disclosure possible without exposure: it proves one decision belongs to the log using only the sibling hashes on its path, revealing nothing about any other customer. The consistency proof above is the other half &mdash; it demonstrates the log was only ever appended to, so a publisher cannot quietly rewrite history and re-anchor. Both follow RFC 6962, the construction behind Certificate Transparency. Neither, on its own, shows that everyone was shown the same log: an operator holding one key can sign one root for the auditor and another for the regulator, and every proof above verifies against both. That is why the head is countersigned. Each witness endorses a head only after checking it extends the last one it endorsed, so serving two versions of history requires every witness to sign twice — and the attempt is what gets caught, producing two conflicting heads under the operator's own signature. Trust would then rest on the witnesses not all colluding rather than on the operator being honest, which is the only arrangement that scales past the people you already know. That substitution is not yet earned here: every cosignature on this page was produced by a key Arbiter holds, so what is demonstrated is the mechanism, not the independence. The row above reports zero independent witnesses for exactly that reason. Getting the first key into somebody else's hands is the work, and no amount of cryptography substitutes for it.</p>
+    <p style="margin-top:.7rem">This verifier is the reference implementation of an <a href="/spec">open specification</a>, published under Apache-2.0 with its patent grant. Anyone may implement it, including competitors &mdash; an evidence format only one vendor can produce is not evidence. Conformance is decided by <a href="/spec/conformance-vectors.json">203 published assertions</a>, 14 of which are cases a conforming verifier must <em>reject</em> — including a tree head that is correctly signed and correctly proved against, but carries no independent endorsement. A fork that ships no witnesses fails the suite, which is the only part of an Apache-2.0 format anyone can own.</p>
   </div>
 </div>
 
@@ -146,7 +146,13 @@ const BUNDLE_ORIGINAL = /*__BUNDLE__*/{
         "signature": "9f4304c8a7639a119439e2f6722c74f6651bde360ffac2438e2d58591d3dfc05a3e4c2fc6002b06e0ee185a530f7d82e35826943e4be1fca30b9cc99369a9d03",
         "name": "Independent monitor (demo)"
       }
-    ]
+    ],
+    "witness_policy": {
+      "quorum_k": 3,
+      "pinned": [],
+      "operator_key": "29acbae141bccaf0b22e1a94d34d0bc7361e526d0bfe12c89794bc9322966dd7",
+      "note": "Every cosignature below was produced by a demonstration key that Arbiter itself holds, so it evidences the mechanism and not independence. Independent witnesses are counted only when a party other than the log operator holds the key; today that count is zero."
+    }
   },
   "receipts": [
     {
@@ -654,7 +660,15 @@ async function verifyTreeHead(log){
     if (ok) seen.add(c.witness_id);                     // distinct keys only
   }
   const offered = (log.cosignatures || []).length;
+  // Signature-valid is not the same as independent. An operator can generate
+  // any number of keypairs and endorse its own head with all of them, so only
+  // keys somebody else pinned -- and never the operator's own -- are counted.
+  const pol = log.witness_policy || {quorum_k: 0, pinned: [], operator_key: ""};
+  const pinned = new Set(pol.pinned || []);
+  let independent = 0;
+  for (const id of seen) if (id !== pol.operator_key && pinned.has(id)) independent++;
   return {sigOk, bindsRoot, witnesses: seen.size, offered,
+          independent, quorum: pol.quorum_k || 0, note: pol.note || "",
           names: (log.cosignatures||[]).map(c=>c.name||c.witness_id.slice(0,8)).join(", ")};
 }
 
@@ -671,10 +685,13 @@ async function renderLogPanel(){
   if (th){
     headHtml = `<div class="chk">${dot(th.sigOk && th.bindsRoot)}<span class="lab">Tree head signed</span><span class="why">${
       th.sigOk && th.bindsRoot ? "the log signed this exact root and size \u2713"
-                               : "the head does not commit to the root proved against above"}</span></div>
-    <div class="chk">${dot(th.witnesses > 0)}<span class="lab">Independently witnessed</span><span class="why">${
-      th.witnesses > 0 ? `${th.witnesses} of ${th.offered} cosignatures verify \u2014 ${esc(th.names)}. Each endorsed this head only after checking it extends the earlier one, so serving a different root to someone else would need all of them to sign twice.`
-                       : "no independent endorsements \u2014 this is the operator's word alone"}</span></div>`;
+                               : "the head does not commit to the root proved against above"}</span></div>`;
+    // Signature-valid is not independence. Until somebody other than the log
+    // operator holds a key, the honest count is zero and the row says so.
+    const met = th.quorum > 0 && th.independent >= th.quorum;
+    headHtml += `<div class="chk"><span class="dot ${met ? "ok" : "wait"}"></span><span class="lab">Independently witnessed</span><span class="why">${
+      met ? `${th.independent} of ${th.quorum} independent witnesses \u2713`
+          : `<b>${th.independent} of ${th.quorum} independent.</b> ${th.witnesses} cosignature${th.witnesses === 1 ? "" : "s"} verify cryptographically \u2014 ${esc(th.names)} \u2014 but Arbiter holds every one of those keys, so they evidence the mechanism, not independence. This row turns green when a party other than the log operator holds a key. Today that number is zero, and counting our own signatures as witnesses would be the exact dishonesty this page exists to make impossible.`}</span></div>`;
   }
   let consHtml = "";
   if (log.previous && log.consistency_proof){

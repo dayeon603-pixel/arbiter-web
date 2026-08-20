@@ -37,17 +37,17 @@
     },
     {
       "input": {
-        "s": "caf\u00e9 \u2014 na\u00efve"
+        "s": "café — naïve"
       },
-      "canonical_utf8": "{\"s\":\"caf\u00e9 \u2014 na\u00efve\"}",
+      "canonical_utf8": "{\"s\":\"café — naïve\"}",
       "sha256": "edbfc12b8f9696d89ffc8bce032fefad4234cdd7471ee5946304441689aa8d16",
       "note": "non-ASCII is emitted literally, not \\u-escaped"
     },
     {
       "input": {
-        "s": "\uace0\uac1d-88214"
+        "s": "고객-88214"
       },
-      "canonical_utf8": "{\"s\":\"\uace0\uac1d-88214\"}",
+      "canonical_utf8": "{\"s\":\"고객-88214\"}",
       "sha256": "3d562abb2a205f7ce521b00c4042b6afd9544e3e1fb199c15eff1cced9fdb4cf",
       "note": "non-Latin scripts likewise"
     },
@@ -2072,6 +2072,311 @@
             "signature": "8fc632d9d04ae8b314df4374d40384f37d0432e2580891d52f9e148f51b670a0bc3c85c3ec7ea4a3dd38931cc49ac97c4fd2720397e93d77acfe013450087300"
           },
           "this_hash": "b413f8335c4225b49c7f5b849bd9b47998cd0a03882301e9da5c05aa36950ce5"
+        }
+      }
+    ]
+  },
+  "tree_heads": {
+    "note": "A conforming verifier evaluates a tree head against a witness policy: it counts only endorsements from pinned keys, never counts the log's own key, and requires the head to commit to the same root the inclusion proofs were checked against. An implementation that accepts any must_reject case will accept an unwitnessed log, which is the one failure this format exists to prevent.",
+    "must_accept": [
+      {
+        "case": "quorum met by pinned independent witnesses",
+        "why": "two endorsements from keys the relying party pinned, neither of them the log's own",
+        "policy": {
+          "log_id": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618",
+          "quorum_k": 2,
+          "pubkeys": [
+            "43a72e714401762df66b68c26dfbdf2682aaec9f2474eca4613e424a0fbafd3c",
+            "66be7e332c7a453332bd9d0a7f7db055f5c5ef1a06ada66d98b39fb6810c473a"
+          ],
+          "operator_key": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618"
+        },
+        "bound_root": "1158afc5e7f084f85e594e6d3afbcfbd3a2ceb9f93edf6ee8ff0f9ef16fcddfa",
+        "head": {
+          "sth": {
+            "log_id": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618",
+            "tree_size": 4,
+            "root": "1158afc5e7f084f85e594e6d3afbcfbd3a2ceb9f93edf6ee8ff0f9ef16fcddfa",
+            "issued_at": "2026-03-14T12:00:00+00:00",
+            "signature": "4b952c0566393194f58962b1c8769465dba502049f9c9afb4108ab4c4d15c247397ab3e0987e1efc4543306e6e923078b52273d721192fd45c45f3c03b48900f"
+          },
+          "cosignatures": [
+            {
+              "witness_id": "43a72e714401762df66b68c26dfbdf2682aaec9f2474eca4613e424a0fbafd3c",
+              "sth_digest": "0bb22d9ef9239cb06ba5b68638bfca060b7f863c9dff42bfaa41f140db5f2e1b",
+              "cosigned_at": "2026-03-14T12:00:00+00:00",
+              "signature": "b2cd63d21d576d22baeb9c601a0bf9c45557f66d27a0c0fa6662aebdff5361da0268bbad4607dee1a15fb8be440d9d6630839269fed498892596cd4324d02c07",
+              "name": "witness-a"
+            },
+            {
+              "witness_id": "66be7e332c7a453332bd9d0a7f7db055f5c5ef1a06ada66d98b39fb6810c473a",
+              "sth_digest": "0bb22d9ef9239cb06ba5b68638bfca060b7f863c9dff42bfaa41f140db5f2e1b",
+              "cosigned_at": "2026-03-14T12:00:00+00:00",
+              "signature": "bad1551ace2c6ac41dee56768fb25e1e836b4c12b5f1dc0d80e133141c50e60f289d737f943427d77e5f9821f799ed52d9582b7f63f12803bdf5edb1cbbf4800",
+              "name": "witness-b"
+            }
+          ]
+        }
+      },
+      {
+        "case": "quorum of one, with a second unpinned endorsement present",
+        "why": "an extra signature from an unpinned key is ignored, not counted and not fatal",
+        "policy": {
+          "log_id": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618",
+          "quorum_k": 1,
+          "pubkeys": [
+            "43a72e714401762df66b68c26dfbdf2682aaec9f2474eca4613e424a0fbafd3c",
+            "66be7e332c7a453332bd9d0a7f7db055f5c5ef1a06ada66d98b39fb6810c473a"
+          ],
+          "operator_key": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618"
+        },
+        "bound_root": "1158afc5e7f084f85e594e6d3afbcfbd3a2ceb9f93edf6ee8ff0f9ef16fcddfa",
+        "head": {
+          "sth": {
+            "log_id": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618",
+            "tree_size": 4,
+            "root": "1158afc5e7f084f85e594e6d3afbcfbd3a2ceb9f93edf6ee8ff0f9ef16fcddfa",
+            "issued_at": "2026-03-14T12:00:00+00:00",
+            "signature": "4b952c0566393194f58962b1c8769465dba502049f9c9afb4108ab4c4d15c247397ab3e0987e1efc4543306e6e923078b52273d721192fd45c45f3c03b48900f"
+          },
+          "cosignatures": [
+            {
+              "witness_id": "43a72e714401762df66b68c26dfbdf2682aaec9f2474eca4613e424a0fbafd3c",
+              "sth_digest": "0bb22d9ef9239cb06ba5b68638bfca060b7f863c9dff42bfaa41f140db5f2e1b",
+              "cosigned_at": "2026-03-14T12:00:00+00:00",
+              "signature": "b2cd63d21d576d22baeb9c601a0bf9c45557f66d27a0c0fa6662aebdff5361da0268bbad4607dee1a15fb8be440d9d6630839269fed498892596cd4324d02c07"
+            },
+            {
+              "witness_id": "0b513ad9b4924015ca0902ed079044d3ac5dbec2306f06948c10da8eb6e39f2d",
+              "sth_digest": "0bb22d9ef9239cb06ba5b68638bfca060b7f863c9dff42bfaa41f140db5f2e1b",
+              "cosigned_at": "2026-03-14T12:00:00+00:00",
+              "signature": "5b4ccebf8face2d7d612e9441f8d59dd5452129c1370c8c9341b2580baa904c35fba4f3a1da4890520870d38668e46c524cf78f65c722ba299168129413dbb0c",
+              "name": "unpinned-stranger"
+            }
+          ]
+        }
+      }
+    ],
+    "must_reject": [
+      {
+        "case": "head-uncosigned",
+        "why": "THE DEFINING ASSERTION. A correctly signed root with no independent cosignature must be rejected, however impeccable the receipts under it.",
+        "policy": {
+          "log_id": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618",
+          "quorum_k": 1,
+          "pubkeys": [
+            "43a72e714401762df66b68c26dfbdf2682aaec9f2474eca4613e424a0fbafd3c"
+          ],
+          "operator_key": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618"
+        },
+        "bound_root": "1158afc5e7f084f85e594e6d3afbcfbd3a2ceb9f93edf6ee8ff0f9ef16fcddfa",
+        "head": {
+          "sth": {
+            "log_id": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618",
+            "tree_size": 4,
+            "root": "1158afc5e7f084f85e594e6d3afbcfbd3a2ceb9f93edf6ee8ff0f9ef16fcddfa",
+            "issued_at": "2026-03-14T12:00:00+00:00",
+            "signature": "4b952c0566393194f58962b1c8769465dba502049f9c9afb4108ab4c4d15c247397ab3e0987e1efc4543306e6e923078b52273d721192fd45c45f3c03b48900f"
+          },
+          "cosignatures": []
+        }
+      },
+      {
+        "case": "cosignatures-all-from-operator-key",
+        "why": "the log endorsing its own head is not a witness; no party witnesses itself",
+        "policy": {
+          "log_id": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618",
+          "quorum_k": 1,
+          "pubkeys": [
+            "43a72e714401762df66b68c26dfbdf2682aaec9f2474eca4613e424a0fbafd3c"
+          ],
+          "operator_key": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618"
+        },
+        "bound_root": "1158afc5e7f084f85e594e6d3afbcfbd3a2ceb9f93edf6ee8ff0f9ef16fcddfa",
+        "head": {
+          "sth": {
+            "log_id": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618",
+            "tree_size": 4,
+            "root": "1158afc5e7f084f85e594e6d3afbcfbd3a2ceb9f93edf6ee8ff0f9ef16fcddfa",
+            "issued_at": "2026-03-14T12:00:00+00:00",
+            "signature": "4b952c0566393194f58962b1c8769465dba502049f9c9afb4108ab4c4d15c247397ab3e0987e1efc4543306e6e923078b52273d721192fd45c45f3c03b48900f"
+          },
+          "cosignatures": [
+            {
+              "witness_id": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618",
+              "sth_digest": "0bb22d9ef9239cb06ba5b68638bfca060b7f863c9dff42bfaa41f140db5f2e1b",
+              "cosigned_at": "2026-03-14T12:00:00+00:00",
+              "signature": "d55e1443b8443303cec33a0195884465f52af922ca52c604df2abe292446d985d1eabfe36b349e216bc09b6beb135d84814b058b903f8a58d6ac858ad0367402",
+              "name": "the log itself"
+            }
+          ]
+        }
+      },
+      {
+        "case": "same-witness-twice",
+        "why": "one key signing twice is one witness, not a quorum of two",
+        "policy": {
+          "log_id": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618",
+          "quorum_k": 2,
+          "pubkeys": [
+            "43a72e714401762df66b68c26dfbdf2682aaec9f2474eca4613e424a0fbafd3c",
+            "66be7e332c7a453332bd9d0a7f7db055f5c5ef1a06ada66d98b39fb6810c473a"
+          ],
+          "operator_key": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618"
+        },
+        "bound_root": "1158afc5e7f084f85e594e6d3afbcfbd3a2ceb9f93edf6ee8ff0f9ef16fcddfa",
+        "head": {
+          "sth": {
+            "log_id": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618",
+            "tree_size": 4,
+            "root": "1158afc5e7f084f85e594e6d3afbcfbd3a2ceb9f93edf6ee8ff0f9ef16fcddfa",
+            "issued_at": "2026-03-14T12:00:00+00:00",
+            "signature": "4b952c0566393194f58962b1c8769465dba502049f9c9afb4108ab4c4d15c247397ab3e0987e1efc4543306e6e923078b52273d721192fd45c45f3c03b48900f"
+          },
+          "cosignatures": [
+            {
+              "witness_id": "43a72e714401762df66b68c26dfbdf2682aaec9f2474eca4613e424a0fbafd3c",
+              "sth_digest": "0bb22d9ef9239cb06ba5b68638bfca060b7f863c9dff42bfaa41f140db5f2e1b",
+              "cosigned_at": "2026-03-14T12:00:00+00:00",
+              "signature": "b2cd63d21d576d22baeb9c601a0bf9c45557f66d27a0c0fa6662aebdff5361da0268bbad4607dee1a15fb8be440d9d6630839269fed498892596cd4324d02c07"
+            },
+            {
+              "witness_id": "43a72e714401762df66b68c26dfbdf2682aaec9f2474eca4613e424a0fbafd3c",
+              "sth_digest": "0bb22d9ef9239cb06ba5b68638bfca060b7f863c9dff42bfaa41f140db5f2e1b",
+              "cosigned_at": "2026-03-14T12:00:01+00:00",
+              "signature": "7a0055a8cfc816c9f3a33f2f3df51c0e9778032c4d698db662e0a79350677c598c141f246069b2a06855ff06edd721971e9c47223aa91f8edaac49510cba7c06"
+            }
+          ]
+        }
+      },
+      {
+        "case": "cosignature-over-other-head",
+        "why": "endorsements gathered for an earlier root must not transfer to a new one",
+        "policy": {
+          "log_id": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618",
+          "quorum_k": 1,
+          "pubkeys": [
+            "43a72e714401762df66b68c26dfbdf2682aaec9f2474eca4613e424a0fbafd3c"
+          ],
+          "operator_key": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618"
+        },
+        "bound_root": "1158afc5e7f084f85e594e6d3afbcfbd3a2ceb9f93edf6ee8ff0f9ef16fcddfa",
+        "head": {
+          "sth": {
+            "log_id": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618",
+            "tree_size": 4,
+            "root": "1158afc5e7f084f85e594e6d3afbcfbd3a2ceb9f93edf6ee8ff0f9ef16fcddfa",
+            "issued_at": "2026-03-14T12:00:00+00:00",
+            "signature": "4b952c0566393194f58962b1c8769465dba502049f9c9afb4108ab4c4d15c247397ab3e0987e1efc4543306e6e923078b52273d721192fd45c45f3c03b48900f"
+          },
+          "cosignatures": [
+            {
+              "witness_id": "43a72e714401762df66b68c26dfbdf2682aaec9f2474eca4613e424a0fbafd3c",
+              "sth_digest": "4ab67e678ca6380f6f4ad2c7468fc62e7c1cb211f8f6cb50cb93c36f87da32db",
+              "cosigned_at": "2026-03-14T12:00:00+00:00",
+              "signature": "32804a9d7cad16caa934e4aeee3bdf994b369667a6e306ad8e77eb7a486c23930263bec0592edb7ea48c32b8a7ec8cb1207f31bcf6aa925b45586614e03bd004"
+            }
+          ]
+        }
+      },
+      {
+        "case": "unpinned-cosigner-only",
+        "why": "a valid signature from a key nobody pinned is discarded, not counted",
+        "policy": {
+          "log_id": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618",
+          "quorum_k": 1,
+          "pubkeys": [
+            "43a72e714401762df66b68c26dfbdf2682aaec9f2474eca4613e424a0fbafd3c"
+          ],
+          "operator_key": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618"
+        },
+        "bound_root": "1158afc5e7f084f85e594e6d3afbcfbd3a2ceb9f93edf6ee8ff0f9ef16fcddfa",
+        "head": {
+          "sth": {
+            "log_id": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618",
+            "tree_size": 4,
+            "root": "1158afc5e7f084f85e594e6d3afbcfbd3a2ceb9f93edf6ee8ff0f9ef16fcddfa",
+            "issued_at": "2026-03-14T12:00:00+00:00",
+            "signature": "4b952c0566393194f58962b1c8769465dba502049f9c9afb4108ab4c4d15c247397ab3e0987e1efc4543306e6e923078b52273d721192fd45c45f3c03b48900f"
+          },
+          "cosignatures": [
+            {
+              "witness_id": "0b513ad9b4924015ca0902ed079044d3ac5dbec2306f06948c10da8eb6e39f2d",
+              "sth_digest": "0bb22d9ef9239cb06ba5b68638bfca060b7f863c9dff42bfaa41f140db5f2e1b",
+              "cosigned_at": "2026-03-14T12:00:00+00:00",
+              "signature": "5b4ccebf8face2d7d612e9441f8d59dd5452129c1370c8c9341b2580baa904c35fba4f3a1da4890520870d38668e46c524cf78f65c722ba299168129413dbb0c",
+              "name": "unpinned-stranger"
+            }
+          ]
+        }
+      },
+      {
+        "case": "head-does-not-bind-root",
+        "why": "a head signed over a different tree than the inclusion proofs were checked against proves nothing about those receipts",
+        "policy": {
+          "log_id": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618",
+          "quorum_k": 2,
+          "pubkeys": [
+            "43a72e714401762df66b68c26dfbdf2682aaec9f2474eca4613e424a0fbafd3c",
+            "66be7e332c7a453332bd9d0a7f7db055f5c5ef1a06ada66d98b39fb6810c473a"
+          ],
+          "operator_key": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618"
+        },
+        "bound_root": "bbc0789206390737d0d2f586258b656c0f91a52ac7952757e9c4ff706ec4181c",
+        "head": {
+          "sth": {
+            "log_id": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618",
+            "tree_size": 4,
+            "root": "1158afc5e7f084f85e594e6d3afbcfbd3a2ceb9f93edf6ee8ff0f9ef16fcddfa",
+            "issued_at": "2026-03-14T12:00:00+00:00",
+            "signature": "4b952c0566393194f58962b1c8769465dba502049f9c9afb4108ab4c4d15c247397ab3e0987e1efc4543306e6e923078b52273d721192fd45c45f3c03b48900f"
+          },
+          "cosignatures": [
+            {
+              "witness_id": "43a72e714401762df66b68c26dfbdf2682aaec9f2474eca4613e424a0fbafd3c",
+              "sth_digest": "0bb22d9ef9239cb06ba5b68638bfca060b7f863c9dff42bfaa41f140db5f2e1b",
+              "cosigned_at": "2026-03-14T12:00:00+00:00",
+              "signature": "b2cd63d21d576d22baeb9c601a0bf9c45557f66d27a0c0fa6662aebdff5361da0268bbad4607dee1a15fb8be440d9d6630839269fed498892596cd4324d02c07",
+              "name": "witness-a"
+            },
+            {
+              "witness_id": "66be7e332c7a453332bd9d0a7f7db055f5c5ef1a06ada66d98b39fb6810c473a",
+              "sth_digest": "0bb22d9ef9239cb06ba5b68638bfca060b7f863c9dff42bfaa41f140db5f2e1b",
+              "cosigned_at": "2026-03-14T12:00:00+00:00",
+              "signature": "bad1551ace2c6ac41dee56768fb25e1e836b4c12b5f1dc0d80e133141c50e60f289d737f943427d77e5f9821f799ed52d9582b7f63f12803bdf5edb1cbbf4800",
+              "name": "witness-b"
+            }
+          ]
+        }
+      },
+      {
+        "case": "forged-cosignature",
+        "why": "a cosignature that does not verify under its own witness_id is not an endorsement",
+        "policy": {
+          "log_id": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618",
+          "quorum_k": 1,
+          "pubkeys": [
+            "43a72e714401762df66b68c26dfbdf2682aaec9f2474eca4613e424a0fbafd3c"
+          ],
+          "operator_key": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618"
+        },
+        "bound_root": "1158afc5e7f084f85e594e6d3afbcfbd3a2ceb9f93edf6ee8ff0f9ef16fcddfa",
+        "head": {
+          "sth": {
+            "log_id": "fd1724385aa0c75b64fb78cd602fa1d991fdebf76b13c58ed702eac835e9f618",
+            "tree_size": 4,
+            "root": "1158afc5e7f084f85e594e6d3afbcfbd3a2ceb9f93edf6ee8ff0f9ef16fcddfa",
+            "issued_at": "2026-03-14T12:00:00+00:00",
+            "signature": "4b952c0566393194f58962b1c8769465dba502049f9c9afb4108ab4c4d15c247397ab3e0987e1efc4543306e6e923078b52273d721192fd45c45f3c03b48900f"
+          },
+          "cosignatures": [
+            {
+              "witness_id": "43a72e714401762df66b68c26dfbdf2682aaec9f2474eca4613e424a0fbafd3c",
+              "sth_digest": "0bb22d9ef9239cb06ba5b68638bfca060b7f863c9dff42bfaa41f140db5f2e1b",
+              "cosigned_at": "2026-03-14T12:00:00+00:00",
+              "signature": "abababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababab"
+            }
+          ]
         }
       }
     ]
