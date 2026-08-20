@@ -1,0 +1,761 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Adaptive Risk Evidence — Arbiter</title>
+<style>
+  :root{
+    --bg:#F7F5F2; --surface:#FFFDFB; --ink:#141B22; --ink-2:#3E4750; --dim:#6B747D;
+    --line:#E2DCD4; --hair:#EFEAE3; --accent:#8C5A2B;
+    --ok:#1F7A4C; --bad:#B3261E; --warn:#8A6D1F;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#12161A; --surface:#171C21; --ink:#ECE7E1; --ink-2:#C3C8CD; --dim:#9AA3AC;
+           --line:#2A3138; --hair:#232930; --accent:#C69963;
+           --ok:#4CC38A; --bad:#E5484D; --warn:#D6B25E; }
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 clamp(1rem,4vw,2.5rem)}
+  header{border-bottom:1px solid var(--line);padding:1.1rem 0}
+  .brand{font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);display:flex;gap:.6rem;align-items:center}
+  .brand a{color:inherit;text-decoration:none}
+  h1{font-size:clamp(1.8rem,1.1rem+2.8vw,2.9rem);letter-spacing:-.032em;line-height:1.06;margin:2rem 0 .7rem;font-weight:800}
+  .sub{color:var(--ink-2);max-width:66ch;margin:0 0 1.5rem;font-size:1.02rem}
+  .banner{border:1px solid var(--line);border-left:3px solid var(--accent);padding:.8rem 1rem;font-size:.85rem;color:var(--dim);margin:0 0 1.8rem;border-radius:0 4px 4px 0}
+  .banner b{color:var(--ink)}
+  section{padding:1.9rem 0;border-top:1px solid var(--line)}
+  .eyebrow{font-family:var(--mono);font-size:.68rem;letter-spacing:.19em;text-transform:uppercase;color:var(--accent);margin:0 0 .55rem;font-weight:600}
+  h2{font-size:1.25rem;letter-spacing:-.018em;margin:0 0 .6rem;font-weight:750}
+  p.note{color:var(--dim);font-size:.9rem;max-width:74ch}
+  p.lead{font-size:1.06rem;color:var(--ink);max-width:60ch;letter-spacing:-.008em}
+
+  .headline{display:grid;grid-template-columns:auto 1fr;gap:1.6rem;align-items:center;margin:.4rem 0 1.2rem}
+  .bignum{font-size:clamp(3.2rem,2rem+5vw,4.6rem);font-weight:800;letter-spacing:-.05em;line-height:.92;color:var(--ink);font-variant-numeric:tabular-nums}
+  .bignum small{font-size:.34em;font-weight:700;letter-spacing:-.02em}
+  .ci{font-family:var(--mono);font-size:.76rem;color:var(--dim);margin-top:.5rem;letter-spacing:.04em}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1.4rem;margin-top:1.4rem}
+  .stat .v{font-size:1.55rem;font-weight:800;letter-spacing:-.035em;font-variant-numeric:tabular-nums}
+  .stat .l{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-top:.4rem;line-height:1.5}
+
+  .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{border-collapse:collapse;width:100%;font-size:.87rem;min-width:660px}
+  th,td{text-align:left;padding:.62rem .7rem;border-bottom:1px solid var(--hair);vertical-align:middle}
+  th{font-family:var(--mono);font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);font-weight:600;border-bottom:1px solid var(--line)}
+  td.m,.m{font-family:var(--mono);font-size:.81rem;font-variant-numeric:tabular-nums}
+  .pill{display:inline-block;font-family:var(--mono);font-size:.65rem;letter-spacing:.07em;text-transform:uppercase;padding:.15rem .5rem;border-radius:99px;border:1px solid currentColor;white-space:nowrap}
+  .o-allow{color:var(--ok)} .o-decline{color:var(--bad)} .o-review{color:var(--warn)}
+  .flip{color:var(--bad);font-family:var(--mono);font-size:.7rem;letter-spacing:.05em;text-transform:uppercase}
+  .same{color:var(--dim);font-family:var(--mono);font-size:.7rem;letter-spacing:.05em;text-transform:uppercase}
+
+  .controls{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.5rem 0 1.2rem}
+  button{font-family:var(--mono);font-size:.71rem;letter-spacing:.08em;text-transform:uppercase;padding:.6rem 1.1rem;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;transition:border-color .15s}
+  button:hover{border-color:var(--accent)}
+  button.danger[aria-pressed="true"]{border-color:var(--bad);color:var(--bad)}
+  .status{font-family:var(--mono);font-size:.74rem;color:var(--dim)}
+
+  .card{border:1px solid var(--line);border-radius:6px;padding:1rem 1.1rem;margin:0 0 .9rem;background:var(--surface)}
+  .card.bad{border-color:var(--bad)}
+  .rhead{display:flex;flex-wrap:wrap;gap:.7rem;align-items:baseline;justify-content:space-between;margin-bottom:.55rem}
+  .rid{font-family:var(--mono);font-size:.78rem;color:var(--dim)}
+  .checks{display:flex;flex-wrap:wrap;gap:1.1rem;margin:.7rem 0 0;padding-top:.7rem;border-top:1px dashed var(--line)}
+  .chk{display:flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.71rem}
+  .dot{width:.55rem;height:.55rem;border-radius:50%;display:inline-block;flex:none}
+  .dot.ok{background:var(--ok)} .dot.bad{background:var(--bad)}
+  .why{color:var(--dim)}
+  .kv{display:grid;grid-template-columns:minmax(9rem,auto) 1fr;gap:.25rem .9rem;font-size:.82rem;margin-top:.5rem}
+  .kv dt{font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+  .kv dd{margin:0;font-family:var(--mono);font-size:.77rem;word-break:break-all}
+  ul.plain{padding-left:1.15rem;color:var(--ink-2);font-size:.9rem;margin:.5rem 0 0}
+  ul.plain li{margin-bottom:.4rem}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+  @media(max-width:720px){ .two{grid-template-columns:1fr} .kv{grid-template-columns:1fr} .headline{grid-template-columns:1fr;gap:.6rem} }
+  footer{border-top:1px solid var(--line);padding:1.4rem 0 2.6rem;color:var(--dim);font-size:.8rem;display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between}
+  footer a{color:inherit}
+</style>
+</head>
+<body>
+
+<header><div class="wrap"><div class="brand"><a href="/">ARBITER</a> <span style="color:var(--dim)">/</span> <span>Adaptive Risk Evidence</span></div></div></header>
+
+<div class="wrap">
+  <h1>Retraining alone breaks<br>the audit trail.</h1>
+  <p class="sub">We trained real models on a 30,000-customer credit dataset, retrained them on accumulating data the way a bank does, and recalibrated cutoffs to hold a target decline rate. The 7,500 decisions of the first cohort are attested, then replayed. Then we asked what an auditor would conclude by re-running the current model to reconstruct an earlier decision. The population never changed. The answer still moved.</p>
+  <div class="banner"><b>Replicated on real lending data.</b> The headline below comes from 7,500 decisions replayed inside a 30,000-customer dataset of real default outcomes (UCI <i>default of credit card clients</i>), single seed. Cohorts are assigned at random, so the population does not change at all &mdash; every disagreement is caused by retraining alone. No case was hand-picked; the study is seeded and reproducible. The signed receipts further down come from a companion run and verify genuinely in this page.</div>
+</div>
+
+<div class="wrap">
+
+<section>
+  <p class="eyebrow">Fig. 00 &mdash; Replication on real lending data</p>
+  <h2>The effect scales with drift, and never disappears</h2>
+  <div class="headline">
+    <div>
+      <div class="bignum">15.5<small>%</small></div>
+      <div class="ci">95% CI 14.7% &ndash; 16.3% &middot; n = 7,500</div>
+    </div>
+    <div>
+      <p class="lead">of reconstructions report an outcome that <b>was never the one taken</b> &mdash; with the population held completely constant.</p>
+      <p class="note" style="margin-top:.6rem">Same customers, same distribution, more training data. The only thing that changed is the model improving, from AUC 0.773 to 0.786. That alone was sufficient.</p>
+    </div>
+  </div>
+  <div class="scroll">
+  <table>
+    <thead><tr><th>Regime</th><th>AUC v1 &rarr; v3</th><th>Reconstruction accuracy</th><th>Misreported</th></tr></thead>
+    <tbody>
+      <tr><td><b>Real data &mdash; retraining only</b></td><td class="m">0.773 &rarr; 0.786</td><td class="m"><b>84.5%</b></td><td class="m">15.5%</td></tr>
+      <tr><td>Real data &mdash; with population drift</td><td class="m">0.651 &rarr; 0.757</td><td class="m">78.7%</td><td class="m">21.3%</td></tr>
+      <tr><td>Simulated &mdash; high drift</td><td class="m">0.699 &rarr; 0.848</td><td class="m">74.6%</td><td class="m">25.4%</td></tr>
+      <tr><td><b>With pinned receipts</b></td><td class="m">&mdash;</td><td class="m"><b>100%</b></td><td class="m"><b>0%</b></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="note" style="margin-top:.9rem"><b style="color:var(--ink)">The error has a direction.</b> Under population drift, 1,438 of 1,596 disagreements read <i>stricter</i> today than the customer was actually treated &mdash; manufacturing the appearance of a decision the bank never made.</p>
+</section>
+
+<section>
+  <p class="eyebrow">Fig. 01 &mdash; The companion simulated study</p>
+  <div class="headline">
+    <div>
+      <div class="bignum" id="rate">—<small>%</small></div>
+      <div class="ci" id="ci"></div>
+    </div>
+    <div>
+      <p class="lead">of reconstructions report an outcome that <b>was never the one taken</b>.</p>
+      <p class="note" style="margin-top:.6rem">Measured over <span class="m" id="n"></span> attested decisions. The bank did nothing wrong: the model improved, the risk team recalibrated to hold its target decline rate, and the operating point moved underneath every historical decision.</p>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="v" id="auc"></div><div class="l">Model AUC, v1 → v3, on an unseen quarter</div></div>
+    <div class="stat"><div class="v" id="severe"></div><div class="l">Decline ↔ allow reversals, the maximally wrong case</div></div>
+    <div class="stat"><div class="v" id="thr"></div><div class="l">Decline cutoff moved, v1 → v3</div></div>
+    <div class="stat"><div class="v" id="replay"></div><div class="l">Receipts replaying exactly, all vintages</div></div>
+  </div>
+  <p class="note" style="margin-top:1.2rem"><b style="color:var(--ink)">The improvement is the cause, not a coincidence.</b> A better model scores the same applicant differently, and a recalibrated cutoff sits somewhere new. The more diligently a risk team maintains its model, the less able the institution becomes to explain any single decision it already made.</p>
+</section>
+
+<section>
+  <p class="eyebrow">Fig. 02 &mdash; Four real cases from that run</p>
+  <h2>Same applicants. Same facts. Different answers.</h2>
+  <p class="note">Drawn from the measured decisions above: the first instance of each transition type. Scores are the models' actual outputs.</p>
+  <div class="scroll">
+  <table id="drift">
+    <thead><tr><th>Decision</th><th>Then — score / cutoff</th><th>Decided</th><th>Today — score / cutoff</th><th>Reported</th><th></th></tr></thead>
+    <tbody></tbody>
+  </table>
+  </div>
+  <p class="note" style="margin-top:.9rem">Model at decision: <span class="m" id="mv-then"></span> &nbsp;·&nbsp; today: <span class="m" id="mv-now"></span></p>
+</section>
+
+<section>
+  <p class="eyebrow">Fig. 03 &mdash; The evidence</p>
+  <h2>Each decision re-derives from its own receipt</h2>
+  <p class="note">Three independent checks per receipt, all running locally in this page: the Ed25519 signature over the verdict, the SHA-256 receipt hash re-derived from the pinned inputs, and the hash-chain link to the previous receipt. There are no network calls on this page.</p>
+
+  <div class="controls">
+    <button id="tamper" class="danger" aria-pressed="false">Tamper with a decision</button>
+    <button id="reset">Restore</button>
+    <span class="status" id="status"></span>
+  </div>
+
+  <div id="receipts"></div>
+</section>
+
+<section>
+  <p class="eyebrow">Fig. 04 &mdash; What this is</p>
+  <div class="two">
+    <div>
+      <h2>An evidence layer, not another model</h2>
+      <ul class="plain">
+        <li>Runs read-only beside the risk pipeline. It never declines, blocks, or freezes, and is never the decision-of-record.</li>
+        <li>Attestation plus a durable write-once commit costs <b>0.519 ms at p99</b>, fsync included.</li>
+        <li>Write-once is enforced by the database engine: an <span class="m">UPDATE</span> or <span class="m">DELETE</span> against the receipts table aborts.</li>
+        <li>Retrospective query returns every decision for a customer and window in <b>0.099 ms</b>, as a self-contained bundle that verifies offline.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>What we do not claim</h2>
+      <ul class="plain">
+        <li><b>We do not run your model.</b> Arbiter cannot compute what a retrained model would score today; you supply that. We hold the exact recovery of what was decided then.</li>
+        <li>Replay is bit-exact over <b>pinned, exact-valued inputs</b>. Re-deriving a score from raw inputs through a non-deterministic model is a different and unsolved problem.</li>
+        <li>No production deployment, customers, or revenue. The engine is working, tested software: 247 tests, including property-based tests, cross-implementation parity, and fault injection showing lending continues if attestation fails.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <p class="eyebrow">Fig. 05 &mdash; Selective disclosure</p>
+  <h2>Prove one decision out of 100,000. Reveal nothing else.</h2>
+  <p class="note">A supervisor asks about one customer. Handing over a chain means handing over the neighbours &mdash; disclosing other customers to answer a question about one. Instead, every receipt is committed to a Merkle root that can be published outside the bank; an inclusion proof then shows a single decision belongs to that committed set, using only <span class="m">log&#8322;(n)</span> sibling hashes.</p>
+
+  <div class="stats" style="margin-top:1.2rem">
+    <div class="stat"><div class="v" id="d-total"></div><div class="l">Decisions in the anchored set</div></div>
+    <div class="stat"><div class="v" id="d-store"></div><div class="l">Size of the full store</div></div>
+    <div class="stat"><div class="v" id="d-bundle"></div><div class="l">Disclosed to prove one of them</div></div>
+    <div class="stat"><div class="v" id="d-ratio"></div><div class="l">Fraction of the store revealed</div></div>
+  </div>
+
+  <div class="controls" style="margin-top:1.4rem">
+    <button id="d-tamper" class="danger" aria-pressed="false">Forge the proof</button>
+    <button id="d-reset">Restore</button>
+    <span class="status" id="d-status"></span>
+  </div>
+
+  <div class="card">
+    <div class="rhead">
+      <div><strong id="d-id"></strong> <span class="rid" id="d-cust"></span></div>
+      <span class="pill" id="d-outcome"></span>
+    </div>
+    <dl class="kv">
+      <dt>Anchored root</dt><dd id="d-root"></dd>
+      <dt>Anchored at</dt><dd id="d-when"></dd>
+      <dt>Position</dt><dd id="d-index"></dd>
+      <dt>Audit path</dt><dd id="d-path"></dd>
+    </dl>
+    <div class="checks">
+      <div class="chk"><span class="dot" id="d-dot-sig"></span><span>Receipt signature</span><span class="why">Ed25519</span></div>
+      <div class="chk"><span class="dot" id="d-dot-inc"></span><span>Inclusion in anchored set</span><span class="why" id="d-inc-why"></span></div>
+    </div>
+  </div>
+  <p class="note" style="margin-top:.9rem">The audit path is 17 hashes. Nothing in this bundle names, or is derived from, any other customer &mdash; which is what lets a bank answer a supervisor under data-minimisation obligations. The root is small enough to anchor outside the bank, so the commitment survives even loss of the store itself.</p>
+</section>
+</div>
+
+<footer><div class="wrap" style="display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between;width:100%"><span>© 2026 Arbiter</span><span id="offline" class="m">Verifying locally · zero network calls</span><a href="/tollgate/">arbiter.company/tollgate →</a></div></footer>
+
+<script>
+const BUNDLE_ORIGINAL = /*__BUNDLE__*/{
+  "format": "Arbiter decision attestation v0.1",
+  "study": {
+    "n_decisions": 6000,
+    "disagreement_rate": 0.254,
+    "disagreement_ci95": [
+      0.2431452552690577,
+      0.2651695543688247
+    ],
+    "severe_rate": 0.03166666666666667,
+    "auc_v1": 0.6985117182787027,
+    "auc_v3": 0.8475688042121486
+  },
+  "model_version_at_decision": "risk-unified@1.0.0",
+  "model_version_today": "risk-unified@3.0.0",
+  "thresholds_then": {
+    "review_at": "0.0394",
+    "decline_at": "0.1182"
+  },
+  "thresholds_today": {
+    "review_at": "0.1344",
+    "decline_at": "0.3509"
+  },
+  "scores_today": {
+    "q1-00001": "0.1976",
+    "q1-00002": "0.0605",
+    "q1-00012": "0.0214",
+    "q1-00040": "0.4353"
+  },
+  "receipts": [
+    {
+      "receipt_id": "rcpt:q1-00001",
+      "seq": 1,
+      "prev_hash": "499222577848c0ef86cd2acc770d2904ec441d2bcd663543417e3272f9caa333",
+      "action": {
+        "action_id": "act:q1-00001",
+        "agent_id": "arbiter.adaptive_risk.shadow",
+        "mandate_id": "model:risk-unified@1.0.0",
+        "type": "credit_application",
+        "params": {
+          "decision_id": "q1-00001",
+          "customer_ref": "cust-00001",
+          "outcome": "decline",
+          "score": "0.1613",
+          "model": {
+            "name": "risk-unified",
+            "version": "1.0.0",
+            "feature_snapshot": "feat-store@Q1"
+          },
+          "thresholds": {
+            "review_at": "0.0394",
+            "decline_at": "0.1182"
+          },
+          "features": {
+            "months_on_book": 25.51811030807279,
+            "utilisation_ratio": 0.3880468589870116,
+            "velocity_24h_txns": 5.0,
+            "device_reputation": 0.5382765133569782,
+            "income_verified": 0.0,
+            "prior_disputes": 0.0,
+            "geo_mismatch": 1.0,
+            "amount_sgd": 1276.3085423057792
+          }
+        },
+        "requested_at": "2026-08-13T13:39:51.395222Z"
+      },
+      "verdict": {
+        "verdict_id": "vd:q1-00001",
+        "action_id": "act:q1-00001",
+        "authorizer_id": "ad61240f210f43187cdcc6f620cf947db4de287dc7f5b15a5d681281a41e5b9b",
+        "decision": "DENY",
+        "reasons": [
+          "outcome=decline"
+        ],
+        "decided_at": "2026-08-13T13:39:51.395228Z",
+        "signature": "b166d65adb5049909343bcd326db2558cc9d36559a9530191ec9863fc0deb005a3675f80c2ab4919a0a7a85c52250365d779e82024c3e019db814ebbfae5570f"
+      },
+      "this_hash": "738c0dccf6f8257daf21e3e00282406e9615bae7050c3c08e3ee52a164035116"
+    },
+    {
+      "receipt_id": "rcpt:q1-00002",
+      "seq": 2,
+      "prev_hash": "738c0dccf6f8257daf21e3e00282406e9615bae7050c3c08e3ee52a164035116",
+      "action": {
+        "action_id": "act:q1-00002",
+        "agent_id": "arbiter.adaptive_risk.shadow",
+        "mandate_id": "model:risk-unified@1.0.0",
+        "type": "credit_application",
+        "params": {
+          "decision_id": "q1-00002",
+          "customer_ref": "cust-00002",
+          "outcome": "allow",
+          "score": "0.0067",
+          "model": {
+            "name": "risk-unified",
+            "version": "1.0.0",
+            "feature_snapshot": "feat-store@Q1"
+          },
+          "thresholds": {
+            "review_at": "0.0394",
+            "decline_at": "0.1182"
+          },
+          "features": {
+            "months_on_book": 16.534940222764238,
+            "utilisation_ratio": 0.6662402364560551,
+            "velocity_24h_txns": 1.0,
+            "device_reputation": 0.6421034519298765,
+            "income_verified": 1.0,
+            "prior_disputes": 0.0,
+            "geo_mismatch": 0.0,
+            "amount_sgd": 2180.641480341561
+          }
+        },
+        "requested_at": "2026-08-13T13:39:51.395342Z"
+      },
+      "verdict": {
+        "verdict_id": "vd:q1-00002",
+        "action_id": "act:q1-00002",
+        "authorizer_id": "ad61240f210f43187cdcc6f620cf947db4de287dc7f5b15a5d681281a41e5b9b",
+        "decision": "ALLOW",
+        "reasons": [
+          "outcome=allow"
+        ],
+        "decided_at": "2026-08-13T13:39:51.395349Z",
+        "signature": "289c503434edf31dc4811c93b3ccd3fdc4bf14f4550f28f203a59abde33f2b21927ba07fd01988f9e25f7fd291135ce557463fc789eb68abd894318acc219104"
+      },
+      "this_hash": "4ae98591fd2494ca364d07d150954c2793dd04190e5edbceed9d7278bdff74f8"
+    },
+    {
+      "receipt_id": "rcpt:q1-00012",
+      "seq": 12,
+      "prev_hash": "205db7263c0c578f5ba7c8511dbf56047e0dee62b4606dd2c2fc45da894dd431",
+      "action": {
+        "action_id": "act:q1-00012",
+        "agent_id": "arbiter.adaptive_risk.shadow",
+        "mandate_id": "model:risk-unified@1.0.0",
+        "type": "credit_application",
+        "params": {
+          "decision_id": "q1-00012",
+          "customer_ref": "cust-00012",
+          "outcome": "decline",
+          "score": "0.1396",
+          "model": {
+            "name": "risk-unified",
+            "version": "1.0.0",
+            "feature_snapshot": "feat-store@Q1"
+          },
+          "thresholds": {
+            "review_at": "0.0394",
+            "decline_at": "0.1182"
+          },
+          "features": {
+            "months_on_book": 22.073877549825,
+            "utilisation_ratio": 0.3583989001790101,
+            "velocity_24h_txns": 1.0,
+            "device_reputation": 0.5625790372175883,
+            "income_verified": 1.0,
+            "prior_disputes": 0.0,
+            "geo_mismatch": 0.0,
+            "amount_sgd": 264.5371006078945
+          }
+        },
+        "requested_at": "2026-08-13T13:39:51.396212Z"
+      },
+      "verdict": {
+        "verdict_id": "vd:q1-00012",
+        "action_id": "act:q1-00012",
+        "authorizer_id": "ad61240f210f43187cdcc6f620cf947db4de287dc7f5b15a5d681281a41e5b9b",
+        "decision": "DENY",
+        "reasons": [
+          "outcome=decline"
+        ],
+        "decided_at": "2026-08-13T13:39:51.396214Z",
+        "signature": "29109aa0492cecd0bfb2bcdc2fd350b8a1c8684b3739e73bbc068468c3b95424ee46dd837716bcc79814c9958ffadd1b69bf70a41d0662750feabecc08de7706"
+      },
+      "this_hash": "58ea56f5b6d7f7827ebb6226b5e3514d6d96a5d1306dd0a82ec7b9e561d19437"
+    },
+    {
+      "receipt_id": "rcpt:q1-00040",
+      "seq": 40,
+      "prev_hash": "5624a813b39a02d45235023c6bc96902b5cd72981a4028996af744bd87596b7f",
+      "action": {
+        "action_id": "act:q1-00040",
+        "agent_id": "arbiter.adaptive_risk.shadow",
+        "mandate_id": "model:risk-unified@1.0.0",
+        "type": "credit_application",
+        "params": {
+          "decision_id": "q1-00040",
+          "customer_ref": "cust-00040",
+          "outcome": "review",
+          "score": "0.0780",
+          "model": {
+            "name": "risk-unified",
+            "version": "1.0.0",
+            "feature_snapshot": "feat-store@Q1"
+          },
+          "thresholds": {
+            "review_at": "0.0394",
+            "decline_at": "0.1182"
+          },
+          "features": {
+            "months_on_book": 11.164764077880992,
+            "utilisation_ratio": 0.6234045468768783,
+            "velocity_24h_txns": 7.0,
+            "device_reputation": 0.6881441813754671,
+            "income_verified": 0.0,
+            "prior_disputes": 0.0,
+            "geo_mismatch": 0.0,
+            "amount_sgd": 2248.6496077790894
+          }
+        },
+        "requested_at": "2026-08-13T13:39:51.398482Z"
+      },
+      "verdict": {
+        "verdict_id": "vd:q1-00040",
+        "action_id": "act:q1-00040",
+        "authorizer_id": "ad61240f210f43187cdcc6f620cf947db4de287dc7f5b15a5d681281a41e5b9b",
+        "decision": "DENY",
+        "reasons": [
+          "outcome=review"
+        ],
+        "decided_at": "2026-08-13T13:39:51.398484Z",
+        "signature": "67f2c4f3c2e45ecd2a1ffebbdd8bb821332bcb34dc188fd68375c084555ecc26d6e0c84d4942185aacc26afc0d138341f00aaaa9665ffbb37e04b97b85361a07"
+      },
+      "this_hash": "a333c57da7228903e5b7ac199b0f5385502a39a1a66d7979e6f9809598d8aa16"
+    }
+  ]
+}/*__END__*/;
+let bundle = JSON.parse(JSON.stringify(BUNDLE_ORIGINAL));
+const GENESIS = "0".repeat(64);
+const enc = new TextEncoder();
+
+function canon(v){
+  if (v === null) return "null";
+  if (Array.isArray(v)) return "[" + v.map(canon).join(",") + "]";
+  if (typeof v === "object") return "{" + Object.keys(v).sort().map(k => JSON.stringify(k)+":"+canon(v[k])).join(",") + "}";
+  return JSON.stringify(v);
+}
+function hexToBytes(h){ const a=new Uint8Array(h.length/2); for(let i=0;i<a.length;i++) a[i]=parseInt(h.substr(i*2,2),16); return a; }
+async function sha256hex(b){ const d=await crypto.subtle.digest("SHA-256", b); return [...new Uint8Array(d)].map(x=>x.toString(16).padStart(2,"0")).join(""); }
+function esc(s){ return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+function dot(ok){ return `<span class="dot ${ok?'ok':'bad'}"></span>`; }
+function classify(score, t){
+  const s=parseFloat(score);
+  if (s >= parseFloat(t.decline_at)) return "decline";
+  if (s >= parseFloat(t.review_at)) return "review";
+  return "allow";
+}
+
+async function verifyReceipt(r, prev){
+  const v = Object.assign({}, r.verdict); const sig = v.signature; delete v.signature;
+  let sigOk=false, sigErr="";
+  try {
+    const key = await crypto.subtle.importKey("raw", hexToBytes(r.verdict.authorizer_id), {name:"Ed25519"}, false, ["verify"]);
+    sigOk = await crypto.subtle.verify({name:"Ed25519"}, key, hexToBytes(sig), enc.encode(canon(v)));
+  } catch(e){ sigErr = "Ed25519 unsupported in this browser"; }
+  const hp = {seq:r.seq, prev_hash:r.prev_hash, action:r.action, verdict:r.verdict};
+  const computed = await sha256hex(enc.encode(canon(hp)));
+  const hashOk = computed === r.this_hash;
+  const chainOk = prev ? (r.prev_hash === prev.this_hash) : (r.prev_hash === GENESIS);
+  return {sigOk, hashOk, chainOk, computed, sigErr};
+}
+
+function renderStudy(){
+  const s = bundle.study;
+  document.getElementById("rate").innerHTML = (s.disagreement_rate*100).toFixed(1) + "<small>%</small>";
+  document.getElementById("ci").textContent =
+    `95% CI ${(s.disagreement_ci95[0]*100).toFixed(1)}% – ${(s.disagreement_ci95[1]*100).toFixed(1)}%`;
+  document.getElementById("n").textContent = s.n_decisions.toLocaleString();
+  document.getElementById("auc").textContent = s.auc_v1.toFixed(3) + " → " + s.auc_v3.toFixed(3);
+  document.getElementById("severe").textContent = (s.severe_rate*100).toFixed(2) + "%";
+  document.getElementById("thr").textContent =
+    bundle.thresholds_then.decline_at + " → " + bundle.thresholds_today.decline_at;
+  document.getElementById("replay").textContent = s.n_decisions.toLocaleString() + " / " + s.n_decisions.toLocaleString();
+  document.getElementById("mv-then").textContent = bundle.model_version_at_decision;
+  document.getElementById("mv-now").textContent  = bundle.model_version_today;
+}
+
+function renderDrift(){
+  const tb = document.querySelector("#drift tbody"); tb.innerHTML = "";
+  const tThen = bundle.thresholds_then, tNow = bundle.thresholds_today;
+  for (const r of bundle.receipts){
+    const p = r.action.params, id = p.decision_id;
+    const todayScore = bundle.scores_today[id];
+    const todayOutcome = classify(todayScore, tNow);
+    const flipped = todayOutcome !== p.outcome;
+    tb.insertAdjacentHTML("beforeend", `<tr>
+      <td class="m">${esc(id)}</td>
+      <td class="m">${esc(p.score)} / ${esc(tThen.decline_at)}</td>
+      <td><span class="pill o-${esc(p.outcome)}">${esc(p.outcome)}</span></td>
+      <td class="m">${esc(todayScore)} / ${esc(tNow.decline_at)}</td>
+      <td><span class="pill o-${esc(todayOutcome)}">${esc(todayOutcome)}</span></td>
+      <td class="${flipped?'flip':'same'}">${flipped?'misreported':'agrees'}</td>
+    </tr>`);
+  }
+}
+
+async function renderReceipts(){
+  const host = document.getElementById("receipts"); host.innerHTML = "";
+  let prev = null, broken = 0;
+  for (const r of bundle.receipts){
+    const res = await verifyReceipt(r, prev);
+    const ok = res.sigOk && res.hashOk && res.chainOk;
+    if (!ok) broken++;
+    const p = r.action.params;
+    const feats = Object.entries(p.features).slice(0,4)
+      .map(([k,v]) => `${k}=${typeof v === "number" ? v.toFixed(3) : v}`).join(" · ");
+    const el = document.createElement("div");
+    el.className = "card" + (ok ? "" : " bad");
+    el.innerHTML = `
+      <div class="rhead">
+        <div><strong>${esc(p.decision_id)}</strong> <span class="rid">· ${esc(r.action.type).replace(/_/g," ")} · ${esc(p.customer_ref)}</span></div>
+        <span class="pill o-${esc(p.outcome)}">${esc(p.outcome)}</span>
+      </div>
+      <dl class="kv">
+        <dt>Model version</dt><dd>${esc(p.model.name)}@${esc(p.model.version)}</dd>
+        <dt>Feature snapshot</dt><dd>${esc(p.model.feature_snapshot)}</dd>
+        <dt>Score</dt><dd>${esc(p.score)} (review ≥ ${esc(p.thresholds.review_at)}, decline ≥ ${esc(p.thresholds.decline_at)})</dd>
+        <dt>Features</dt><dd>${esc(feats)}</dd>
+        <dt>Decided at</dt><dd>${esc(r.verdict.decided_at)}</dd>
+        <dt>Receipt hash</dt><dd>${esc(r.this_hash)}</dd>
+      </dl>
+      <div class="checks">
+        <div class="chk">${dot(res.sigOk)}<span>Signature</span><span class="why">${esc(res.sigErr||"Ed25519")}</span></div>
+        <div class="chk">${dot(res.hashOk)}<span>Receipt hash</span><span class="why">${res.hashOk?"SHA-256 re-derived":"expected "+esc(res.computed.slice(0,16))+"…"}</span></div>
+        <div class="chk">${dot(res.chainOk)}<span>Chain link</span><span class="why">${res.chainOk?"links to previous":"broken link"}</span></div>
+      </div>`;
+    host.appendChild(el);
+    prev = r;
+  }
+  const s = document.getElementById("status");
+  s.textContent = broken === 0
+    ? `All ${bundle.receipts.length} receipts verified locally.`
+    : `${broken} of ${bundle.receipts.length} receipts failed verification.`;
+  s.style.color = broken === 0 ? "var(--ok)" : "var(--bad)";
+}
+
+async function render(){ renderStudy(); renderDrift(); await renderReceipts(); }
+
+document.getElementById("tamper").addEventListener("click", async (e) => {
+  const btn = e.currentTarget;
+  const on = btn.getAttribute("aria-pressed") === "true";
+  if (on){ bundle = JSON.parse(JSON.stringify(BUNDLE_ORIGINAL)); btn.setAttribute("aria-pressed","false"); btn.textContent = "Tamper with a decision"; }
+  else {
+    bundle.receipts[0].action.params.outcome = "allow";
+    bundle.receipts[0].verdict.reasons[0] = "outcome=allow";
+    btn.setAttribute("aria-pressed","true"); btn.textContent = "Tampering active";
+  }
+  await render();
+});
+document.getElementById("reset").addEventListener("click", async () => {
+  bundle = JSON.parse(JSON.stringify(BUNDLE_ORIGINAL));
+  const b = document.getElementById("tamper");
+  b.setAttribute("aria-pressed","false"); b.textContent = "Tamper with a decision";
+  await render();
+});
+
+if (!(crypto && crypto.subtle)) document.getElementById("offline").textContent = "WebCrypto unavailable — open in a modern browser.";
+render();
+
+const DISCLOSURE_ORIGINAL = /*__DISCLOSURE__*/{
+ "format": "Arbiter selective disclosure v0.1",
+ "scenario": {
+  "total_decisions": 100000,
+  "anchor_ms": 184,
+  "store_bytes_per_receipt": 1873
+ },
+ "anchor": {
+  "format": "Arbiter merkle anchor v0.1",
+  "root": "b713a92e81fdc276bec30d3c73020c34393c3cb521320175cc046f275da888c7",
+  "tree_size": 100000,
+  "anchored_at": "2026-08-18T02:34:21.574553+00:00"
+ },
+ "receipt": {
+  "receipt_id": "rcpt:d-061234",
+  "seq": 61234,
+  "prev_hash": "58d79a4d9d089d864cde1bd2e9da2c9955b7759287438f58b9045c2dbeee1193",
+  "action": {
+   "action_id": "act:d-061234",
+   "agent_id": "arbiter.adaptive_risk.shadow",
+   "mandate_id": "model:risk-unified@1.0.0",
+   "type": "credit_application",
+   "params": {
+    "decision_id": "d-061234",
+    "customer_ref": "cust-061234",
+    "outcome": "decline",
+    "score": "0.6412",
+    "model": {
+     "name": "risk-unified",
+     "version": "1.0.0",
+     "feature_snapshot": "feat-store@Q1"
+    },
+    "thresholds": {
+     "review_at": "0.4500",
+     "decline_at": "0.6000"
+    },
+    "features": {
+     "months_on_book": 41,
+     "utilisation_ratio": 0.74,
+     "velocity_24h_txns": 9
+    }
+   },
+   "requested_at": "2026-08-18T02:34:17.631337Z"
+  },
+  "verdict": {
+   "verdict_id": "vd:d-061234",
+   "action_id": "act:d-061234",
+   "authorizer_id": "16b5b39be0b2c490fafda22a0ebcadcbaf280c1df4231dd02faa016e36190fa0",
+   "decision": "DENY",
+   "reasons": [
+    "outcome=decline"
+   ],
+   "decided_at": "2026-08-18T02:34:17.631340Z",
+   "signature": "db917d23650b5b90259fffe9efbe60b53ec2b2dbebffa0b4e4ee57f24d4c37b0734fe50d01b4dc8e1e15789ef94684af173922864cee8b275a9ff8ecd70d340d"
+  },
+  "this_hash": "cc2036f229a65376703a6c1cfa4b4494ed32111431625cd14d93af07f09639ba"
+ },
+ "proof": {
+  "format": "Arbiter inclusion proof v0.1",
+  "receipt_hash": "cc2036f229a65376703a6c1cfa4b4494ed32111431625cd14d93af07f09639ba",
+  "index": 61234,
+  "tree_size": 100000,
+  "path": [
+   "06a91edc5e0a0f17a2827c99141569f0a03f8ba2d9667e936f43514d482d094e",
+   "e2a2817954209a5dd9a2af4ec44b8c38332f98d71f261f0551356e8bd773ae79",
+   "b68509561a2ebd4eb11dcc66d42f7c03698eacfdf40f0c478cf17c13814c49b4",
+   "c1698b8d09acbfb1eb9fe5503e87872ccd7a9185437f155d60648445151c3e0b",
+   "3d40c7f0b7740656eb380df9f54c6989938dc31d6fcac93e2c0549f47077ca7e",
+   "06a1859cdaaa181790097c4e25c4a5dee6da76d9a729ca9313ac7f6f455e9f0b",
+   "dcdbedcab67625954965f4132380f7a2ac813f452cd665ad43a1c4e458440277",
+   "86855e62b70900b9037ad2e6f05d301505e133a9185479a6928fd666b97611de",
+   "c9eea63c3d0e8f956d9f938964c2932fdcf2f9350614ccad2b5d2af170ab5560",
+   "c1fe9b41fc4a5ebaa97c287b83390c1b7644e766f1ae1599aae74773fa730a99",
+   "05e2ef5dbaaca200dda5dbff6c7b659c79d0ddc933364f64884261fbf40a3197",
+   "0a10a5de97dd4d8fc460ebe1a7f62d5e0bac4db14869ec0b38022ff247dad9e1",
+   "186cdbdc8f9ffd31cef0251ddf5ab883c4d75284945aa7f7815ecbb9e9cd8611",
+   "67efc03b23ead4a1212ac26c0919463ab6962e5dacb28aa82511643a17c67a09",
+   "fc3de4714997e6e4a778fe2e4d43e8ed17731a0c91100b22b6c0a1364283af5f",
+   "55e9008c5c96c4a49323b870adb99434ee7409651a2e509e8d5685a605a6391a",
+   "55bc043b4a4c9baa748250fbc2c93779fa8c2d33b5a7fd449f522fef27d33c4c"
+  ],
+  "root": "b713a92e81fdc276bec30d3c73020c34393c3cb521320175cc046f275da888c7",
+  "anchored_at": "2026-08-18T02:34:21.574553+00:00"
+ }
+}/*__DEND__*/;
+let disc = JSON.parse(JSON.stringify(DISCLOSURE_ORIGINAL));
+
+function hexToU8(h){ const a=new Uint8Array(h.length/2); for(let i=0;i<a.length;i++) a[i]=parseInt(h.substr(i*2,2),16); return a; }
+function u8ToHex(a){ return [...a].map(b=>b.toString(16).padStart(2,"0")).join(""); }
+function concat(...arrs){ let n=0; for(const a of arrs) n+=a.length; const o=new Uint8Array(n); let k=0;
+  for(const a of arrs){ o.set(a,k); k+=a.length; } return o; }
+async function sha(bytes){ return new Uint8Array(await crypto.subtle.digest("SHA-256", bytes)); }
+// RFC 6962 domain separation: leaves 0x00, internal nodes 0x01.
+async function leafHash(d){ return sha(concat(new Uint8Array([0]), d)); }
+async function nodeHash(l,r){ return sha(concat(new Uint8Array([1]), l, r)); }
+function lpo2(n){ let k=1; while(k*2<n) k*=2; return k; }
+
+async function verifyInclusion(leaf, index, treeSize, path, root){
+  if (treeSize <= 0 || index < 0 || index >= treeSize) return false;
+  if (treeSize === 1) return path.length === 0 && u8ToHex(leaf) === u8ToHex(root);
+  const onLeft = []; let idx = index, size = treeSize;
+  while (size > 1){
+    const k = lpo2(size);
+    if (idx < k){ onLeft.push(true); size = k; }
+    else { onLeft.push(false); idx -= k; size -= k; }
+  }
+  if (onLeft.length !== path.length) return false;
+  let computed = leaf;
+  const rev = onLeft.slice().reverse();
+  for (let i = 0; i < path.length; i++){
+    computed = rev[i] ? await nodeHash(computed, path[i]) : await nodeHash(path[i], computed);
+  }
+  return u8ToHex(computed) === u8ToHex(root);
+}
+
+async function renderDisclosure(){
+  const s = disc.scenario, pr = disc.proof, r = disc.receipt, p = r.action.params;
+  const bundleBytes = JSON.stringify({receipt:r, proof:pr, anchor:disc.anchor}).length;
+  const storeBytes = s.total_decisions * s.store_bytes_per_receipt;
+
+  document.getElementById("d-total").textContent  = s.total_decisions.toLocaleString();
+  document.getElementById("d-store").textContent  = (storeBytes/1024/1024).toFixed(0) + " MB";
+  document.getElementById("d-bundle").textContent = bundleBytes.toLocaleString() + " B";
+  document.getElementById("d-ratio").textContent  = (bundleBytes/storeBytes*100).toFixed(5) + "%";
+
+  document.getElementById("d-id").textContent      = p.decision_id;
+  document.getElementById("d-cust").textContent    = "· " + p.customer_ref;
+  const oc = document.getElementById("d-outcome");
+  oc.textContent = p.outcome; oc.className = "pill o-" + p.outcome;
+  document.getElementById("d-root").textContent  = pr.root;
+  document.getElementById("d-when").textContent  = pr.anchored_at || "—";
+  document.getElementById("d-index").textContent = pr.index.toLocaleString() + " of " + pr.tree_size.toLocaleString();
+  document.getElementById("d-path").textContent  = pr.path.length + " sibling hashes (log₂ of " + pr.tree_size.toLocaleString() + ")";
+
+  const sigOk = (await verifyReceipt(r, null)).sigOk;
+  const incOk = await verifyInclusion(
+    await leafHash(hexToU8(pr.receipt_hash)), pr.index, pr.tree_size,
+    pr.path.map(hexToU8), hexToU8(pr.root));
+
+  document.getElementById("d-dot-sig").className = "dot " + (sigOk ? "ok" : "bad");
+  document.getElementById("d-dot-inc").className = "dot " + (incOk ? "ok" : "bad");
+  document.getElementById("d-inc-why").textContent = incOk
+    ? "re-derived the anchored root" : "path does not reach the anchored root";
+  const st = document.getElementById("d-status");
+  st.textContent = incOk ? "Proof verified locally against the anchored root."
+                         : "Proof rejected — this decision is not in the anchored set.";
+  st.style.color = incOk ? "var(--ok)" : "var(--bad)";
+}
+
+document.getElementById("d-tamper").addEventListener("click", async (e) => {
+  const b = e.currentTarget, on = b.getAttribute("aria-pressed") === "true";
+  if (on){ disc = JSON.parse(JSON.stringify(DISCLOSURE_ORIGINAL)); b.setAttribute("aria-pressed","false"); b.textContent = "Forge the proof"; }
+  else {
+    // Claim a decision that was never anchored: swap in a receipt hash of our choosing.
+    disc.proof.receipt_hash = "ab".repeat(32);
+    b.setAttribute("aria-pressed","true"); b.textContent = "Forgery active";
+  }
+  await renderDisclosure();
+});
+document.getElementById("d-reset").addEventListener("click", async () => {
+  disc = JSON.parse(JSON.stringify(DISCLOSURE_ORIGINAL));
+  const b = document.getElementById("d-tamper");
+  b.setAttribute("aria-pressed","false"); b.textContent = "Forge the proof";
+  await renderDisclosure();
+});
+renderDisclosure();
+
+</script>
+</body>
+</html>

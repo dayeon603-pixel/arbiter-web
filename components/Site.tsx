@@ -138,12 +138,11 @@ function SectorBlock({ s, index }: { s: Sector; index: number }) {
 }
 
 function StatBand() {
-  const numProducts = sectors.reduce((n, s) => n + (s.product ? 1 : 0) + (s.products?.length ?? 0), 0)
   const stats = [
     { n: String(sectors.length), l: 'regulated & high-stakes domains' },
-    { n: String(numProducts), l: 'products in development' },
-    { n: '1', l: 'operator, building in the open' },
-    { n: 'Open', l: 'every repository public' },
+    { n: 'Active', l: 'development across every domain' },
+    { n: '2026', l: 'founded, Republic of Korea' },
+    { n: 'Open', l: 'select repositories public' },
   ]
   return (
     <section className="statband" aria-label="Arbiter at a glance">

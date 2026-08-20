@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Decision Attestation Format — Arbiter</title>
+<style>
+:root{--bg:#F7F5F2;--surface:#FFFDFB;--ink:#141B22;--ink2:#3E4750;--dim:#6B747D;--line:#E2DCD4;--hair:#EFEAE3;--accent:#8C5A2B;--ok:#1F7A4C;
+--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;--sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif}
+@media(prefers-color-scheme:dark){:root{--bg:#12161A;--surface:#171C21;--ink:#ECE7E1;--ink2:#C3C8CD;--dim:#9AA3AC;--line:#2A3138;--hair:#232930;--accent:#C69963;--ok:#4CC38A}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.62;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding:0 clamp(1rem,4vw,2.5rem)}
+header{border-bottom:1px solid var(--line);padding:1.1rem 0}
+.brand{font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
+.brand a{color:inherit;text-decoration:none}
+.hero{padding:2.6rem 0 1.6rem}
+h1{font-size:clamp(1.9rem,1.2rem+2.6vw,2.7rem);letter-spacing:-.032em;line-height:1.08;font-weight:800}
+.tag{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:.7rem}
+.lede{font-size:1.06rem;color:var(--ink2);max-width:64ch;margin-top:.9rem}
+.cols{display:grid;grid-template-columns:210px 1fr;gap:3rem;padding:2rem 0 4rem;align-items:start}
+nav{position:sticky;top:1.5rem;display:flex;flex-direction:column;gap:.42rem;border-left:1px solid var(--line);padding-left:1rem}
+nav a{color:var(--dim);text-decoration:none;font-size:.83rem} nav a:hover{color:var(--accent)}
+h2{font-size:1.24rem;letter-spacing:-.018em;margin:2.3rem 0 .7rem;font-weight:750;scroll-margin-top:1.5rem}
+h3{font-size:1rem;margin:1.5rem 0 .5rem;font-weight:700}
+p{margin:.75rem 0;color:var(--ink2);max-width:70ch}
+ul{margin:.6rem 0 .6rem 1.15rem} li{color:var(--ink2);margin:.32rem 0;max-width:68ch}
+code{font-family:var(--mono);font-size:.86em;background:var(--hair);padding:.1rem .3rem;border-radius:3px}
+hr{border:0;border-top:1px solid var(--line);margin:2rem 0}
+strong{color:var(--ink)}
+.scroll{overflow-x:auto} table{border-collapse:collapse;width:100%;font-size:.88rem;margin:.9rem 0;min-width:520px}
+th,td{text-align:left;padding:.55rem .7rem;border-bottom:1px solid var(--hair)}
+th{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--line)}
+.panel{border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:1.2rem 1.3rem;margin:1.4rem 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1.1rem;margin-top:.9rem}
+.stat .v{font-size:1.5rem;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.stat .l{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-top:.3rem}
+.btns{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem}
+.btn{font-family:var(--mono);font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;padding:.6rem 1.05rem;border:1px solid var(--line);border-radius:99px;color:var(--ink);text-decoration:none}
+.btn:hover{border-color:var(--accent)} .btn.solid{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+pre{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:.85rem 1rem;overflow-x:auto;font-family:var(--mono);font-size:.8rem;color:var(--ink2)}
+footer{border-top:1px solid var(--line);padding:1.4rem 0 2.6rem;color:var(--dim);font-size:.8rem;display:flex;gap:.8rem;justify-content:space-between;flex-wrap:wrap}
+footer a{color:inherit}
+@media(max-width:820px){.cols{grid-template-columns:1fr;gap:1rem}nav{position:static;flex-flow:row wrap;border-left:0;border-top:1px solid var(--line);padding:1rem 0 0}}
+</style></head><body>
+<header><div class="wrap"><div class="brand"><a href="/">ARBITER</a> &nbsp;/&nbsp; Open specification</div></div></header>
+<div class="wrap hero">
+  <div class="tag">Draft v0.1 &nbsp;·&nbsp; Apache-2.0, patent grant included</div>
+  <h1>Decision Attestation Format</h1>
+  <p class="lede">An open format for records of automated decisions that a third party can verify without trusting whoever produced them. Published so that more than one vendor can emit it — an evidence format only you can produce is not evidence, it is a lock-in.</p>
+  <div class="panel">
+    <div class="grid">
+      <div class="stat"><div class="v">30</div><div class="l">Vector objects</div></div>
+      <div class="stat"><div class="v">194</div><div class="l">Assertions they carry</div></div>
+      <div class="stat"><div class="v">144</div><div class="l">Inclusion + consistency proofs</div></div>
+      <div class="stat"><div class="v" style="color:var(--accent)">7</div><div class="l">Receipts you MUST reject</div></div>
+    </div>
+    <p style="margin-top:1rem;font-size:.9rem"><strong>The arithmetic, so it can be checked:</strong> 30 vector objects — 10 canonicalisation cases, 10 Merkle trees, 3 receipts that must verify, 7 that must be rejected — carrying 194 assertions: each canonicalisation case is checked for both canonical bytes and digest (20), each tree for both leaf hashes and root (20), plus 72 inclusion proofs, 72 consistency proofs, and the 10 receipts. Conformance is decidable by a machine, not asserted by a vendor. An implementation that accepts any of the 7 <code>must_reject</code> receipts does not conform — it is a verifier that will accept forged evidence.</p>
+    <div class="btns">
+      <a class="btn solid" href="/spec/conformance-vectors.json">Download vectors (JSON)</a>
+      <a class="btn" href="/adaptive-risk">See it verify live</a>
+      <a class="btn" href="/verify">Offline verifier</a>
+    </div>
+    <pre>$ python -m signet.conform
+Arbiter Decision Attestation Format v0.1 — conformance
+
+  [PASS] Canonical JSON             20/20
+  [PASS] Merkle roots and proofs    164/164
+  [PASS] Receipt verification       10/10
+
+CONFORMING — all 194 checks passed</pre>
+  </div>
+</div>
+<div class="wrap cols"><nav><a href="#scope-and-motivation">Scope and motivation</a>
+<a href="#conventions">Conventions</a>
+<a href="#canonical-form">Canonical form</a>
+<a href="#receipt">Receipt</a>
+<a href="#merkle-commitments">Merkle commitments</a>
+<a href="#key-transparency">Key transparency</a>
+<a href="#conformance">Conformance</a>
+<a href="#security-considerations">Security considerations</a>
+<a href="#licence">Licence</a></nav><main><h1>Arbiter Decision Attestation Format</h1>
+<p><strong>Version 0.1 · Draft</strong></p>
+<p>An open format for records of automated decisions that a third party can verify</p>
+<p>without trusting the party that produced them.</p>
+<p>This specification is published openly and may be implemented by anyone,</p>
+<p>including competitors. That is deliberate. A format only becomes useful to a</p>
+<p>supervisor when more than one vendor emits it, and an evidence format nobody</p>
+<p>else can produce is not evidence — it is a lock-in.</p>
+<hr>
+<h2 id="scope-and-motivation">1. Scope and motivation</h2>
+<p>When an automated system makes a decision that must later be defended — a credit</p>
+<p>decline, a fraud block, a benefits determination, an employment screening — the</p>
+<p>institution is normally expected to produce &quot;the log.&quot; A log records what a</p>
+<p>system <em>reported</em> it did. It does not let anyone re-derive that decision from the</p>
+<p>inputs that produced it, and it cannot demonstrate that it was not edited</p>
+<p>afterwards.</p>
+<p>The gap is measurable. On 30,000 real credit customers, retraining a model with</p>
+<p>the customer population held completely constant caused re-running the current</p>
+<p>system to misreport <strong>15.5%</strong> of past decisions (95% CI 14.7–16.3). The model had</p>
+<p>improved. That is precisely why the reconstruction moved.</p>
+<p>EU AI Act Article 12, in force since 2 August 2026, requires high-risk AI systems</p>
+<p>to record events automatically over their lifetime, retained at least six months,</p>
+<p>and states that manual documentation does not satisfy this. It requires that</p>
+<p>records exist. It does not require them to be tamper-evident or independently</p>
+<p>checkable. This format addresses that second gap.</p>
+<h3>1.1 What this format does not claim</h3>
+<p>Determinism holds over <strong>pinned, exact-valued inputs</strong>: the recorded score,</p>
+<p>thresholds, and outcome are recoverable bit-for-bit. Re-deriving a score from raw</p>
+<p>inputs through a non-deterministic model is a different and unsolved problem, and</p>
+<p>nothing here should be read as solving it.</p>
+<hr>
+<h2 id="conventions">2. Conventions</h2>
+<p>The key words MUST, MUST NOT, SHOULD, and MAY are to be interpreted as described</p>
+<p>in RFC 2119.</p>
+<p>An implementation <strong>conforms</strong> to this specification only if it passes every</p>
+<p>vector in <code>conformance-vectors.json</code>, including every case listed under</p>
+<p><code>must_reject</code>. An implementation that accepts a receipt in <code>must_reject</code> does not</p>
+<p>conform. Leniency here is not a lesser conformance; it is a verifier that will</p>
+<p>accept forged evidence.</p>
+<hr>
+<h2 id="canonical-form">3. Canonical form</h2>
+<p>All signatures and digests are computed over <strong>canonical JSON</strong>.</p>
+<p>A canonical encoding MUST:</p>
+<ul>
+<li>encode as UTF-8, emitting non-ASCII characters literally rather than as <code>\u</code></li>
+</ul>
+<p>  escapes;</p>
+<ul>
+<li>order object keys by Unicode code point, <strong>recursively at every depth</strong>;</li>
+<li>preserve array order, which is significant and MUST NOT be sorted;</li>
+<li>emit no insignificant whitespace, using <code>,</code> and <code>:</code> as separators;</li>
+<li>exclude any <code>signature</code> member from the preimage of the object that carries</li>
+</ul>
+<p>  it, so an object can be signed and then carry its own signature.</p>
+<p>Canonicalisation is where independent implementations diverge silently: key</p>
+<p>ordering, unicode escaping, and number formatting all differ between language</p>
+<p>defaults, and any one of them produces a valid receipt that fails verification in</p>
+<p>another implementation. Implementers SHOULD treat section 3 vectors as a gate</p>
+<p>rather than a smoke test.</p>
+<hr>
+<h2 id="receipt">4. Receipt</h2>
+<p>A receipt binds one decision to the state that produced it.</p>
+<div class="scroll"><table>
+<tr><th>Field</th><th>Binds</th></tr>
+<tr><td><code>action.mandate_id</code></td><td>the model version that decided</td></tr>
+<tr><td><code>action.params.model</code></td><td>model name, version, feature-store snapshot</td></tr>
+<tr><td><code>action.params.features</code></td><td>the exact feature vector read at scoring</td></tr>
+<tr><td><code>action.params.thresholds</code></td><td>the cutoffs then in force</td></tr>
+<tr><td><code>action.params.score</code></td><td>the score as emitted, as a decimal string</td></tr>
+<tr><td><code>action.params.outcome</code></td><td>the outcome taken</td></tr>
+<tr><td><code>verdict.reasons</code></td><td>the rule path that produced it</td></tr>
+<tr><td><code>verdict.authorizer_id</code></td><td>signing identity, hex Ed25519 public key</td></tr>
+<tr><td><code>verdict.signature</code></td><td>Ed25519 over the canonical verdict</td></tr>
+<tr><td><code>seq</code>, <code>prev_hash</code>, <code>this_hash</code></td><td>position in the hash chain</td></tr>
+</table></div>
+<p><code>score</code> and the threshold values MUST be represented as decimal <strong>strings</strong>, not</p>
+<p>JSON numbers. A cutoff comparison performed in binary floating point can be wrong</p>
+<p>by one representable value, which is a wrong decision carrying a valid signature.</p>
+<h3>4.1 Verification</h3>
+<p>A verifier MUST perform all three checks and MUST fail if any fails:</p>
+<p>1. <strong>Signature.</strong> Ed25519 over the canonical verdict with <code>signature</code> removed,</p>
+<p>   against <code>verdict.authorizer_id</code>.</p>
+<p>2. <strong>Re-derivation.</strong> Re-classifying the pinned <code>score</code> under the pinned</p>
+<p>   <code>thresholds</code> MUST reproduce the recorded <code>outcome</code>.</p>
+<p>3. <strong>Integrity.</strong> <code>this_hash</code> MUST equal SHA-256 over the canonical form of</p>
+<p>   <code>{seq, prev_hash, action, verdict}</code>.</p>
+<p>A verifier MUST NOT require network access, an account, or any interaction with</p>
+<p>the issuer. If it does, the format has failed at its only purpose.</p>
+<h3>4.2 Uniqueness</h3>
+<p>A given <code>decision_id</code> MUST be attested at most once. Without this, re-attesting</p>
+<p>produces a second receipt that also verifies — it chains at a new position, so</p>
+<p>its hash legitimately differs — and nothing in the record establishes which of</p>
+<p>two contradictory attestations governs.</p>
+<hr>
+<h2 id="merkle-commitments">5. Merkle commitments</h2>
+<p>Trees follow RFC 6962.</p>
+<ul>
+<li><code>leaf_hash(d) = SHA-256(0x00 || d)</code></li>
+<li><code>node_hash(l, r) = SHA-256(0x01 || l || r)</code></li>
+<li>The empty tree hashes to <code>SHA-256(&quot;&quot;)</code>.</li>
+<li>For <code>n &gt; 1</code>, split at <code>k</code>, the largest power of two <strong>strictly less than</strong> <code>n</code>.</li>
+</ul>
+<p>The <code>0x00</code>/<code>0x01</code> prefixes are load-bearing: without domain separation a leaf can</p>
+<p>be presented as an internal node. The split rule is equally load-bearing —</p>
+<p>duplicating a final odd node instead allows two differently-shaped trees to</p>
+<p>produce the same root.</p>
+<p>Leaves commit to a receipt&#x27;s <code>this_hash</code>, <strong>not</strong> its payload. This is what</p>
+<p>allows a receipt body to be destroyed under an erasure obligation while the root</p>
+<p>and every proof already issued remain valid.</p>
+<h3>5.1 Inclusion proofs</h3>
+<p>An inclusion proof demonstrates one receipt is in a committed set using</p>
+<p><code>O(log n)</code> sibling hashes and reveals nothing about any other receipt. The path</p>
+<p>is ordered <strong>innermost sibling first</strong>.</p>
+<p>Verifiers MUST reject a path of the wrong length rather than raising, and MUST</p>
+<p>NOT crash on malformed input. A verifier is an adversarial surface.</p>
+<h3>5.2 Consistency proofs</h3>
+<p>A consistency proof demonstrates that a later tree append-only extends an earlier</p>
+<p>one. Anchoring without it proves only that a root existed: an issuer could</p>
+<p>publish a root, rewrite history, publish a new root, and every inclusion proof</p>
+<p>against the new root would still verify. Implementations that anchor SHOULD</p>
+<p>publish consistency proofs between successive anchors.</p>
+<hr>
+<h2 id="key-transparency">6. Key transparency</h2>
+<p>Where a supervisor may rely on a signature, an issuer SHOULD publish an</p>
+<p>append-only log of which key was in force over which period. Verifying a</p>
+<p>signature establishes that <em>a</em> key signed. Only the log establishes that it was</p>
+<p>the institution&#x27;s key <strong>on the day of the decision</strong>.</p>
+<p>An epoch MUST record only when a key came into force. It MUST NOT store an end</p>
+<p>time; the end is implied by the successor&#x27;s start. Storing it would require</p>
+<p>rewriting a committed record whenever a key rotates, and any party able to do</p>
+<p>that legitimately can also do it illegitimately.</p>
+<hr>
+<h2 id="conformance">7. Conformance</h2>
+<p>Run the vectors. <code>conformance-vectors.json</code> contains:</p>
+<ul>
+<li>10 canonicalisation cases, each with expected canonical bytes and digest</li>
+<li>10 Merkle trees, with 72 inclusion and 72 consistency proofs</li>
+<li>3 receipts that MUST verify</li>
+<li>7 receipts that MUST be rejected</li>
+</ul>
+<p>The reference implementation checks itself with <code>python -m signet.conform</code>, and</p>
+<p>the same vectors are the contract for any other implementation.</p>
+<hr>
+<h2 id="security-considerations">8. Security considerations</h2>
+<ul>
+<li><strong>Fail-open placement.</strong> An attestation layer MUST NOT be able to block the</li>
+</ul>
+<p>  decision it observes. A component that can halt a credit decision has become</p>
+<p>  part of the decision path. Failures SHOULD be recorded as counted coverage gaps</p>
+<p>  rather than raised, and gaps MUST be surfaced rather than silently absorbed.</p>
+<ul>
+<li><strong>Key custody.</strong> Software signing proves a record is self-consistent, not who</li>
+</ul>
+<p>  produced it. Where a supervisor relies on the signature, the key SHOULD sit in</p>
+<p>  an HSM or KMS the signing process cannot read.</p>
+<ul>
+<li><strong>What deletion still achieves.</strong> Write-once storage prevents edits, not</li>
+</ul>
+<p>  deletion of the whole store. Anchoring a root outside the issuer&#x27;s control is</p>
+<p>  what makes destruction detectable rather than silent.</p>
+<ul>
+<li><strong>Fuzzy and non-deterministic paths.</strong> Out of scope, and any implementation</li>
+</ul>
+<p>  extending to them MUST NOT present the result as bit-exact replay.</p>
+<hr>
+<h2 id="licence">9. Licence</h2>
+<p>This specification is published under Apache-2.0, including its patent grant.</p>
+<p>Implementations owe no royalty and need no permission.</p></main></div>
+<footer><div class="wrap" style="display:flex;justify-content:space-between;width:100%;flex-wrap:wrap;gap:.8rem">
+<span>© 2026 Arbiter · Apache-2.0</span><a href="/">arbiter.company →</a></div></footer>
+</body></html>

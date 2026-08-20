@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Reference Verifier — Decision Attestation Format</title>
+<style>
+  :root{
+    --ink:#141B22; --muted:#5B6472; --line:#E2DCD4; --hair:#EFEAE3; --paper:#F7F5F2; --card:#FFFDFB;
+    --ok:#1F7A4C; --okbg:#E9F5EE; --bad:#B3261E; --badbg:#FBECEB; --accent:#8C5A2B;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--ink:#ECE7E1;--muted:#9AA3AC;--line:#2A3138;--hair:#232930;--paper:#12161A;--card:#171C21;
+          --ok:#4CC38A;--okbg:#12251C;--bad:#E5484D;--badbg:#2A1517;--accent:#C69963;}
+  }
+  *{box-sizing:border-box;margin:0;padding:0;min-width:0}
+  html,body{max-width:100%;overflow-x:hidden}
+  body{font-family:var(--sans);color:var(--ink);background:var(--paper);line-height:1.6;-webkit-text-size-adjust:100%}
+  .wrap{max-width:920px;margin:0 auto;padding:clamp(1.1rem,4vw,2rem) clamp(1rem,4vw,1.6rem) 4rem}
+  .crumb{font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:1.4rem;overflow-wrap:anywhere}
+  .crumb a{color:inherit;text-decoration:none}
+  h1{font-size:clamp(1.5rem,1.1rem+1.9vw,2.15rem);letter-spacing:-.028em;line-height:1.12;font-weight:800}
+  .sub{color:var(--muted);font-size:clamp(.98rem,.94rem+.2vw,1.06rem);margin-top:.6rem;max-width:60ch}
+  .offline{font-family:var(--mono);font-size:.78rem;color:var(--ok);margin-top:.9rem;font-weight:600}
+  .banner{border:1px solid var(--line);border-left:3px solid var(--accent);background:var(--card);
+          color:var(--muted);font-size:.85rem;padding:.75rem .95rem;border-radius:0 5px 5px 0;margin:1.3rem 0}
+  .banner b{color:var(--ink)}
+  .controls{margin:1.3rem 0 .5rem;display:flex;flex-wrap:wrap;gap:.6rem}
+  button,label.file{font-family:var(--mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;
+    padding:.75rem 1.15rem;border-radius:99px;border:1px solid var(--line);background:var(--card);
+    color:var(--ink);cursor:pointer;min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+  button:hover,label.file:hover{border-color:var(--accent)}
+  button.primary{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  button.tamper{border-color:#d8a9a4;color:var(--bad)}
+  .note{color:var(--muted);font-size:.82rem;margin-top:.7rem;font-family:var(--mono);overflow-wrap:anywhere}
+  .card{border:1px solid var(--line);border-radius:8px;background:var(--card);margin-top:1rem;overflow:hidden}
+  .rhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.6rem;
+         padding:.8rem 1rem;border-bottom:1px solid var(--line)}
+  .rid{font-family:var(--mono);font-size:.85rem;font-weight:700;overflow-wrap:anywhere}
+  .outcome{font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;padding:.2rem .6rem;border-radius:99px;white-space:nowrap}
+  .o-ALLOW{background:var(--okbg);color:var(--ok)} .o-DENY,.o-BLOCK,.o-HOLD,.o-DECLINE{background:var(--badbg);color:var(--bad)}
+  /* single column by default; two only when there is genuinely room */
+  .body{display:grid;grid-template-columns:1fr}
+  .fields,.checks{padding:.9rem 1rem}
+  .checks{border-top:1px solid var(--hair);background:transparent}
+  .kv{font-family:var(--mono);font-size:.76rem;color:var(--muted);margin:.28rem 0;overflow-wrap:anywhere}
+  .kv b{color:var(--ink);font-weight:700}
+  .chk{display:flex;align-items:flex-start;gap:.55rem;font-size:.88rem;margin:.5rem 0;flex-wrap:wrap}
+  .dot{width:.7rem;height:.7rem;border-radius:50%;flex:none;margin-top:.35rem}
+  .dot.ok{background:var(--ok)} .dot.bad{background:var(--bad)} .dot.wait{background:#c9ced6}
+  .chk .lab{font-weight:650} .chk .why{color:var(--muted);font-family:var(--mono);font-size:.72rem;width:100%;padding-left:1.25rem}
+  .stamp{margin:0 1rem 1rem;font-family:var(--mono);font-size:.8rem;font-weight:700;padding:.6rem .8rem;border-radius:6px;text-align:center}
+  .stamp.ok{background:var(--okbg);color:var(--ok)} .stamp.bad{background:var(--badbg);color:var(--bad)}
+  .foot{margin-top:2.2rem;color:var(--muted);font-size:.82rem;border-top:1px solid var(--line);padding-top:1rem}
+  .foot a{color:var(--accent)}
+  code{font-family:var(--mono);font-size:.9em}
+  @media (min-width:720px){
+    .body{grid-template-columns:1.15fr .85fr}
+    .checks{border-top:0;border-left:1px solid var(--hair)}
+    .chk .why{width:auto;padding-left:0}
+  }
+
+.o-REVIEW{background:rgba(200,140,20,.13);color:#b8860b}
+:root:not([data-theme=light]) .o-REVIEW{color:#e0b050}
+@media (prefers-color-scheme:dark){.o-REVIEW{color:#e0b050}}
+.logpanel{border:1px solid var(--line);border-radius:10px;padding:1rem;margin:1.1rem 0 .4rem;background:var(--card)}
+.logpanel h2{font-size:.95rem;margin-bottom:.5rem}
+.logpanel .kv{margin:.3rem 0}
+.roothex{font-family:var(--mono);font-size:.72rem;color:var(--muted);overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="crumb"><a href="/">ARBITER</a> &nbsp;/&nbsp; <a href="/spec">Open specification</a> &nbsp;/&nbsp; Reference verifier</div>
+  <h1>Reference verifier for the Decision Attestation Format</h1>
+  <p class="sub">Anyone holding a receipt can re-derive the decision it records &mdash; here, in this page, without an account and without contacting whoever issued it. That is the entire point of the format: evidence you can check yourself is the only kind worth having.</p>
+  <div class="banner"><b>Scope.</b> The guarantee covers pinned, exact-valued inputs: the recorded score, thresholds, and outcome are recoverable bit-for-bit. Re-deriving a score from raw inputs through a non-deterministic model is a different problem and is not claimed here. The sample below is six retail credit and fraud decisions from one bank.</div>
+  <p class="offline" id="offline">&#9679; Runs entirely in your browser. Open your network tab &mdash; this page makes zero requests.</p>
+
+  <div class="controls">
+    <button class="primary" id="run">Verify</button>
+    <button class="tamper" id="tamper">Flip one byte</button>
+    <button id="restore">Restore</button>
+    <label class="file">Load your own bundle&hellip; <input id="file" type="file" accept="application/json" hidden></label>
+  </div>
+  <p class="note" id="meta"></p>
+
+  <div class="logpanel" id="logpanel"></div>
+
+  <div id="receipts"></div>
+
+  <div class="foot">
+    <p>Five checks per receipt, all performed locally: the Ed25519 signature over the signed verdict; the SHA-256 receipt hash re-derived from the pinned inputs; the hash-chain link to the receipt before it; the recorded outcome re-derived by re-applying the pinned thresholds to the pinned score; and a Merkle inclusion proof placing the receipt in the published log. Flip a single byte and three of the five fail on that receipt: its hash no longer re-derives, its outcome no longer follows from the inputs pinned beside it, and it is no longer the receipt the log committed to at that position. The link into the next receipt is severed at the same time, which cuts everything after it off from the genesis record. The signature stays valid, and that is itself worth seeing — it covers the signed verdict, so an edit to the recorded inputs is caught by the hash and the log rather than by the signature. No single check is sufficient alone.</p>
+    <p style="margin-top:.7rem">The inclusion proof is what makes disclosure possible without exposure: it proves one decision belongs to the log using only the sibling hashes on its path, revealing nothing about any other customer. The consistency proof above is the other half &mdash; it demonstrates the log was only ever appended to, so a publisher cannot quietly rewrite history and re-anchor. Both follow RFC 6962, the construction behind Certificate Transparency.</p>
+    <p style="margin-top:.7rem">This verifier is the reference implementation of an <a href="/spec">open specification</a>, published under Apache-2.0 with its patent grant. Anyone may implement it, including competitors &mdash; an evidence format only one vendor can produce is not evidence. Conformance is decided by <a href="/spec/conformance-vectors.json">194 published assertions</a>, 7 of which are receipts a conforming verifier must <em>reject</em>.</p>
+  </div>
+</div>
+
+<script>
+const BUNDLE_ORIGINAL = /*__BUNDLE__*/{
+  "format": "Decision Attestation Format v0.1",
+  "rulebook_version": "risk-unified@4.2.1 / fs:2026-03-14",
+  "log": {
+    "root": "272ec2f5c4ddc0128b983ee2c68a36fd93ee5200846a985b9b6a2f8a88037763",
+    "tree_size": 6,
+    "anchored_at": "2026-03-14T15:12:00+00:00",
+    "previous": {
+      "root": "5c4273064377963e1d4994cedad22808b170b5675b084bd5825d608141c34d04",
+      "tree_size": 3,
+      "anchored_at": "2026-03-14T10:12:00+00:00"
+    },
+    "consistency_proof": [
+      "2ebdb549e82dd3eee699ce504156ce6d6d1a6fe8a9f282cc9ccca34e031f8a75",
+      "0d260dcca41cc21f7b643ae77fce64dfc738a8ea908c12f7a6616a6b3e7a3b50",
+      "a480f592adc94c095cd6b50ed533f76f8d050e19f55eb65b1645adc6a5c25b37",
+      "c51436f7fdc68557d6446db7ea60f618d8efd20f224f9e3d9c8f0e0a9c53befc"
+    ]
+  },
+  "receipts": [
+    {
+      "receipt_id": "rcpt:d-88401",
+      "seq": 0,
+      "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "action": {
+        "action_id": "act:d-88401",
+        "agent_id": "arbiter.adaptive_risk.shadow",
+        "mandate_id": "model:risk-unified@4.2.1",
+        "type": "credit_application",
+        "params": {
+          "decision_id": "d-88401",
+          "customer_ref": "cust:8f2a",
+          "outcome": "allow",
+          "score": "0.118",
+          "model": {
+            "name": "risk-unified",
+            "version": "4.2.1",
+            "feature_snapshot": "fs:2026-03-14"
+          },
+          "thresholds": {
+            "review_at": "0.35",
+            "decline_at": "0.70"
+          },
+          "features": {
+            "income_band": 4,
+            "utilisation": 0.11,
+            "delinq_24m": 0,
+            "tenure_months": 61
+          }
+        },
+        "requested_at": "2026-03-14T09:12:00Z"
+      },
+      "verdict": {
+        "verdict_id": "vd:d-88401",
+        "action_id": "act:d-88401",
+        "authorizer_id": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+        "decision": "ALLOW",
+        "reasons": [
+          "outcome=allow",
+          "policy=retail_unsecured_v7"
+        ],
+        "decided_at": "2026-03-14T09:12:00Z",
+        "signature": "ff8231516a7296e617a9b9f5caaee31c2a4f1cdb278a7d676f994e302ce88c00cc7cab1342a1004cf8a9755d53e069792d580851bfd01ab4a5fbf6bc7b293505"
+      },
+      "this_hash": "941adc12392399e9dcb4f00fc2172774ccf09cdb630ffd1ab25c2f99c7b944de",
+      "inclusion_proof": {
+        "index": 0,
+        "tree_size": 6,
+        "path": [
+          "7de81531e0514643f01766fcebe0aeb0cb057ac036626bdf6902c989a25c60e1",
+          "952786ea9e4961b6137e45692c866158345e569dae15ca21a405d8e7a491cf6c",
+          "c51436f7fdc68557d6446db7ea60f618d8efd20f224f9e3d9c8f0e0a9c53befc"
+        ]
+      }
+    },
+    {
+      "receipt_id": "rcpt:d-88402",
+      "seq": 1,
+      "prev_hash": "941adc12392399e9dcb4f00fc2172774ccf09cdb630ffd1ab25c2f99c7b944de",
+      "action": {
+        "action_id": "act:d-88402",
+        "agent_id": "arbiter.adaptive_risk.shadow",
+        "mandate_id": "model:risk-unified@4.2.1",
+        "type": "credit_application",
+        "params": {
+          "decision_id": "d-88402",
+          "customer_ref": "cust:1c7d",
+          "outcome": "review",
+          "score": "0.412",
+          "model": {
+            "name": "risk-unified",
+            "version": "4.2.1",
+            "feature_snapshot": "fs:2026-03-14"
+          },
+          "thresholds": {
+            "review_at": "0.35",
+            "decline_at": "0.70"
+          },
+          "features": {
+            "income_band": 2,
+            "utilisation": 0.58,
+            "delinq_24m": 1,
+            "tenure_months": 9
+          }
+        },
+        "requested_at": "2026-03-14T09:19:00Z"
+      },
+      "verdict": {
+        "verdict_id": "vd:d-88402",
+        "action_id": "act:d-88402",
+        "authorizer_id": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+        "decision": "DENY",
+        "reasons": [
+          "outcome=review",
+          "policy=retail_unsecured_v7",
+          "manual_review_queue=thin_file"
+        ],
+        "decided_at": "2026-03-14T09:19:00Z",
+        "signature": "8fc4779f2128d00623e4f13a6d36e935ed9d2a4eb17276b1e9bfe68f0022fb3f5f560ca98d73477cdaa78b3f219e2c3042d883676065e6cd8f045cef4b1f1e01"
+      },
+      "this_hash": "2c94f2bed21f0be5e75ff11bb19288cc195d24ba314540dcd466b45083fcf788",
+      "inclusion_proof": {
+        "index": 1,
+        "tree_size": 6,
+        "path": [
+          "7134af8a228a9499fb8f8471052d3b3b9d0af1a4205537bf3f0a4c162946813f",
+          "952786ea9e4961b6137e45692c866158345e569dae15ca21a405d8e7a491cf6c",
+          "c51436f7fdc68557d6446db7ea60f618d8efd20f224f9e3d9c8f0e0a9c53befc"
+        ]
+      }
+    },
+    {
+      "receipt_id": "rcpt:d-88403",
+      "seq": 2,
+      "prev_hash": "2c94f2bed21f0be5e75ff11bb19288cc195d24ba314540dcd466b45083fcf788",
+      "action": {
+        "action_id": "act:d-88403",
+        "agent_id": "arbiter.adaptive_risk.shadow",
+        "mandate_id": "model:risk-unified@4.2.1",
+        "type": "transaction_fraud",
+        "params": {
+          "decision_id": "d-88403",
+          "customer_ref": "cust:44b0",
+          "outcome": "decline",
+          "score": "0.884",
+          "model": {
+            "name": "risk-unified",
+            "version": "4.2.1",
+            "feature_snapshot": "fs:2026-03-14"
+          },
+          "thresholds": {
+            "review_at": "0.35",
+            "decline_at": "0.70"
+          },
+          "features": {
+            "velocity_1h": 14,
+            "device_new": 1,
+            "geo_mismatch": 1,
+            "mcc_risk": 0.77
+          }
+        },
+        "requested_at": "2026-03-14T09:26:00Z"
+      },
+      "verdict": {
+        "verdict_id": "vd:d-88403",
+        "action_id": "act:d-88403",
+        "authorizer_id": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+        "decision": "DENY",
+        "reasons": [
+          "outcome=decline",
+          "policy=fraud_realtime_v3",
+          "rule=velocity_burst"
+        ],
+        "decided_at": "2026-03-14T09:26:00Z",
+        "signature": "cb2eb70536c7d553945155b76229b60a2cef383a72c444423127922b40146c89e92463f731e6cb285840d0299f6215a5370b20d62daefdab47e216a59b17e00c"
+      },
+      "this_hash": "a9ae553a8926235b092ae12071a37c57f855c3d2692ff5552b7d022f4dfd1f13",
+      "inclusion_proof": {
+        "index": 2,
+        "tree_size": 6,
+        "path": [
+          "0d260dcca41cc21f7b643ae77fce64dfc738a8ea908c12f7a6616a6b3e7a3b50",
+          "a480f592adc94c095cd6b50ed533f76f8d050e19f55eb65b1645adc6a5c25b37",
+          "c51436f7fdc68557d6446db7ea60f618d8efd20f224f9e3d9c8f0e0a9c53befc"
+        ]
+      }
+    },
+    {
+      "receipt_id": "rcpt:d-88404",
+      "seq": 3,
+      "prev_hash": "a9ae553a8926235b092ae12071a37c57f855c3d2692ff5552b7d022f4dfd1f13",
+      "action": {
+        "action_id": "act:d-88404",
+        "agent_id": "arbiter.adaptive_risk.shadow",
+        "mandate_id": "model:risk-unified@4.2.1",
+        "type": "credit_limit_increase",
+        "params": {
+          "decision_id": "d-88404",
+          "customer_ref": "cust:9e13",
+          "outcome": "allow",
+          "score": "0.349",
+          "model": {
+            "name": "risk-unified",
+            "version": "4.2.1",
+            "feature_snapshot": "fs:2026-03-14"
+          },
+          "thresholds": {
+            "review_at": "0.35",
+            "decline_at": "0.70"
+          },
+          "features": {
+            "income_band": 5,
+            "utilisation": 0.29,
+            "delinq_24m": 0,
+            "tenure_months": 118
+          }
+        },
+        "requested_at": "2026-03-14T09:33:00Z"
+      },
+      "verdict": {
+        "verdict_id": "vd:d-88404",
+        "action_id": "act:d-88404",
+        "authorizer_id": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+        "decision": "ALLOW",
+        "reasons": [
+          "outcome=allow",
+          "policy=retail_unsecured_v7"
+        ],
+        "decided_at": "2026-03-14T09:33:00Z",
+        "signature": "b2275b31abd377b46ce5af64a600fc1006d41232e1bee7c55754d923fdad2190b3b2e3fc489cea0c6e1b6821e887145b097c35ba80f29cd235bea9f4877b610f"
+      },
+      "this_hash": "6b13f12e3ab1437d8bf9e72c088c0a4e86bc3b299d4f61a97b386490f490a68f",
+      "inclusion_proof": {
+        "index": 3,
+        "tree_size": 6,
+        "path": [
+          "2ebdb549e82dd3eee699ce504156ce6d6d1a6fe8a9f282cc9ccca34e031f8a75",
+          "a480f592adc94c095cd6b50ed533f76f8d050e19f55eb65b1645adc6a5c25b37",
+          "c51436f7fdc68557d6446db7ea60f618d8efd20f224f9e3d9c8f0e0a9c53befc"
+        ]
+      }
+    },
+    {
+      "receipt_id": "rcpt:d-88405",
+      "seq": 4,
+      "prev_hash": "6b13f12e3ab1437d8bf9e72c088c0a4e86bc3b299d4f61a97b386490f490a68f",
+      "action": {
+        "action_id": "act:d-88405",
+        "agent_id": "arbiter.adaptive_risk.shadow",
+        "mandate_id": "model:risk-unified@4.2.1",
+        "type": "transaction_fraud",
+        "params": {
+          "decision_id": "d-88405",
+          "customer_ref": "cust:2ab6",
+          "outcome": "decline",
+          "score": "0.701",
+          "model": {
+            "name": "risk-unified",
+            "version": "4.2.1",
+            "feature_snapshot": "fs:2026-03-14"
+          },
+          "thresholds": {
+            "review_at": "0.35",
+            "decline_at": "0.70"
+          },
+          "features": {
+            "velocity_1h": 3,
+            "device_new": 0,
+            "geo_mismatch": 1,
+            "mcc_risk": 0.64
+          }
+        },
+        "requested_at": "2026-03-14T09:40:00Z"
+      },
+      "verdict": {
+        "verdict_id": "vd:d-88405",
+        "action_id": "act:d-88405",
+        "authorizer_id": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+        "decision": "DENY",
+        "reasons": [
+          "outcome=decline",
+          "policy=fraud_realtime_v3",
+          "rule=geo_anomaly"
+        ],
+        "decided_at": "2026-03-14T09:40:00Z",
+        "signature": "033b203220874d11439d4010cb6c05c884a04458eaaff87ce5917e3ed9260f90c909c6e4991d7c60e85e472364f662037190c973c9b1d8eb9e06f757eb08fb0b"
+      },
+      "this_hash": "ee892e26039373a1fadeadc04fcb295e841b5ed060aecfd373899cb307db8243",
+      "inclusion_proof": {
+        "index": 4,
+        "tree_size": 6,
+        "path": [
+          "bb7b0f8a75e4deb9810a13baa83701cc712015736758c34612bc51e9cae2627f",
+          "0d9eec3c488c09f09a5a1ff01db072e86daf9a2effb2b9d66b9a6e239ef0eaeb"
+        ]
+      }
+    },
+    {
+      "receipt_id": "rcpt:d-88406",
+      "seq": 5,
+      "prev_hash": "ee892e26039373a1fadeadc04fcb295e841b5ed060aecfd373899cb307db8243",
+      "action": {
+        "action_id": "act:d-88406",
+        "agent_id": "arbiter.adaptive_risk.shadow",
+        "mandate_id": "model:risk-unified@4.2.1",
+        "type": "credit_application",
+        "params": {
+          "decision_id": "d-88406",
+          "customer_ref": "cust:70f5",
+          "outcome": "allow",
+          "score": "0.226",
+          "model": {
+            "name": "risk-unified",
+            "version": "4.2.1",
+            "feature_snapshot": "fs:2026-03-14"
+          },
+          "thresholds": {
+            "review_at": "0.35",
+            "decline_at": "0.70"
+          },
+          "features": {
+            "income_band": 3,
+            "utilisation": 0.37,
+            "delinq_24m": 0,
+            "tenure_months": 34
+          }
+        },
+        "requested_at": "2026-03-14T09:47:00Z"
+      },
+      "verdict": {
+        "verdict_id": "vd:d-88406",
+        "action_id": "act:d-88406",
+        "authorizer_id": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+        "decision": "ALLOW",
+        "reasons": [
+          "outcome=allow",
+          "policy=retail_unsecured_v7"
+        ],
+        "decided_at": "2026-03-14T09:47:00Z",
+        "signature": "35ab6dacae9f1ad8ff694fc2bb9eec48c8acf9c8321be1d373c88ef8c00f1189e502f919fa0a83539390a597902f696adfeb132a3917efdb98e28c913991aa0b"
+      },
+      "this_hash": "c9d5414f0abb3f106a0498829db0b19fa0aec9c89edac83db6172d9d20d8a5bc",
+      "inclusion_proof": {
+        "index": 5,
+        "tree_size": 6,
+        "path": [
+          "d03d486c943e5ab2f1edb6768890ef4daf8795f511bbd2d2a4e3adc54285eef0",
+          "0d9eec3c488c09f09a5a1ff01db072e86daf9a2effb2b9d66b9a6e239ef0eaeb"
+        ]
+      }
+    }
+  ]
+}/*__END__*/;
+let bundle = JSON.parse(JSON.stringify(BUNDLE_ORIGINAL));
+const GENESIS = "0".repeat(64);
+const enc = new TextEncoder();
+
+// Canonical JSON identical to Python json.dumps(sort_keys=True, separators=(",",":"), ensure_ascii=False).
+function canon(v){
+  if (v === null) return "null";
+  if (Array.isArray(v)) return "[" + v.map(canon).join(",") + "]";
+  if (typeof v === "object") return "{" + Object.keys(v).sort().map(k => JSON.stringify(k)+":"+canon(v[k])).join(",") + "}";
+  return JSON.stringify(v);
+}
+function hexToBytes(h){ const a=new Uint8Array(h.length/2); for(let i=0;i<a.length;i++) a[i]=parseInt(h.substr(i*2,2),16); return a; }
+function bytesToHex(b){ return [...b].map(x=>x.toString(16).padStart(2,"0")).join(""); }
+async function sha256hex(bytes){ return bytesToHex(new Uint8Array(await crypto.subtle.digest("SHA-256", bytes))); }
+
+// ---- RFC 6962 -------------------------------------------------------------
+// Leaves are prefixed 0x00 and internal nodes 0x01, so a leaf can never be
+// passed off as an interior node. Odd node counts split at the largest power of
+// two below n rather than duplicating the last leaf, which is what avoids the
+// ambiguity where two differently shaped trees share a root.
+function concatBytes(prefix, ...hexes){
+  const parts = hexes.map(hexToBytes);
+  const out = new Uint8Array(1 + parts.reduce((n,p)=>n+p.length,0));
+  out[0] = prefix; let o = 1;
+  for (const p of parts){ out.set(p, o); o += p.length; }
+  return out;
+}
+const leafHash = (dataHex) => sha256hex(concatBytes(0x00, dataHex));
+const nodeHash = (lHex, rHex) => sha256hex(concatBytes(0x01, lHex, rHex));
+function largestPow2Below(n){ let k=1; while (k*2 < n) k*=2; return k; }
+
+async function verifyInclusion(leaf, index, treeSize, path, root){
+  if (treeSize <= 0 || index < 0 || index >= treeSize) return false;
+  if (treeSize === 1) return path.length === 0 && leaf === root;
+  // Descend from the root recording, at each level, whether the leaf lies left.
+  const onLeft = [];
+  let idx = index, size = treeSize;
+  while (size > 1){
+    const k = largestPow2Below(size);
+    if (idx < k){ onLeft.push(true); size = k; }
+    else { onLeft.push(false); idx -= k; size -= k; }
+  }
+  // Siblings arrive innermost-first, so pair them with the descent reversed.
+  // A path of the wrong length is a failed proof, never an exception.
+  if (onLeft.length !== path.length) return false;
+  let computed = leaf;
+  for (let i = 0; i < path.length; i++){
+    computed = onLeft[onLeft.length - 1 - i]
+      ? await nodeHash(computed, path[i])
+      : await nodeHash(path[i], computed);
+  }
+  return computed === root;
+}
+
+async function verifyConsistency(m, n, firstRoot, secondRoot, path){
+  if (m <= 0 || n <= 0 || m > n) return false;
+  if (m === n) return path.length === 0 && firstRoot === secondRoot;
+  let i = 0; const take = () => (i < path.length ? path[i++] : null);
+  let fn = m - 1, sn = n - 1;
+  while (fn & 1){ fn >>= 1; sn >>= 1; }
+  let fr, sr;
+  if ((m & (m - 1)) === 0){ fr = sr = firstRoot; }
+  else { const seed = take(); if (seed === null) return false; fr = sr = seed; }
+  while (fn > 0){
+    const node = take(); if (node === null) return false;
+    if ((fn & 1) || fn === sn){
+      fr = await nodeHash(node, fr);
+      sr = await nodeHash(node, sr);
+      while (((fn & 1) === 0) && fn !== 0){ fn >>= 1; sn >>= 1; }
+    } else {
+      sr = await nodeHash(sr, node);
+    }
+    fn >>= 1; sn >>= 1;
+  }
+  while (sn > 0){
+    const node = take(); if (node === null) return false;
+    sr = await nodeHash(sr, node); sn >>= 1;
+  }
+  return fr === firstRoot && sr === secondRoot && take() === null;
+}
+
+// ---- decimal comparison ---------------------------------------------------
+// Thresholds are compared as exact decimals, not floats. A score sitting on a
+// cutoff must classify the same way here as it did in the engine that recorded
+// it, and binary floating point does not reliably agree with itself about that.
+function cmpDec(a, b){
+  const norm = s => { s = String(s).trim(); const neg = s[0] === "-"; if (neg || s[0] === "+") s = s.slice(1);
+    let [ip, fp = ""] = s.split("."); ip = ip.replace(/^0+(?=\d)/, ""); fp = fp.replace(/0+$/, ""); return {neg, ip, fp}; };
+  const x = norm(a), y = norm(b);
+  if (x.neg !== y.neg) return x.neg ? -1 : 1;
+  const s = x.neg ? -1 : 1;
+  if (x.ip.length !== y.ip.length) return x.ip.length > y.ip.length ? s : -s;
+  if (x.ip !== y.ip) return x.ip > y.ip ? s : -s;
+  const len = Math.max(x.fp.length, y.fp.length);
+  const xf = x.fp.padEnd(len, "0"), yf = y.fp.padEnd(len, "0");
+  if (xf === yf) return 0;
+  return xf > yf ? s : -s;
+}
+function classify(score, th){
+  if (cmpDec(score, th.decline_at) >= 0) return "decline";
+  if (cmpDec(score, th.review_at) >= 0) return "review";
+  return "allow";
+}
+
+async function verifyReceipt(r, prevComputed, root){
+  // 1. signature over the verdict minus its own signature field
+  const v = Object.assign({}, r.verdict); const sig = v.signature; delete v.signature;
+  let sigOk=false, sigErr="";
+  try {
+    const key = await crypto.subtle.importKey("raw", hexToBytes(r.verdict.authorizer_id), {name:"Ed25519"}, false, ["verify"]);
+    sigOk = await crypto.subtle.verify({name:"Ed25519"}, key, hexToBytes(sig), enc.encode(canon(v)));
+  } catch(e){ sigErr = "Ed25519 unsupported in this browser"; }
+  // 2. receipt hash re-derived from pinned inputs
+  const hp = {seq:r.seq, prev_hash:r.prev_hash, action:r.action, verdict:r.verdict};
+  const computed = await sha256hex(enc.encode(canon(hp)));
+  const hashOk = computed === r.this_hash;
+  // 3. chain linkage, against the previous receipt's RE-DERIVED hash. Comparing
+  //    with its stored hash would let an edited receipt keep an intact-looking
+  //    link; recomputing is what makes a single edit break every receipt after it.
+  const isGenesis = prevComputed === null;
+  const chainOk = isGenesis ? (r.prev_hash === GENESIS) : (r.prev_hash === prevComputed);
+  // 4. the decision itself re-derives from the inputs pinned beside it
+  const p = r.action.params || {};
+  let outOk = false, rederived = "", outWhy = "";
+  if (p.thresholds && p.score !== undefined && p.outcome !== undefined){
+    rederived = classify(p.score, p.thresholds);
+    outOk = rederived === p.outcome;
+    outWhy = outOk ? `${p.score} \u2192 ${rederived} \u2713` : `re-derives to ${rederived}, recorded ${p.outcome}`;
+  } else { outWhy = "no pinned thresholds in this receipt"; }
+  // 5. inclusion in the published log
+  let inclOk = false, inclWhy = "no inclusion proof supplied";
+  if (r.inclusion_proof && root){
+    const pr = r.inclusion_proof;
+    inclOk = await verifyInclusion(await leafHash(computed), pr.index, pr.tree_size, pr.path, root);
+    inclWhy = inclOk
+      ? `leaf ${pr.index} of ${pr.tree_size}, ${pr.path.length} sibling hashes \u2713`
+      : "this receipt is not the one the log committed to at that position";
+  }
+  return {sigOk, hashOk, chainOk, isGenesis, outOk, outWhy, inclOk, inclWhy, computed, sigErr};
+}
+
+function dot(ok){ return `<span class="dot ${ok?'ok':'bad'}"></span>`; }
+function esc(s){ return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+
+async function renderLogPanel(){
+  const el = document.getElementById("logpanel");
+  const log = bundle.log;
+  if (!log || !log.root){ el.style.display = "none"; return null; }
+  el.style.display = "";
+  let consHtml = "";
+  if (log.previous && log.consistency_proof){
+    const ok = await verifyConsistency(
+      log.previous.tree_size, log.tree_size, log.previous.root, log.root, log.consistency_proof);
+    consHtml = `<div class="chk">${dot(ok)}<span class="lab">Append-only</span><span class="why">${
+      ok ? `every one of the ${log.previous.tree_size} decisions committed at the earlier anchor is still present, unchanged, and in the same position at ${log.tree_size} \u2713`
+         : "the later log is NOT an extension of the earlier one \u2014 history was rewritten"}</span></div>`;
+  }
+  el.innerHTML = `
+    <h2>Published log</h2>
+    <div class="kv"><b>root</b> <span class="roothex">${esc(log.root)}</span></div>
+    <div class="kv"><b>size</b> <span class="roothex">${esc(log.tree_size)} decisions &middot; anchored ${esc((log.anchored_at||'').slice(0,19))}Z</span></div>
+    ${log.previous ? `<div class="kv"><b>prior</b> <span class="roothex">${esc(log.previous.root.slice(0,32))}\u2026 at ${esc(log.previous.tree_size)} decisions</span></div>` : ""}
+    ${consHtml}`;
+  return log.root;
+}
+
+async function render(){
+  document.getElementById("meta").textContent =
+    `Model: ${bundle.rulebook_version||'(embedded)'}   \u00b7   ${bundle.receipts.length} receipts`;
+  const root = await renderLogPanel();
+  const host = document.getElementById("receipts"); host.innerHTML="";
+  let prevComputed=null;
+  for (const r of bundle.receipts){
+    const res = await verifyReceipt(r, prevComputed, root);
+    const allOk = res.sigOk && res.hashOk && res.chainOk && res.outOk && (res.inclOk || !r.inclusion_proof);
+    const p = r.action.params||{};
+    const outcome = String(p.outcome || r.verdict.decision).toUpperCase();
+    const th = p.thresholds || {};
+    const el = document.createElement("div"); el.className="card";
+    el.innerHTML = `
+      <div class="rhead">
+        <span class="rid">${esc(r.receipt_id)} \u00b7 seq ${r.seq}</span>
+        <span class="outcome o-${esc(outcome)}">${esc(outcome)}</span>
+      </div>
+      <div class="body">
+        <div class="fields">
+          <div class="kv"><b>surface</b> ${esc(r.action.type)}</div>
+          <div class="kv"><b>customer</b> ${esc(p.customer_ref||'\u2014')}</div>
+          <div class="kv"><b>score</b> ${esc(p.score)}</div>
+          <div class="kv"><b>thresholds</b> review \u2265 ${esc(th.review_at)} \u00b7 decline \u2265 ${esc(th.decline_at)}</div>
+          <div class="kv"><b>model</b> ${esc(p.model ? p.model.name+'@'+p.model.version : '\u2014')}</div>
+          <div class="kv"><b>this_hash</b> ${esc(r.this_hash.slice(0,24))}\u2026</div>
+          <div class="kv"><b>prev_hash</b> ${esc(r.prev_hash.slice(0,24))}\u2026</div>
+        </div>
+        <div class="checks">
+          <div class="chk">${dot(res.sigOk)}<span class="lab">Signature</span><span class="why">${res.sigErr||'Ed25519'}</span></div>
+          <div class="chk">${dot(res.hashOk)}<span class="lab">Receipt hash</span><span class="why">${res.hashOk?'re-derived \u2713':'recomputed \u2260 stored'}</span></div>
+          <div class="chk">${dot(res.chainOk)}<span class="lab">Chain link</span><span class="why">${res.chainOk?(res.isGenesis?'genesis \u2713':'linked \u2713'):'broken \u2014 the receipt before this one was edited'}</span></div>
+          <div class="chk">${dot(res.outOk)}<span class="lab">Outcome re-derived</span><span class="why">${esc(res.outWhy)}</span></div>
+          <div class="chk">${dot(res.inclOk)}<span class="lab">Log inclusion</span><span class="why">${esc(res.inclWhy)}</span></div>
+        </div>
+      </div>
+      <div class="stamp ${allOk?'ok':'bad'}">${allOk?'REPRODUCED byte-for-byte against root '+ String(root||'').slice(0,8) : 'MISMATCH \u2014 this receipt does not reproduce'}</div>`;
+    host.appendChild(el);
+    prevComputed = res.computed;
+  }
+}
+
+document.getElementById("run").onclick = render;
+document.getElementById("tamper").onclick = () => {
+  // Rewrite a recorded score the way a bank quietly revising history would.
+  const t = bundle.receipts[1] || bundle.receipts[0];
+  if (t && t.action && t.action.params && t.action.params.score !== undefined){
+    t.action.params.score = "0.118";
+    render();
+  }
+};
+document.getElementById("restore").onclick = () => { bundle = JSON.parse(JSON.stringify(BUNDLE_ORIGINAL)); render(); };
+document.getElementById("file").onchange = (e) => {
+  const f = e.target.files[0]; if(!f) return;
+  const fr = new FileReader();
+  fr.onload = () => { try { bundle = JSON.parse(fr.result); if(Array.isArray(bundle)) bundle={receipts:bundle}; render(); } catch(err){ alert("Not a valid receipt bundle JSON."); } };
+  fr.readAsText(f); // local read, no network
+};
+document.querySelector("label.file").addEventListener("click", e => document.getElementById("file").click());
+
+if (!(crypto && crypto.subtle)) document.getElementById("offline").textContent = "WebCrypto unavailable \u2014 open in a modern browser.";
+render();
+</script>
+</body>
+</html>

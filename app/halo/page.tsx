@@ -73,7 +73,7 @@ export default function HaloPage() {
       <footer className="footer">
         <div className="wrap footer__bar-only">
           <span>© 2026 Arbiter</span>
-          <Link href="/">arbiter.inc →</Link>
+          <Link href="/">arbiter.company →</Link>
         </div>
       </footer>
     </>
