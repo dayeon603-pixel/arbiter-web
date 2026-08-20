@@ -1,6 +1,6 @@
 {
   "format": "Arbiter Decision Attestation Format",
-  "version": "0.1",
+  "version": "0.2",
   "note": "Normative conformance vectors. An implementation conforms only if it reproduces every canonical form and hash, verifies every must_accept receipt, and rejects every must_reject case.",
   "canonicalisation": [
     {
@@ -1619,7 +1619,8 @@
     }
   ],
   "receipts": {
-    "public_key": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+    "public_key": "ea4a6c63e29c520abef5507b132ec5f9954776aebebe7b92421eea691446d22c",
+    "note": "must_reject cases are sampled from the mutation generator in signet.adversary. They are instances of rules, not an exhaustive list: a conforming verifier must reject every mutation of every receipt, not these cases in particular.",
     "must_accept": [
       {
         "receipt_id": "rcpt:vec-0",
@@ -1633,49 +1634,6 @@
           "params": {
             "decision_id": "vec-0",
             "customer_ref": "cust-0",
-            "outcome": "decline",
-            "score": "0.6412",
-            "model": {
-              "name": "risk-unified",
-              "version": "1.0.0",
-              "feature_snapshot": "feat-store@2026-01-01"
-            },
-            "thresholds": {
-              "review_at": "0.4500",
-              "decline_at": "0.6000"
-            },
-            "features": {
-              "months_on_book": 7,
-              "flag": true
-            }
-          },
-          "requested_at": "2026-01-01T12:00:00Z"
-        },
-        "verdict": {
-          "verdict_id": "vd:vec-0",
-          "action_id": "act:vec-0",
-          "authorizer_id": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
-          "decision": "DENY",
-          "reasons": [
-            "outcome=decline"
-          ],
-          "decided_at": "2026-01-01T12:00:00Z",
-          "signature": "436d79a60000a07abbf37908f50e42a1666ee979860a2853b525fcbf8ffc09bab1f7abcf1153f1aef5c91e23423c7fc66898c62106bea86894f3cf39ab18390d"
-        },
-        "this_hash": "9163f85a1f4ad24e2f1279686beeb2ab9017ef08ec79bc8b756256a917ca3674"
-      },
-      {
-        "receipt_id": "rcpt:vec-1",
-        "seq": 1,
-        "prev_hash": "9163f85a1f4ad24e2f1279686beeb2ab9017ef08ec79bc8b756256a917ca3674",
-        "action": {
-          "action_id": "act:vec-1",
-          "agent_id": "arbiter.adaptive_risk.shadow",
-          "mandate_id": "model:risk-unified@1.0.0",
-          "type": "credit_application",
-          "params": {
-            "decision_id": "vec-1",
-            "customer_ref": "cust-1",
             "outcome": "allow",
             "score": "0.1732",
             "model": {
@@ -1684,80 +1642,175 @@
               "feature_snapshot": "feat-store@2026-01-01"
             },
             "thresholds": {
-              "review_at": "0.4500",
-              "decline_at": "0.6000"
+              "review_at": "0.35",
+              "decline_at": "0.70"
             },
             "features": {
-              "months_on_book": 8,
-              "flag": false
+              "utilisation": 0.11,
+              "delinq_24m": 0
             }
           },
-          "requested_at": "2026-01-01T12:00:00Z"
+          "requested_at": "2026-01-01T00:00:00Z"
         },
         "verdict": {
-          "verdict_id": "vd:vec-1",
-          "action_id": "act:vec-1",
-          "authorizer_id": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+          "verdict_id": "vd:vec-0",
+          "action_id": "act:vec-0",
+          "authorizer_id": "ea4a6c63e29c520abef5507b132ec5f9954776aebebe7b92421eea691446d22c",
           "decision": "ALLOW",
           "reasons": [
             "outcome=allow"
           ],
-          "decided_at": "2026-01-01T12:00:00Z",
-          "signature": "8fc632d9d04ae8b314df4374d40384f37d0432e2580891d52f9e148f51b670a0bc3c85c3ec7ea4a3dd38931cc49ac97c4fd2720397e93d77acfe013450087302"
+          "decided_at": "2026-01-01T00:00:00Z",
+          "action_digest": "82c21e3553467caa33384fe7adc5cb956371fa27d5935ae89949b2b485d906e3",
+          "signature": "941a194923b694c14abf3f0a32044be248c7b1d3a454e0b91d21430f598b1ac15e957f3d8b1c7743220d439e3340aa56a8af3ea8980bcb02fe7bcb2fedd07801"
         },
-        "this_hash": "b413f8335c4225b49c7f5b849bd9b47998cd0a03882301e9da5c05aa36950ce5"
+        "this_hash": "f444340c8708cb1986baa1d4f1f128fe1b3dd6c1aad663eaffc2e2a4d77f888e"
       },
       {
-        "receipt_id": "rcpt:vec-2",
-        "seq": 2,
-        "prev_hash": "b413f8335c4225b49c7f5b849bd9b47998cd0a03882301e9da5c05aa36950ce5",
+        "receipt_id": "rcpt:vec-1",
+        "seq": 1,
+        "prev_hash": "f444340c8708cb1986baa1d4f1f128fe1b3dd6c1aad663eaffc2e2a4d77f888e",
         "action": {
-          "action_id": "act:vec-2",
+          "action_id": "act:vec-1",
           "agent_id": "arbiter.adaptive_risk.shadow",
           "mandate_id": "model:risk-unified@1.0.0",
           "type": "credit_application",
           "params": {
-            "decision_id": "vec-2",
-            "customer_ref": "cust-2",
+            "decision_id": "vec-1",
+            "customer_ref": "cust-1",
             "outcome": "review",
-            "score": "0.4884",
+            "score": "0.4210",
             "model": {
               "name": "risk-unified",
               "version": "1.0.0",
               "feature_snapshot": "feat-store@2026-01-01"
             },
             "thresholds": {
-              "review_at": "0.4500",
-              "decline_at": "0.6000"
+              "review_at": "0.35",
+              "decline_at": "0.70"
             },
             "features": {
-              "months_on_book": 9,
-              "flag": true
+              "utilisation": 0.58,
+              "delinq_24m": 1
             }
           },
-          "requested_at": "2026-01-01T12:00:00Z"
+          "requested_at": "2026-01-01T00:01:00Z"
         },
         "verdict": {
-          "verdict_id": "vd:vec-2",
-          "action_id": "act:vec-2",
-          "authorizer_id": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+          "verdict_id": "vd:vec-1",
+          "action_id": "act:vec-1",
+          "authorizer_id": "ea4a6c63e29c520abef5507b132ec5f9954776aebebe7b92421eea691446d22c",
           "decision": "DENY",
           "reasons": [
             "outcome=review"
           ],
-          "decided_at": "2026-01-01T12:00:00Z",
-          "signature": "c27b8c7ec1056e42326c3d041af732c3355e28121f6a9142672be8823bddd7e6d11e7e0a62f65e7574794bdd636c786b6d13a8bb2dceb7ae9169d2abf15e7601"
+          "decided_at": "2026-01-01T00:01:00Z",
+          "action_digest": "217ec196bbe4fef6e0c1bb8294efd6e24dead35e323d584bc5c162f7b16da26a",
+          "signature": "c3a42a37326b90b24baa53ed63c392811ec9b602af48fbeb6afb11e9ac81ed2d7b7e3dbb72909eff65d3c13e95ddb5a7b27154d00e53cd468bdaf38f3a2d6009"
         },
-        "this_hash": "7f55757d8023c162ceec0dac019f7ff1acc510b682ba7356193eaebb54d49c03"
+        "this_hash": "9f06c10dcaad298e257ede877291677989cf202a0f48709dd83f227a685b95c3"
+      },
+      {
+        "receipt_id": "rcpt:vec-2",
+        "seq": 2,
+        "prev_hash": "9f06c10dcaad298e257ede877291677989cf202a0f48709dd83f227a685b95c3",
+        "action": {
+          "action_id": "act:vec-2",
+          "agent_id": "arbiter.adaptive_risk.shadow",
+          "mandate_id": "model:risk-unified@1.0.0",
+          "type": "transaction_fraud",
+          "params": {
+            "decision_id": "vec-2",
+            "customer_ref": "cust-2",
+            "outcome": "decline",
+            "score": "0.8840",
+            "model": {
+              "name": "risk-unified",
+              "version": "1.0.0",
+              "feature_snapshot": "feat-store@2026-01-01"
+            },
+            "thresholds": {
+              "review_at": "0.35",
+              "decline_at": "0.70"
+            },
+            "features": {
+              "velocity_1h": 14,
+              "device_new": 1
+            }
+          },
+          "requested_at": "2026-01-01T00:02:00Z"
+        },
+        "verdict": {
+          "verdict_id": "vd:vec-2",
+          "action_id": "act:vec-2",
+          "authorizer_id": "ea4a6c63e29c520abef5507b132ec5f9954776aebebe7b92421eea691446d22c",
+          "decision": "DENY",
+          "reasons": [
+            "outcome=decline"
+          ],
+          "decided_at": "2026-01-01T00:02:00Z",
+          "action_digest": "d803d77b2b8d062f77c395d68b22c842c3807edfcedab1ad20cda841b275720e",
+          "signature": "9b40eda24a2ec1a80f1b54dd772687ed6fd01117664b10f5d6574aac59abf4ec82a98fed45a920d45328948c0cd1a6c707b69243562abd3d8f75f22637e7430b"
+        },
+        "this_hash": "aa8d1eadd7731b40b0d83a2f17fbca020d9489d7c7fb2cbd04ec20ae3cf58666"
       }
     ],
     "must_reject": [
       {
-        "case": "outcome rewritten",
+        "case": "rewrite_outcome",
+        "why": "a recorded outcome was replaced with a different one",
         "receipt": {
           "receipt_id": "rcpt:vec-1",
           "seq": 1,
-          "prev_hash": "9163f85a1f4ad24e2f1279686beeb2ab9017ef08ec79bc8b756256a917ca3674",
+          "prev_hash": "f444340c8708cb1986baa1d4f1f128fe1b3dd6c1aad663eaffc2e2a4d77f888e",
+          "action": {
+            "action_id": "act:vec-1",
+            "agent_id": "arbiter.adaptive_risk.shadow",
+            "mandate_id": "model:risk-unified@1.0.0",
+            "type": "credit_application",
+            "params": {
+              "decision_id": "vec-1",
+              "customer_ref": "cust-1",
+              "outcome": "decline",
+              "score": "0.4210",
+              "model": {
+                "name": "risk-unified",
+                "version": "1.0.0",
+                "feature_snapshot": "feat-store@2026-01-01"
+              },
+              "thresholds": {
+                "review_at": "0.35",
+                "decline_at": "0.70"
+              },
+              "features": {
+                "utilisation": 0.58,
+                "delinq_24m": 1
+              }
+            },
+            "requested_at": "2026-01-01T00:01:00Z"
+          },
+          "verdict": {
+            "verdict_id": "vd:vec-1",
+            "action_id": "act:vec-1",
+            "authorizer_id": "ea4a6c63e29c520abef5507b132ec5f9954776aebebe7b92421eea691446d22c",
+            "decision": "DENY",
+            "reasons": [
+              "outcome=review"
+            ],
+            "decided_at": "2026-01-01T00:01:00Z",
+            "action_digest": "217ec196bbe4fef6e0c1bb8294efd6e24dead35e323d584bc5c162f7b16da26a",
+            "signature": "c3a42a37326b90b24baa53ed63c392811ec9b602af48fbeb6afb11e9ac81ed2d7b7e3dbb72909eff65d3c13e95ddb5a7b27154d00e53cd468bdaf38f3a2d6009"
+          },
+          "this_hash": "ed553193b62ecfccb3f21db4fd4df671289236df37a168b736b2531bfa880b04"
+        }
+      },
+      {
+        "case": "lower_score",
+        "why": "the recorded score was reduced after the fact",
+        "receipt": {
+          "receipt_id": "rcpt:vec-1",
+          "seq": 1,
+          "prev_hash": "f444340c8708cb1986baa1d4f1f128fe1b3dd6c1aad663eaffc2e2a4d77f888e",
           "action": {
             "action_id": "act:vec-1",
             "agent_id": "arbiter.adaptive_risk.shadow",
@@ -1767,43 +1820,45 @@
               "decision_id": "vec-1",
               "customer_ref": "cust-1",
               "outcome": "review",
-              "score": "0.1732",
+              "score": "0.2210",
               "model": {
                 "name": "risk-unified",
                 "version": "1.0.0",
                 "feature_snapshot": "feat-store@2026-01-01"
               },
               "thresholds": {
-                "review_at": "0.4500",
-                "decline_at": "0.6000"
+                "review_at": "0.35",
+                "decline_at": "0.70"
               },
               "features": {
-                "months_on_book": 8,
-                "flag": false
+                "utilisation": 0.58,
+                "delinq_24m": 1
               }
             },
-            "requested_at": "2026-01-01T12:00:00Z"
+            "requested_at": "2026-01-01T00:01:00Z"
           },
           "verdict": {
             "verdict_id": "vd:vec-1",
             "action_id": "act:vec-1",
-            "authorizer_id": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
-            "decision": "ALLOW",
+            "authorizer_id": "ea4a6c63e29c520abef5507b132ec5f9954776aebebe7b92421eea691446d22c",
+            "decision": "DENY",
             "reasons": [
-              "outcome=allow"
+              "outcome=review"
             ],
-            "decided_at": "2026-01-01T12:00:00Z",
-            "signature": "8fc632d9d04ae8b314df4374d40384f37d0432e2580891d52f9e148f51b670a0bc3c85c3ec7ea4a3dd38931cc49ac97c4fd2720397e93d77acfe013450087302"
+            "decided_at": "2026-01-01T00:01:00Z",
+            "action_digest": "217ec196bbe4fef6e0c1bb8294efd6e24dead35e323d584bc5c162f7b16da26a",
+            "signature": "c3a42a37326b90b24baa53ed63c392811ec9b602af48fbeb6afb11e9ac81ed2d7b7e3dbb72909eff65d3c13e95ddb5a7b27154d00e53cd468bdaf38f3a2d6009"
           },
-          "this_hash": "b413f8335c4225b49c7f5b849bd9b47998cd0a03882301e9da5c05aa36950ce5"
+          "this_hash": "9a78b1174135172f1e0f04988c28b62ad08fd3ed9ed5004ed41ec497c2cea2ca"
         }
       },
       {
-        "case": "score lowered",
+        "case": "move_threshold",
+        "why": "the cutoff was moved so a past decision looks correct",
         "receipt": {
           "receipt_id": "rcpt:vec-1",
           "seq": 1,
-          "prev_hash": "9163f85a1f4ad24e2f1279686beeb2ab9017ef08ec79bc8b756256a917ca3674",
+          "prev_hash": "f444340c8708cb1986baa1d4f1f128fe1b3dd6c1aad663eaffc2e2a4d77f888e",
           "action": {
             "action_id": "act:vec-1",
             "agent_id": "arbiter.adaptive_risk.shadow",
@@ -1812,44 +1867,46 @@
             "params": {
               "decision_id": "vec-1",
               "customer_ref": "cust-1",
-              "outcome": "allow",
-              "score": "0.0001",
+              "outcome": "review",
+              "score": "0.4210",
               "model": {
                 "name": "risk-unified",
                 "version": "1.0.0",
                 "feature_snapshot": "feat-store@2026-01-01"
               },
               "thresholds": {
-                "review_at": "0.4500",
-                "decline_at": "0.6000"
+                "review_at": "0.65",
+                "decline_at": "1"
               },
               "features": {
-                "months_on_book": 8,
-                "flag": false
+                "utilisation": 0.58,
+                "delinq_24m": 1
               }
             },
-            "requested_at": "2026-01-01T12:00:00Z"
+            "requested_at": "2026-01-01T00:01:00Z"
           },
           "verdict": {
             "verdict_id": "vd:vec-1",
             "action_id": "act:vec-1",
-            "authorizer_id": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
-            "decision": "ALLOW",
+            "authorizer_id": "ea4a6c63e29c520abef5507b132ec5f9954776aebebe7b92421eea691446d22c",
+            "decision": "DENY",
             "reasons": [
-              "outcome=allow"
+              "outcome=review"
             ],
-            "decided_at": "2026-01-01T12:00:00Z",
-            "signature": "8fc632d9d04ae8b314df4374d40384f37d0432e2580891d52f9e148f51b670a0bc3c85c3ec7ea4a3dd38931cc49ac97c4fd2720397e93d77acfe013450087302"
+            "decided_at": "2026-01-01T00:01:00Z",
+            "action_digest": "217ec196bbe4fef6e0c1bb8294efd6e24dead35e323d584bc5c162f7b16da26a",
+            "signature": "c3a42a37326b90b24baa53ed63c392811ec9b602af48fbeb6afb11e9ac81ed2d7b7e3dbb72909eff65d3c13e95ddb5a7b27154d00e53cd468bdaf38f3a2d6009"
           },
-          "this_hash": "b413f8335c4225b49c7f5b849bd9b47998cd0a03882301e9da5c05aa36950ce5"
+          "this_hash": "f4254def856992ddac4bd28c9411cbf653cf0905961f58872a5cf547f4cd0d56"
         }
       },
       {
-        "case": "threshold moved",
+        "case": "swap_model_version",
+        "why": "the decision was attributed to a different model version",
         "receipt": {
           "receipt_id": "rcpt:vec-1",
           "seq": 1,
-          "prev_hash": "9163f85a1f4ad24e2f1279686beeb2ab9017ef08ec79bc8b756256a917ca3674",
+          "prev_hash": "f444340c8708cb1986baa1d4f1f128fe1b3dd6c1aad663eaffc2e2a4d77f888e",
           "action": {
             "action_id": "act:vec-1",
             "agent_id": "arbiter.adaptive_risk.shadow",
@@ -1858,44 +1915,46 @@
             "params": {
               "decision_id": "vec-1",
               "customer_ref": "cust-1",
-              "outcome": "allow",
-              "score": "0.1732",
+              "outcome": "review",
+              "score": "0.4210",
               "model": {
                 "name": "risk-unified",
-                "version": "1.0.0",
+                "version": "1.0.0-b",
                 "feature_snapshot": "feat-store@2026-01-01"
               },
               "thresholds": {
-                "review_at": "0.0100",
-                "decline_at": "0.0200"
+                "review_at": "0.35",
+                "decline_at": "0.70"
               },
               "features": {
-                "months_on_book": 8,
-                "flag": false
+                "utilisation": 0.58,
+                "delinq_24m": 1
               }
             },
-            "requested_at": "2026-01-01T12:00:00Z"
+            "requested_at": "2026-01-01T00:01:00Z"
           },
           "verdict": {
             "verdict_id": "vd:vec-1",
             "action_id": "act:vec-1",
-            "authorizer_id": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
-            "decision": "ALLOW",
+            "authorizer_id": "ea4a6c63e29c520abef5507b132ec5f9954776aebebe7b92421eea691446d22c",
+            "decision": "DENY",
             "reasons": [
-              "outcome=allow"
+              "outcome=review"
             ],
-            "decided_at": "2026-01-01T12:00:00Z",
-            "signature": "8fc632d9d04ae8b314df4374d40384f37d0432e2580891d52f9e148f51b670a0bc3c85c3ec7ea4a3dd38931cc49ac97c4fd2720397e93d77acfe013450087302"
+            "decided_at": "2026-01-01T00:01:00Z",
+            "action_digest": "217ec196bbe4fef6e0c1bb8294efd6e24dead35e323d584bc5c162f7b16da26a",
+            "signature": "c3a42a37326b90b24baa53ed63c392811ec9b602af48fbeb6afb11e9ac81ed2d7b7e3dbb72909eff65d3c13e95ddb5a7b27154d00e53cd468bdaf38f3a2d6009"
           },
-          "this_hash": "b413f8335c4225b49c7f5b849bd9b47998cd0a03882301e9da5c05aa36950ce5"
+          "this_hash": "a1a4be9e119cd4dbba7c010b1779762c8839119bcda38aaf1f61dc741b4cd380"
         }
       },
       {
-        "case": "model version swapped",
+        "case": "edit_feature",
+        "why": "feature 'delinq_24m' was altered after the decision",
         "receipt": {
           "receipt_id": "rcpt:vec-1",
           "seq": 1,
-          "prev_hash": "9163f85a1f4ad24e2f1279686beeb2ab9017ef08ec79bc8b756256a917ca3674",
+          "prev_hash": "f444340c8708cb1986baa1d4f1f128fe1b3dd6c1aad663eaffc2e2a4d77f888e",
           "action": {
             "action_id": "act:vec-1",
             "agent_id": "arbiter.adaptive_risk.shadow",
@@ -1904,44 +1963,94 @@
             "params": {
               "decision_id": "vec-1",
               "customer_ref": "cust-1",
-              "outcome": "allow",
-              "score": "0.1732",
+              "outcome": "review",
+              "score": "0.4210",
               "model": {
                 "name": "risk-unified",
-                "version": "9.9.9",
+                "version": "1.0.0",
                 "feature_snapshot": "feat-store@2026-01-01"
               },
               "thresholds": {
-                "review_at": "0.4500",
-                "decline_at": "0.6000"
+                "review_at": "0.35",
+                "decline_at": "0.70"
               },
               "features": {
-                "months_on_book": 8,
-                "flag": false
+                "utilisation": 0.58,
+                "delinq_24m": 2
               }
             },
-            "requested_at": "2026-01-01T12:00:00Z"
+            "requested_at": "2026-01-01T00:01:00Z"
           },
           "verdict": {
             "verdict_id": "vd:vec-1",
             "action_id": "act:vec-1",
-            "authorizer_id": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
-            "decision": "ALLOW",
+            "authorizer_id": "ea4a6c63e29c520abef5507b132ec5f9954776aebebe7b92421eea691446d22c",
+            "decision": "DENY",
             "reasons": [
-              "outcome=allow"
+              "outcome=review"
             ],
-            "decided_at": "2026-01-01T12:00:00Z",
-            "signature": "8fc632d9d04ae8b314df4374d40384f37d0432e2580891d52f9e148f51b670a0bc3c85c3ec7ea4a3dd38931cc49ac97c4fd2720397e93d77acfe013450087302"
+            "decided_at": "2026-01-01T00:01:00Z",
+            "action_digest": "217ec196bbe4fef6e0c1bb8294efd6e24dead35e323d584bc5c162f7b16da26a",
+            "signature": "c3a42a37326b90b24baa53ed63c392811ec9b602af48fbeb6afb11e9ac81ed2d7b7e3dbb72909eff65d3c13e95ddb5a7b27154d00e53cd468bdaf38f3a2d6009"
           },
-          "this_hash": "b413f8335c4225b49c7f5b849bd9b47998cd0a03882301e9da5c05aa36950ce5"
+          "this_hash": "b66a722438ae562dd963c61ee2c43b31f91fbd57de33f18e05d7ceebd6f2e8c1"
         }
       },
       {
-        "case": "feature edited",
+        "case": "edit_customer",
+        "why": "the decision was reassigned to a different customer",
         "receipt": {
           "receipt_id": "rcpt:vec-1",
           "seq": 1,
-          "prev_hash": "9163f85a1f4ad24e2f1279686beeb2ab9017ef08ec79bc8b756256a917ca3674",
+          "prev_hash": "f444340c8708cb1986baa1d4f1f128fe1b3dd6c1aad663eaffc2e2a4d77f888e",
+          "action": {
+            "action_id": "act:vec-1",
+            "agent_id": "arbiter.adaptive_risk.shadow",
+            "mandate_id": "model:risk-unified@1.0.0",
+            "type": "credit_application",
+            "params": {
+              "decision_id": "vec-1",
+              "customer_ref": "cust-1-x",
+              "outcome": "review",
+              "score": "0.4210",
+              "model": {
+                "name": "risk-unified",
+                "version": "1.0.0",
+                "feature_snapshot": "feat-store@2026-01-01"
+              },
+              "thresholds": {
+                "review_at": "0.35",
+                "decline_at": "0.70"
+              },
+              "features": {
+                "utilisation": 0.58,
+                "delinq_24m": 1
+              }
+            },
+            "requested_at": "2026-01-01T00:01:00Z"
+          },
+          "verdict": {
+            "verdict_id": "vd:vec-1",
+            "action_id": "act:vec-1",
+            "authorizer_id": "ea4a6c63e29c520abef5507b132ec5f9954776aebebe7b92421eea691446d22c",
+            "decision": "DENY",
+            "reasons": [
+              "outcome=review"
+            ],
+            "decided_at": "2026-01-01T00:01:00Z",
+            "action_digest": "217ec196bbe4fef6e0c1bb8294efd6e24dead35e323d584bc5c162f7b16da26a",
+            "signature": "c3a42a37326b90b24baa53ed63c392811ec9b602af48fbeb6afb11e9ac81ed2d7b7e3dbb72909eff65d3c13e95ddb5a7b27154d00e53cd468bdaf38f3a2d6009"
+          },
+          "this_hash": "d13c8bc95f79c81ef64c17ed3e2b7abaf08c609d3f12996191c6c3758eb86fdf"
+        }
+      },
+      {
+        "case": "strip_signature",
+        "why": "the signature was removed",
+        "receipt": {
+          "receipt_id": "rcpt:vec-1",
+          "seq": 1,
+          "prev_hash": "f444340c8708cb1986baa1d4f1f128fe1b3dd6c1aad663eaffc2e2a4d77f888e",
           "action": {
             "action_id": "act:vec-1",
             "agent_id": "arbiter.adaptive_risk.shadow",
@@ -1950,44 +2059,46 @@
             "params": {
               "decision_id": "vec-1",
               "customer_ref": "cust-1",
-              "outcome": "allow",
-              "score": "0.1732",
+              "outcome": "review",
+              "score": "0.4210",
               "model": {
                 "name": "risk-unified",
                 "version": "1.0.0",
                 "feature_snapshot": "feat-store@2026-01-01"
               },
               "thresholds": {
-                "review_at": "0.4500",
-                "decline_at": "0.6000"
+                "review_at": "0.35",
+                "decline_at": "0.70"
               },
               "features": {
-                "months_on_book": 999,
-                "flag": false
+                "utilisation": 0.58,
+                "delinq_24m": 1
               }
             },
-            "requested_at": "2026-01-01T12:00:00Z"
+            "requested_at": "2026-01-01T00:01:00Z"
           },
           "verdict": {
             "verdict_id": "vd:vec-1",
             "action_id": "act:vec-1",
-            "authorizer_id": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
-            "decision": "ALLOW",
+            "authorizer_id": "ea4a6c63e29c520abef5507b132ec5f9954776aebebe7b92421eea691446d22c",
+            "decision": "DENY",
             "reasons": [
-              "outcome=allow"
+              "outcome=review"
             ],
-            "decided_at": "2026-01-01T12:00:00Z",
-            "signature": "8fc632d9d04ae8b314df4374d40384f37d0432e2580891d52f9e148f51b670a0bc3c85c3ec7ea4a3dd38931cc49ac97c4fd2720397e93d77acfe013450087302"
+            "decided_at": "2026-01-01T00:01:00Z",
+            "action_digest": "217ec196bbe4fef6e0c1bb8294efd6e24dead35e323d584bc5c162f7b16da26a",
+            "signature": ""
           },
-          "this_hash": "b413f8335c4225b49c7f5b849bd9b47998cd0a03882301e9da5c05aa36950ce5"
+          "this_hash": "55cc002539219268baa31ab217c6eb1be93b573f6341ed1602093a6afaf384f9"
         }
       },
       {
-        "case": "prev_hash broken",
+        "case": "foreign_signature",
+        "why": "re-signed by a key that is not the recorded authorizer",
         "receipt": {
           "receipt_id": "rcpt:vec-1",
           "seq": 1,
-          "prev_hash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "prev_hash": "f444340c8708cb1986baa1d4f1f128fe1b3dd6c1aad663eaffc2e2a4d77f888e",
           "action": {
             "action_id": "act:vec-1",
             "agent_id": "arbiter.adaptive_risk.shadow",
@@ -1996,44 +2107,46 @@
             "params": {
               "decision_id": "vec-1",
               "customer_ref": "cust-1",
-              "outcome": "allow",
-              "score": "0.1732",
+              "outcome": "review",
+              "score": "0.4210",
               "model": {
                 "name": "risk-unified",
                 "version": "1.0.0",
                 "feature_snapshot": "feat-store@2026-01-01"
               },
               "thresholds": {
-                "review_at": "0.4500",
-                "decline_at": "0.6000"
+                "review_at": "0.35",
+                "decline_at": "0.70"
               },
               "features": {
-                "months_on_book": 8,
-                "flag": false
+                "utilisation": 0.58,
+                "delinq_24m": 1
               }
             },
-            "requested_at": "2026-01-01T12:00:00Z"
+            "requested_at": "2026-01-01T00:01:00Z"
           },
           "verdict": {
             "verdict_id": "vd:vec-1",
             "action_id": "act:vec-1",
-            "authorizer_id": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
-            "decision": "ALLOW",
+            "authorizer_id": "ea4a6c63e29c520abef5507b132ec5f9954776aebebe7b92421eea691446d22c",
+            "decision": "DENY",
             "reasons": [
-              "outcome=allow"
+              "outcome=review"
             ],
-            "decided_at": "2026-01-01T12:00:00Z",
-            "signature": "8fc632d9d04ae8b314df4374d40384f37d0432e2580891d52f9e148f51b670a0bc3c85c3ec7ea4a3dd38931cc49ac97c4fd2720397e93d77acfe013450087302"
+            "decided_at": "2026-01-01T00:01:00Z",
+            "action_digest": "217ec196bbe4fef6e0c1bb8294efd6e24dead35e323d584bc5c162f7b16da26a",
+            "signature": "cda18ded1cb36c2089468bfe10cf72206773658da7a16e129bf7e7226259778b2ebb167addb520fdfd5117344c05c36c93dbc07c7fb90b246a6d447beaf22e0a"
           },
-          "this_hash": "b413f8335c4225b49c7f5b849bd9b47998cd0a03882301e9da5c05aa36950ce5"
+          "this_hash": "df14f05869db1c620400ca372e85d3c4f4263970372f15da67a7833056d1fc96"
         }
       },
       {
-        "case": "signature truncated",
+        "case": "stale_hash",
+        "why": "the payload changed but the stored hash was left untouched",
         "receipt": {
           "receipt_id": "rcpt:vec-1",
           "seq": 1,
-          "prev_hash": "9163f85a1f4ad24e2f1279686beeb2ab9017ef08ec79bc8b756256a917ca3674",
+          "prev_hash": "f444340c8708cb1986baa1d4f1f128fe1b3dd6c1aad663eaffc2e2a4d77f888e",
           "action": {
             "action_id": "act:vec-1",
             "agent_id": "arbiter.adaptive_risk.shadow",
@@ -2042,36 +2155,37 @@
             "params": {
               "decision_id": "vec-1",
               "customer_ref": "cust-1",
-              "outcome": "allow",
-              "score": "0.1732",
+              "outcome": "decline",
+              "score": "0.4210",
               "model": {
                 "name": "risk-unified",
                 "version": "1.0.0",
                 "feature_snapshot": "feat-store@2026-01-01"
               },
               "thresholds": {
-                "review_at": "0.4500",
-                "decline_at": "0.6000"
+                "review_at": "0.35",
+                "decline_at": "0.70"
               },
               "features": {
-                "months_on_book": 8,
-                "flag": false
+                "utilisation": 0.58,
+                "delinq_24m": 1
               }
             },
-            "requested_at": "2026-01-01T12:00:00Z"
+            "requested_at": "2026-01-01T00:01:00Z"
           },
           "verdict": {
             "verdict_id": "vd:vec-1",
             "action_id": "act:vec-1",
-            "authorizer_id": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
-            "decision": "ALLOW",
+            "authorizer_id": "ea4a6c63e29c520abef5507b132ec5f9954776aebebe7b92421eea691446d22c",
+            "decision": "DENY",
             "reasons": [
-              "outcome=allow"
+              "outcome=review"
             ],
-            "decided_at": "2026-01-01T12:00:00Z",
-            "signature": "8fc632d9d04ae8b314df4374d40384f37d0432e2580891d52f9e148f51b670a0bc3c85c3ec7ea4a3dd38931cc49ac97c4fd2720397e93d77acfe013450087300"
+            "decided_at": "2026-01-01T00:01:00Z",
+            "action_digest": "217ec196bbe4fef6e0c1bb8294efd6e24dead35e323d584bc5c162f7b16da26a",
+            "signature": "c3a42a37326b90b24baa53ed63c392811ec9b602af48fbeb6afb11e9ac81ed2d7b7e3dbb72909eff65d3c13e95ddb5a7b27154d00e53cd468bdaf38f3a2d6009"
           },
-          "this_hash": "b413f8335c4225b49c7f5b849bd9b47998cd0a03882301e9da5c05aa36950ce5"
+          "this_hash": "9f06c10dcaad298e257ede877291677989cf202a0f48709dd83f227a685b95c3"
         }
       }
     ]
