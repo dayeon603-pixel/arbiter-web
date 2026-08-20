@@ -633,7 +633,12 @@ async function verifyReceipt(r, prevComputed, root){
   let inclOk = false, inclWhy = "no inclusion proof supplied";
   if (r.inclusion_proof && root){
     const pr = r.inclusion_proof;
-    inclOk = await verifyInclusion(await leafHash(computed), pr.index, pr.tree_size, pr.path, root);
+    // Use the SIGNED head's tree_size, not the size the proof claims for
+    // itself. A forged leaf is not accepted at any claimed size, so this is
+    // hardening rather than a hole -- but the head commits to a size and the
+    // proof does not, and a verifier should prefer the value someone signed.
+    const treeSize = (log.signed_tree_head && log.signed_tree_head.tree_size) || pr.tree_size;
+    inclOk = await verifyInclusion(await leafHash(computed), pr.index, treeSize, pr.path, root);
     inclWhy = inclOk
       ? `leaf ${pr.index} of ${pr.tree_size}, ${pr.path.length} sibling hashes \u2713`
       : "this receipt is not the one the log committed to at that position";
