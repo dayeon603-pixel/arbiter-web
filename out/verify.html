@@ -93,7 +93,7 @@
 
   <div class="foot">
     <p>Five checks per receipt, all performed locally: the Ed25519 signature over the signed verdict; the SHA-256 receipt hash re-derived from the pinned inputs; the hash-chain link to the receipt before it; the recorded outcome re-derived by re-applying the pinned thresholds to the pinned score; and a Merkle inclusion proof placing the receipt in the published log. Flip a single byte and three of the five fail on that receipt: its hash no longer re-derives, its outcome no longer follows from the inputs pinned beside it, and it is no longer the receipt the log committed to at that position. The link into the next receipt is severed at the same time, which cuts everything after it off from the genesis record. The signature stays valid, and that is itself worth seeing — it covers the signed verdict, so an edit to the recorded inputs is caught by the hash and the log rather than by the signature. No single check is sufficient alone.</p>
-    <p style="margin-top:.7rem">The inclusion proof is what makes disclosure possible without exposure: it proves one decision belongs to the log using only the sibling hashes on its path, revealing nothing about any other customer. The consistency proof above is the other half &mdash; it demonstrates the log was only ever appended to, so a publisher cannot quietly rewrite history and re-anchor. Both follow RFC 6962, the construction behind Certificate Transparency.</p>
+    <p style="margin-top:.7rem">The inclusion proof is what makes disclosure possible without exposure: it proves one decision belongs to the log using only the sibling hashes on its path, revealing nothing about any other customer. The consistency proof above is the other half &mdash; it demonstrates the log was only ever appended to, so a publisher cannot quietly rewrite history and re-anchor. Both follow RFC 6962, the construction behind Certificate Transparency. Neither, on its own, shows that everyone was shown the same log: an operator holding one key can sign one root for the auditor and another for the regulator, and every proof above verifies against both. That is why the head is countersigned. Each witness endorses a head only after checking it extends the last one it endorsed, so serving two versions of history requires every witness to sign twice — and the attempt is what gets caught, producing two conflicting heads under the operator's own signature. Trust rests on the witnesses not all colluding rather than on the operator being honest, which is the only arrangement that scales past the people you already know.</p>
     <p style="margin-top:.7rem">This verifier is the reference implementation of an <a href="/spec">open specification</a>, published under Apache-2.0 with its patent grant. Anyone may implement it, including competitors &mdash; an evidence format only one vendor can produce is not evidence. Conformance is decided by <a href="/spec/conformance-vectors.json">194 published assertions</a>, 7 of which are receipts a conforming verifier must <em>reject</em>.</p>
   </div>
 </div>
@@ -116,6 +116,36 @@ const BUNDLE_ORIGINAL = /*__BUNDLE__*/{
       "0d260dcca41cc21f7b643ae77fce64dfc738a8ea908c12f7a6616a6b3e7a3b50",
       "a480f592adc94c095cd6b50ed533f76f8d050e19f55eb65b1645adc6a5c25b37",
       "c51436f7fdc68557d6446db7ea60f618d8efd20f224f9e3d9c8f0e0a9c53befc"
+    ],
+    "signed_tree_head": {
+      "log_id": "29acbae141bccaf0b22e1a94d34d0bc7361e526d0bfe12c89794bc9322966dd7",
+      "tree_size": 6,
+      "root": "272ec2f5c4ddc0128b983ee2c68a36fd93ee5200846a985b9b6a2f8a88037763",
+      "issued_at": "2026-03-14T15:12:00+00:00",
+      "signature": "8d05fc46f82a0111cf94f6fbf2606330d48b77d92bad12897bed83266b4f0d5464c48ab27bd9c8d3ee0d9e3c4d505027ed213be7449b14ddbea5b6c17af55103"
+    },
+    "cosignatures": [
+      {
+        "witness_id": "8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c",
+        "sth_digest": "9774b18ea1c4eb308f92b975a68e339e78d463dee6f25835f9e09ddac5b10473",
+        "cosigned_at": "2026-03-14T15:12:00+00:00",
+        "signature": "d3a0af4a3f6099ca1f86ba1bb918fec6053218510b105fed151e9cf8cbf021eaa34bfe0ef9a31ba3a41ab4be4570f8df2ea8015ca99e95e3f559b28b706d2f0a",
+        "name": "Supervisory observer (demo)"
+      },
+      {
+        "witness_id": "8139770ea87d175f56a35466c34c7ecccb8d8a91b4ee37a25df60f5b8fc9b394",
+        "sth_digest": "9774b18ea1c4eb308f92b975a68e339e78d463dee6f25835f9e09ddac5b10473",
+        "cosigned_at": "2026-03-14T15:12:00+00:00",
+        "signature": "4fdabe4c21c8e630ad7c18e693b22ae235cc75eaa1af71aaee22eb87c7eb0cfb202529ae4d5746f24bbfa3c73c8ca2ca13bf5ce0e7ad7384d6a03e0786151406",
+        "name": "Counterparty bank (demo)"
+      },
+      {
+        "witness_id": "ed4928c628d1c2c6eae90338905995612959273a5c63f93636c14614ac8737d1",
+        "sth_digest": "9774b18ea1c4eb308f92b975a68e339e78d463dee6f25835f9e09ddac5b10473",
+        "cosigned_at": "2026-03-14T15:12:00+00:00",
+        "signature": "9f4304c8a7639a119439e2f6722c74f6651bde360ffac2438e2d58591d3dfc05a3e4c2fc6002b06e0ee185a530f7d82e35826943e4be1fca30b9cc99369a9d03",
+        "name": "Independent monitor (demo)"
+      }
     ]
   },
   "receipts": [
@@ -593,6 +623,41 @@ async function verifyReceipt(r, prevComputed, root){
   return {sigOk, hashOk, chainOk, isGenesis, outOk, outWhy, inclOk, inclWhy, computed, sigErr};
 }
 
+async function verifyEd25519(pubHex, payload, sigHex){
+  if (!sigHex) return false;
+  try {
+    const key = await crypto.subtle.importKey("raw", hexToBytes(pubHex), {name:"Ed25519"}, false, ["verify"]);
+    return await crypto.subtle.verify({name:"Ed25519"}, key, hexToBytes(sigHex), enc.encode(canon(payload)));
+  } catch(e){ return false; }
+}
+
+// ---- equivocation resistance ---------------------------------------------
+// Inclusion proves a decision is in *a* log; consistency proves *that* log only
+// grew. Neither shows that everyone was handed the same log. A log operator can
+// sign one root for the auditor and another for the regulator, and every proof
+// above still verifies against both. Independent witnesses close it: each
+// cosigns a head only after checking it extends the last head it endorsed, so a
+// split view needs every witness to sign twice, and none of them will.
+async function verifyTreeHead(log){
+  const sth = log && log.signed_tree_head;
+  if (!sth) return null;
+  const payload = {log_id:sth.log_id, tree_size:sth.tree_size, root:sth.root, issued_at:sth.issued_at};
+  const sigOk = await verifyEd25519(sth.log_id, payload, sth.signature);
+  // The head must commit to the same root the inclusion proofs were checked
+  // against, or it is a signature over an unrelated tree.
+  const bindsRoot = sth.root === log.root && sth.tree_size === log.tree_size;
+  const digest = await sha256hex(enc.encode(canon(payload)));
+  const seen = new Set();
+  for (const c of (log.cosignatures || [])){
+    if (c.sth_digest !== digest) continue;              // not an endorsement of THIS head
+    const ok = await verifyEd25519(c.witness_id, {witness_id:c.witness_id, sth_digest:c.sth_digest, cosigned_at:c.cosigned_at}, c.signature);
+    if (ok) seen.add(c.witness_id);                     // distinct keys only
+  }
+  const offered = (log.cosignatures || []).length;
+  return {sigOk, bindsRoot, witnesses: seen.size, offered,
+          names: (log.cosignatures||[]).map(c=>c.name||c.witness_id.slice(0,8)).join(", ")};
+}
+
 function dot(ok){ return `<span class="dot ${ok?'ok':'bad'}"></span>`; }
 function esc(s){ return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
 
@@ -601,6 +666,16 @@ async function renderLogPanel(){
   const log = bundle.log;
   if (!log || !log.root){ el.style.display = "none"; return null; }
   el.style.display = "";
+  const th = await verifyTreeHead(log);
+  let headHtml = "";
+  if (th){
+    headHtml = `<div class="chk">${dot(th.sigOk && th.bindsRoot)}<span class="lab">Tree head signed</span><span class="why">${
+      th.sigOk && th.bindsRoot ? "the log signed this exact root and size \u2713"
+                               : "the head does not commit to the root proved against above"}</span></div>
+    <div class="chk">${dot(th.witnesses > 0)}<span class="lab">Independently witnessed</span><span class="why">${
+      th.witnesses > 0 ? `${th.witnesses} of ${th.offered} cosignatures verify \u2014 ${esc(th.names)}. Each endorsed this head only after checking it extends the earlier one, so serving a different root to someone else would need all of them to sign twice.`
+                       : "no independent endorsements \u2014 this is the operator's word alone"}</span></div>`;
+  }
   let consHtml = "";
   if (log.previous && log.consistency_proof){
     const ok = await verifyConsistency(
@@ -614,7 +689,7 @@ async function renderLogPanel(){
     <div class="kv"><b>root</b> <span class="roothex">${esc(log.root)}</span></div>
     <div class="kv"><b>size</b> <span class="roothex">${esc(log.tree_size)} decisions &middot; anchored ${esc((log.anchored_at||'').slice(0,19))}Z</span></div>
     ${log.previous ? `<div class="kv"><b>prior</b> <span class="roothex">${esc(log.previous.root.slice(0,32))}\u2026 at ${esc(log.previous.tree_size)} decisions</span></div>` : ""}
-    ${consHtml}`;
+    ${consHtml}${headHtml}`;
   return log.root;
 }
 

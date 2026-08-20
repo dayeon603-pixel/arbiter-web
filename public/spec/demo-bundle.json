@@ -15,6 +15,36 @@
       "0d260dcca41cc21f7b643ae77fce64dfc738a8ea908c12f7a6616a6b3e7a3b50",
       "a480f592adc94c095cd6b50ed533f76f8d050e19f55eb65b1645adc6a5c25b37",
       "c51436f7fdc68557d6446db7ea60f618d8efd20f224f9e3d9c8f0e0a9c53befc"
+    ],
+    "signed_tree_head": {
+      "log_id": "29acbae141bccaf0b22e1a94d34d0bc7361e526d0bfe12c89794bc9322966dd7",
+      "tree_size": 6,
+      "root": "272ec2f5c4ddc0128b983ee2c68a36fd93ee5200846a985b9b6a2f8a88037763",
+      "issued_at": "2026-03-14T15:12:00+00:00",
+      "signature": "8d05fc46f82a0111cf94f6fbf2606330d48b77d92bad12897bed83266b4f0d5464c48ab27bd9c8d3ee0d9e3c4d505027ed213be7449b14ddbea5b6c17af55103"
+    },
+    "cosignatures": [
+      {
+        "witness_id": "8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c",
+        "sth_digest": "9774b18ea1c4eb308f92b975a68e339e78d463dee6f25835f9e09ddac5b10473",
+        "cosigned_at": "2026-03-14T15:12:00+00:00",
+        "signature": "d3a0af4a3f6099ca1f86ba1bb918fec6053218510b105fed151e9cf8cbf021eaa34bfe0ef9a31ba3a41ab4be4570f8df2ea8015ca99e95e3f559b28b706d2f0a",
+        "name": "Supervisory observer (demo)"
+      },
+      {
+        "witness_id": "8139770ea87d175f56a35466c34c7ecccb8d8a91b4ee37a25df60f5b8fc9b394",
+        "sth_digest": "9774b18ea1c4eb308f92b975a68e339e78d463dee6f25835f9e09ddac5b10473",
+        "cosigned_at": "2026-03-14T15:12:00+00:00",
+        "signature": "4fdabe4c21c8e630ad7c18e693b22ae235cc75eaa1af71aaee22eb87c7eb0cfb202529ae4d5746f24bbfa3c73c8ca2ca13bf5ce0e7ad7384d6a03e0786151406",
+        "name": "Counterparty bank (demo)"
+      },
+      {
+        "witness_id": "ed4928c628d1c2c6eae90338905995612959273a5c63f93636c14614ac8737d1",
+        "sth_digest": "9774b18ea1c4eb308f92b975a68e339e78d463dee6f25835f9e09ddac5b10473",
+        "cosigned_at": "2026-03-14T15:12:00+00:00",
+        "signature": "9f4304c8a7639a119439e2f6722c74f6651bde360ffac2438e2d58591d3dfc05a3e4c2fc6002b06e0ee185a530f7d82e35826943e4be1fca30b9cc99369a9d03",
+        "name": "Independent monitor (demo)"
+      }
     ]
   },
   "receipts": [
