@@ -1,0 +1,141 @@
+/* ============================================================================
+   Arbiter design tokens — the single source of truth.
+   Nothing in this codebase may declare a raw colour, size, space, radius,
+   duration, or easing value. Everything resolves to a token defined here.
+
+   Naming is semantic, never literal: `--c-accent`, not `--c-gold`.
+   Ground surfaces come in a light and an inverse (near-black) pair. Text and
+   accent tokens are redefined under `.on-inverse` so a component written once
+   is legible on either ground without a variant class per element.
+
+   Every text/background pair in this file is measured against WCAG 2.1 AA.
+   Ratios are recorded in the comment beside each declaration and reproduced
+   in the report. If you change a value here, re-run the contrast check before
+   committing — several of these pairs sit close to the 4.5 boundary.
+   ========================================================================= */
+
+:root {
+  /* ---------------------------------------------------------------- colour
+     Ground: warm off-white and warm near-black. Both are off-neutral on
+     purpose — a pure #fff / #000 pair reads as a default, not a choice. */
+  --c-surface:          #FAF9F6;
+  --c-surface-raised:   #FFFFFF;
+  --c-surface-inverse:  #121110;
+  --c-surface-inverse-raised: #1C1A18;
+
+  --c-text-primary:     #121110;  /* 17.91:1 on surface · 18.86:1 on raised */
+  --c-text-secondary:   #57544C;  /*  7.18:1 on surface ·  7.56:1 on raised */
+
+  /* The brand gold, kept. It carries two jobs and they need two values:
+     `--c-accent` is the brand mark used for rules, borders, and fills, where
+     WCAG's 3:1 non-text threshold applies. `--c-accent-text` is the darkened
+     variant used wherever the gold carries actual words. The original
+     #B5821E measures 3.23:1 on the off-white ground — it passes as a graphic
+     and fails as text, which is precisely how the old site used it. */
+  --c-accent:           #B5821E;  /*  3.23:1 on surface — non-text only */
+  --c-accent-text:      #8A6212;  /*  5.20:1 on surface */
+
+  /* Functional colours. States only, never decorative.
+     `--c-alert` is used by the styleguide's contrast report and by any future
+     failed/invalid state; it is not part of the marketing palette. */
+  --c-verified:         #19673F;  /*  6.53:1 on surface */
+  --c-alert:            #A32118;  /*  7.15:1 on surface */
+
+  /* Hairlines. The primary separator in this system — there are no shadows.
+     Expressed as an alpha of the ink so they hold on either raised surface. */
+  --c-border:           rgba(18, 17, 16, 0.12);
+  --c-border-strong:    rgba(18, 17, 16, 0.24);
+
+  --c-focus:            #121110;  /* 17.91:1 on surface — focus ring */
+
+  /* ------------------------------------------------------------------ type
+     Strict modular scale. Ratio 1.26, base 17px (--t-2). Eight steps, no
+     value outside them. The top three interpolate between two adjacent scale
+     steps across 390px→1280px; the scale stays strict at both endpoints. */
+  --font-sans: var(--font-instrument), "Helvetica Neue", Arial, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SF Mono", Menlo, monospace;
+
+  --t-1: 0.8433rem;   /* 13.5px */
+  --t-2: 1.0625rem;   /* 17px — body */
+  --t-3: 1.3388rem;   /* 21.4px */
+  --t-4: 1.6868rem;   /* 27px */
+  --t-5: 2.1254rem;   /* 34px */
+  --t-6: clamp(2.1254rem, 1.883rem + 0.99vw, 2.678rem);   /* 34 → 42.8px */
+  --t-7: clamp(2.678rem,  2.373rem + 1.25vw, 3.3743rem);  /* 42.8 → 54px */
+  --t-8: clamp(3.3743rem, 2.990rem + 1.58vw, 4.2516rem);  /* 54 → 68px */
+
+  --lh-display: 1.05;
+  --lh-tight:   1.2;
+  --lh-body:    1.6;
+
+  --tr-display: -0.03em;  /* --t-7, --t-8 */
+  --tr-heading: -0.025em; /* --t-5, --t-6 */
+  --tr-tight:   -0.02em;  /* --t-4 */
+  --tr-body:    0;
+  --tr-eyebrow: 0.14em;   /* mono eyebrow labels only */
+
+  --fw-regular: 400;
+  --fw-medium:  500;
+  --fw-semibold: 600;
+
+  /* ----------------------------------------------------------------- space
+     4px scale. No spacing value may be written outside these steps. */
+  --sp-1:  0.25rem;  /*   4px */
+  --sp-2:  0.5rem;   /*   8px */
+  --sp-3:  0.75rem;  /*  12px */
+  --sp-4:  1rem;     /*  16px */
+  --sp-5:  1.5rem;   /*  24px */
+  --sp-6:  2rem;     /*  32px */
+  --sp-7:  3rem;     /*  48px */
+  --sp-8:  4rem;     /*  64px */
+  --sp-9:  6rem;     /*  96px */
+  --sp-10: 7.5rem;   /* 120px */
+
+  /* Section rhythm: 120px desktop, 72px mobile. */
+  --rhythm: 7.5rem;
+
+  /* ---------------------------------------------------------------- layout */
+  --shell:   1440px;
+  --content: 1200px;
+  --cols: 12;
+  --gutter: 1.5rem;          /* 24px — the column gap */
+  --pad: clamp(1.25rem, 0.5rem + 3vw, 3rem);
+
+  /* ---------------------------------------------------------------- shape
+     ONE radius. Everything else is square. */
+  --radius: 4px;
+  --hairline: 1px;
+  --focus-ring: 2px;
+  --focus-offset: 2px;
+
+  /* --------------------------------------------------------------- motion */
+  --dur: 400ms;
+  --dur-fast: 160ms;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --stagger: 60ms;
+  --rise: 8px;
+}
+
+@media (max-width: 768px) {
+  :root { --rhythm: 4.5rem; }  /* 72px */
+}
+
+/* ---------------------------------------------------------------------------
+   Inverse ground. Applied to any section sitting on near-black. Text and
+   accent tokens are redefined so the same component markup stays AA on both
+   grounds — no `--dark` variant classes scattered through the components. */
+.on-inverse {
+  --c-surface:        #121110;
+  --c-surface-raised: #1C1A18;
+  --c-text-primary:   #FAF9F6;  /* 17.91:1 on inverse · 16.48:1 on raised */
+  --c-text-secondary: #A8A39A;  /*  7.52:1 on inverse ·  6.92:1 on raised */
+  --c-accent-text:    #C9962B;  /*  7.08:1 on inverse */
+  --c-verified:       #63CE92;  /*  9.68:1 on inverse */
+  --c-alert:          #F2938A;  /*  8.37:1 on inverse */
+  --c-border:         rgba(250, 249, 246, 0.14);
+  --c-border-strong:  rgba(250, 249, 246, 0.28);
+  --c-focus:          #FAF9F6;
+
+  background: var(--c-surface);
+  color: var(--c-text-primary);
+}
