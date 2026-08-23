@@ -52,7 +52,11 @@ export default function DivisionPage({ params }: { params: { division: string } 
                 style={{ ['--col-span' as string]: 6 }}
               >
                 <p className="eyebrow">{p.name}</p>
-                <h3 className="card__title">{p.note}</h3>
+                <h3 className="card__title">{p.headline}</h3>
+                <p className="card__body">{p.note}</p>
+                {p.detail?.map((para, i) => (
+                  <p className="card__body" key={i}>{para}</p>
+                ))}
                 {p.href && p.href !== `/${d.slug}#signet` && (
                   <p className="card__foot">
                     <Link className="named-link" href={p.href}>

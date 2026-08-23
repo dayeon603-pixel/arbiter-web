@@ -31,6 +31,10 @@ export const sampleReceipt = {
     '86b547591525850585fcea76f754556bfa7efb4673a019480e2c4f1a93e88e71326769e2e4f49c880c2207a854de25077a8808ce9c25165363a5eeb38a8a490f',
 } as const
 
+/** Middle ellipsis. Keeps both ends, which are the parts anyone checks. */
+const mid = (s: string, head = 12, tail = 12) =>
+  s.length <= head + tail + 1 ? s : `${s.slice(0, head)}…${s.slice(-tail)}`
+
 /**
  * The rows the proof panel renders, in order.
  *
@@ -41,12 +45,12 @@ export const sampleReceipt = {
  */
 export const receiptRows: { k: string; display: string; full: string }[] = [
   { k: 'decision',      display: `${sampleReceipt.decision} · ${sampleReceipt.reason}`, full: `${sampleReceipt.decision} · ${sampleReceipt.reason}` },
-  { k: 'authority',     display: `${sampleReceipt.authorityId.slice(0, 16)}… (Ed25519)`, full: `${sampleReceipt.authorityId} (Ed25519)` },
+  { k: 'authority',     display: `${mid(sampleReceipt.authorityId)} (Ed25519)`, full: `${sampleReceipt.authorityId} (Ed25519)` },
   { k: 'decided at',    display: sampleReceipt.decidedAt, full: sampleReceipt.decidedAt },
-  { k: 'list snapshot', display: `${sampleReceipt.listSnapshot.slice(0, 16)}… (${sampleReceipt.rulebook})`, full: `${sampleReceipt.listSnapshot} (${sampleReceipt.rulebook})` },
-  { k: 'previous hash', display: sampleReceipt.prevHash, full: sampleReceipt.prevHash },
-  { k: 'this hash',     display: sampleReceipt.thisHash, full: sampleReceipt.thisHash },
-  { k: 'signature',     display: sampleReceipt.signature, full: sampleReceipt.signature },
+  { k: 'list snapshot', display: `${mid(sampleReceipt.listSnapshot)} (${sampleReceipt.rulebook})`, full: `${sampleReceipt.listSnapshot} (${sampleReceipt.rulebook})` },
+  { k: 'previous hash', display: mid(sampleReceipt.prevHash), full: sampleReceipt.prevHash },
+  { k: 'this hash',     display: mid(sampleReceipt.thisHash), full: sampleReceipt.thisHash },
+  { k: 'signature',     display: mid(sampleReceipt.signature), full: sampleReceipt.signature },
 ]
 
 /** Plain-text form used by the panel's copy button. Full values, never elided. */

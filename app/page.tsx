@@ -1,6 +1,5 @@
 import Nav from '@/components/site/Nav'
 import Hero from '@/components/site/Hero'
-import ProofPanel from '@/components/ui/ProofPanel'
 import FinanceBlock from '@/components/site/FinanceBlock'
 import HowItWorks from '@/components/site/HowItWorks'
 import Divider from '@/components/site/Divider'
@@ -15,18 +14,15 @@ export default function Page() {
       <Nav />
       <main id="main">
         <Hero />
-        {/* The proof panel breaks the grid on purpose — see app/home.css. */}
-        <section className="section proofband" aria-label="Sample receipt">
-          <div className="content grid">
-            <div className="proofband__panel">
-              <ProofPanel />
-            </div>
-          </div>
-        </section>
         <FinanceBlock />
+        {/* Rhythm down the page: cream, dark panel in cream, cream, photo,
+            dark, cream, photo, cream, footer. The two dark moments are the
+            machine output and the explanation of it — the value shift tracks
+            what the content is, not a decorative alternation. */}
+        <Divider image="research" />
         <HowItWorks />
-        <Divider />
         <DivisionsIndex />
+        <Divider image="cyber" />
         <Founder />
       </main>
       <Footer />

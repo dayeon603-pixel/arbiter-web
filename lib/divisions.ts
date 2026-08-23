@@ -17,12 +17,17 @@
 
 export type Product = {
   name: string
+  /** Card headline. One line, seven words or fewer. */
+  headline: string
   /** One line. Concrete and falsifiable — no adjectives standing in for facts. */
   note: string
   /** Internal route, or null for a product that is named but has no page. */
   href: string | null
   /** The named link text used on the card. Never a bare arrow. */
   linkLabel?: string
+  /** Longer copy. Rendered on the division page only — never on a card.
+   *  A card is one headline, one sentence, one named link. */
+  detail?: string[]
 }
 
 export type Division = {
@@ -68,19 +73,27 @@ export const divisions: Division[] = [
     products: [
       {
         name: 'Tollgate',
-        note: 'Sanctions and Travel Rule decisions pinned to the list as it stood, replayable offline.',
+        headline: 'Sanctions decisions an examiner can replay',
+        note: 'Pinned to the list as it stood, and re-derived offline months later.',
         href: '/tollgate',
         linkLabel: 'Read the Tollgate spec',
+        detail: [
+          'Tollgate runs read-only beside the screener a firm already uses, so adopting it needs no replacement and it never becomes the block-of-record.',
+          'When an examiner asks why a counterparty was blocked six months ago, the usual answer is that the list has moved, the vendor’s system has been updated, and the decision can no longer be reproduced. A Tollgate receipt is re-derived from the inputs that produced it, in a browser, with no account and no call back to us.',
+          'Reproducibility is offered on the exact-match path only. That limit is stated on the verifier itself rather than buried, because a green check over a match the system cannot actually reproduce would defeat the point of the product.',
+        ],
       },
       {
         name: 'Signet',
-        note: 'The engine underneath: deny-by-default policy over signed mandates and a hash-chained ledger.',
+        headline: 'The engine underneath',
+        note: 'Deny-by-default policy over signed mandates and a hash-chained ledger.',
         href: '/finance#signet',
         linkLabel: 'Read about Signet',
       },
       {
         name: 'Caravan',
-        note: 'A neutral record of a cross-border trade decision that no platform in the deal controls.',
+        headline: 'A trade record no platform owns',
+        note: 'Both sides of a cross-border deal verify the same record independently.',
         href: '/caravan',
         linkLabel: 'Read about Caravan',
       },
@@ -100,13 +113,15 @@ export const divisions: Division[] = [
     products: [
       {
         name: 'HALO',
-        note: 'Reads the messenger thread and the pre-transfer screen on-device, and warns the family in time.',
+        headline: 'Catches the scam mid-call',
+        note: 'Reads the messenger thread and the transfer screen on-device, and warns the family.',
         href: '/halo',
         linkLabel: 'Read about HALO',
       },
       {
         name: 'Goldentime',
-        note: 'The recovery sequence for the hour after a transfer, in the order that recovers money.',
+        headline: 'The first hour, in order',
+        note: 'The time-critical recovery steps, sequenced so the actions that recover money come first.',
         href: '/goldentime',
         linkLabel: 'Read about Goldentime',
       },
@@ -126,13 +141,15 @@ export const divisions: Division[] = [
     products: [
       {
         name: 'HarvestGuard',
-        note: 'A solar cold-storage pod billed per day through mobile money, sized for one village.',
+        headline: 'Cold storage off the grid',
+        note: 'A solar pod billed per day through mobile money, sized for one village.',
         href: '/harvestguard',
         linkLabel: 'Read about HarvestGuard',
       },
       {
         name: 'FarmPilot',
-        note: 'Names a crop disease from one photo, on the phone, offline, with its measured accuracy stated.',
+        headline: 'Names the disease from one photo',
+        note: 'Runs on the phone, offline, with its measured accuracy stated in the demo.',
         href: '/farmpilot',
         linkLabel: 'Read about FarmPilot',
       },
@@ -151,7 +168,8 @@ export const divisions: Division[] = [
     products: [
       {
         name: 'ClaimPilot',
-        note: 'Denial prevention for U.S. revenue-cycle management, built on the same decision engine.',
+        headline: 'Catches the denial before submission',
+        note: 'Denial prevention for U.S. revenue-cycle management, on the same decision engine.',
         href: null,
       },
     ],
@@ -170,12 +188,14 @@ export const divisions: Division[] = [
     products: [
       {
         name: 'Model calibration',
-        note: 'Measuring the divergence between capability and self-assessment across engineered task families.',
+        headline: 'Where capability and self-knowledge diverge',
+        note: 'Measured across engineered task families rather than asserted.',
         href: null,
       },
       {
         name: 'Structured perturbation stability',
-        note: 'How far a model holds up under structured, non-random input perturbation.',
+        headline: 'How far a model holds up',
+        note: 'Under structured, non-random input perturbation rather than noise.',
         href: null,
       },
     ],

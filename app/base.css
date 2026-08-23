@@ -228,47 +228,6 @@ body {
   background: currentColor; flex: none;
 }
 
-/* --------------------------------------------------------------- proof panel
-   Machine output. Mono throughout, tabular figures, hairline bounded.
-   Long hashes wrap on any character rather than overflowing the panel. */
-.proof {
-  border: var(--hairline) solid var(--c-border);
-  border-radius: var(--radius);
-  background: var(--c-surface-raised);
-}
-.proof__head {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: var(--sp-4);
-  padding: var(--sp-4) var(--sp-5);
-  border-bottom: var(--hairline) solid var(--c-border);
-}
-.proof__body { padding: var(--sp-5); display: grid; gap: var(--sp-3); }
-.proof__row {
-  display: grid;
-  grid-template-columns: 11rem minmax(0, 1fr);
-  gap: var(--sp-4);
-  align-items: baseline;
-}
-.proof__k {
-  font-family: var(--font-mono); font-size: var(--t-1);
-  letter-spacing: var(--tr-eyebrow); text-transform: uppercase;
-  color: var(--c-text-secondary);
-}
-.proof__v {
-  font-family: var(--font-mono); font-size: var(--t-1);
-  font-variant-numeric: tabular-nums slashed-zero;
-  color: var(--c-text-primary);
-  overflow-wrap: anywhere;
-}
-.proof__foot {
-  padding: var(--sp-4) var(--sp-5);
-  border-top: var(--hairline) solid var(--c-border);
-  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-4);
-}
-@media (max-width: 768px) {
-  .proof__row { grid-template-columns: minmax(0, 1fr); gap: var(--sp-1); }
-}
-
 /* -------------------------------------------------------------------- motion
    One entrance: fade + 8px rise, 400ms, on section enter. Lists may stagger
    at 60ms. Nothing else animates on scroll. */
@@ -286,10 +245,4 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-}
-
-.proof__note {
-  padding: 0 var(--sp-5) var(--sp-5);
-  color: var(--c-text-secondary);
-  max-width: 62ch;
 }

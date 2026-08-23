@@ -3,7 +3,8 @@ import { Instrument_Sans, JetBrains_Mono } from 'next/font/google'
 import './tokens.css'
 import './base.css'
 import './home.css'
-import './globals.css'
+import './product.css'
+import './legal.css'
 
 /**
  * Both faces are SIL OFL 1.1 and cost nothing. `next/font/google` downloads

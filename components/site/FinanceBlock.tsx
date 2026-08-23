@@ -2,10 +2,16 @@ import Link from 'next/link'
 import { financeDivision, nameOf } from '@/lib/divisions'
 
 /**
- * The one division shown in depth on the homepage. Cards are deliberately
- * unequal: Tollgate takes seven columns because it is the flagship, the other
- * two take five and share a row. A uniform three-column grid would say all
- * three matter equally, which is not what we mean.
+ * The one division shown in depth on the homepage.
+ *
+ * Cards are deliberately unequal: Tollgate takes seven columns because it is
+ * the flagship, the other two take five and share the column beside it. A
+ * uniform three-column grid would say all three matter equally, which is not
+ * what we mean.
+ *
+ * Each card is one headline, one sentence, one named link. The longer Tollgate
+ * copy lives on /finance — a card that runs to four paragraphs has stopped
+ * being a card.
  */
 export default function FinanceBlock() {
   const d = financeDivision
@@ -23,22 +29,8 @@ export default function FinanceBlock() {
         <div className="grid finance__cards">
           <article className="card finance__lead" style={{ ['--col-span' as string]: 7 }}>
             <p className="eyebrow">{lead.name}</p>
-            <h3 className="card__title">{lead.note}</h3>
-            <p className="card__body">
-              Runs read-only beside the screener a firm already uses, so adopting it needs no
-              replacement and never becomes the block-of-record.
-            </p>
-            <p className="card__body">
-              When an examiner asks why a counterparty was blocked six months ago, the usual
-              answer is that the list has moved, the vendor&rsquo;s system has been updated, and the
-              decision can no longer be reproduced. A Tollgate receipt is re-derived from the
-              inputs that produced it, in a browser, with no account and no call back to us.
-            </p>
-            <p className="card__body">
-              Reproducibility is offered on the exact-match path only. That limit is stated on
-              the verifier itself rather than buried, because a green check over a match the
-              system cannot actually reproduce would defeat the point of the product.
-            </p>
+            <h3 className="card__title">{lead.headline}</h3>
+            <p className="card__body">{lead.note}</p>
             {lead.href && (
               <p className="card__foot">
                 <Link className="named-link" href={lead.href}>
@@ -52,16 +44,15 @@ export default function FinanceBlock() {
           {rest.map((p) => (
             <article className="card" key={p.name} style={{ ['--col-span' as string]: 5 }}>
               <p className="eyebrow">{p.name}</p>
-              <h3 className="card__title">{p.note}</h3>
-              {p.href ? (
+              <h3 className="card__title">{p.headline}</h3>
+              <p className="card__body">{p.note}</p>
+              {p.href && (
                 <p className="card__foot">
                   <Link className="named-link" href={p.href}>
                     {p.linkLabel}
                     <span className="named-link__arrow" aria-hidden="true">→</span>
                   </Link>
                 </p>
-              ) : (
-                <p className="small finance__nolink">Not a separate product page.</p>
               )}
             </article>
           ))}

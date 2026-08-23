@@ -61,49 +61,57 @@
 }
 
 /* ---------------------------------------------------------------------- hero
-   Headline occupies seven of twelve columns. The remaining five are left
-   empty rather than filled — the proof panel below reclaims them. */
-/* border:0 and overflow:visible are not decoration — the legacy stylesheet
-   still sets a border-bottom and overflow:hidden on .hero, and that border
-   was drawing straight through the receipt panel. */
+   Display scale. --t-8 tops out at 68px, which is a headline; this is a
+   masthead, so the hero gets its own step above the scale rather than
+   stretching --t-8 and dragging every other h1 on the site up with it.
+
+   border:0 / overflow:visible are load-bearing: the legacy stylesheet still
+   sets a border-bottom and overflow:hidden on .hero, and that border drew
+   straight through the receipt panel. */
 .hero {
-  padding-block: calc(var(--rhythm) + var(--sp-8)) var(--sp-9);
+  min-height: 88vh;
+  display: flex; align-items: center;
+  padding-block: calc(var(--rhythm) + var(--sp-8)) var(--rhythm);
   border: 0; overflow: visible;
 }
-.hero__inner { display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: var(--gutter); }
-.hero__inner > * { grid-column: span 7; }
-.hero__title { margin-top: var(--sp-4); }
-.hero__sub { margin-top: var(--sp-5); max-width: 44ch; }
+.hero__inner { width: 100%; }
+.hero__title {
+  font-size: clamp(2.75rem, 1.6rem + 4.6vw, 6rem);   /* 44px → 96px */
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  font-weight: var(--fw-semibold);
+  margin-top: var(--sp-5);
+  text-wrap: balance;
+}
+.hero__sub { margin-top: var(--sp-6); max-width: 46ch; }
 .hero__actions { display: flex; flex-wrap: wrap; gap: var(--sp-4); margin-top: var(--sp-7); }
 
-@media (max-width: 1024px) { .hero__inner > * { grid-column: span 10; } }
-@media (max-width: 768px)  { .hero__inner { grid-template-columns: minmax(0, 1fr); } .hero__inner > * { grid-column: 1 / -1; } }
+/* Option A — stacked. Text at full content width, receipt directly beneath. */
+.hero--stack .hero__inner { display: block; }
+.hero--stack .hero__title { max-width: 15ch; }
+.hero--stack .hero__sub { max-width: 46ch; }
+.hero--stack .hero__panel { margin-top: var(--sp-9); max-width: 46rem; }
 
-/* --------------------------------------------------------------- proof band
-   The deliberate asymmetry.
-
-   The panel spans columns 5–12 and is pulled up by exactly the hero's bottom
-   padding, so its top edge lands level with the hero's last baseline and it
-   occupies the columns the seven-column headline left empty. The receipt is
-   the argument, not an illustration of it, so it collides with the claim
-   instead of queueing politely underneath it.
-
-   It starts at column 5, not 4, because the CTA row extends to roughly the
-   fourth column and an overlap that covers a button is a bug, not a choice.
-   Below 1024px the overlap is dropped entirely — there is no spare width for
-   it, and a panel sitting on top of the buttons is worse than a plain stack. */
-.proofband { padding-block: 0 var(--rhythm); }
-.proofband__panel {
-  grid-column: 5 / -1;
-  margin-top: calc(var(--sp-9) * -1);
-  position: relative; z-index: 1;
+/* Option B — true 5/7. Both columns top-aligned, panel fills its column. */
+.hero--split .hero__inner {
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  gap: var(--sp-8) var(--sp-7);
+  align-items: start;
 }
+.hero--split .hero__title { max-width: 12ch; }
+.hero--split .hero__sub { max-width: 34ch; }
+.hero--split .hero__panel { display: flex; }
+.hero--split .hero__panel > * { width: 100%; }
+
 @media (max-width: 1024px) {
-  .proofband__panel { grid-column: 3 / -1; margin-top: 0; }
+  .hero--split .hero__inner { grid-template-columns: minmax(0, 1fr); }
+  .hero--split .hero__title, .hero--split .hero__sub { max-width: 20ch; }
+  .hero--split .hero__sub { max-width: 46ch; }
 }
 @media (max-width: 768px) {
-  .proofband { padding-top: var(--sp-7); }
-  .proofband__panel { grid-column: 1 / -1; margin-top: 0; }
+  .hero { min-height: 0; padding-block: calc(var(--rhythm) + var(--sp-7)) var(--rhythm); }
+  .hero__panel { margin-top: var(--sp-7); }
 }
 
 /* ------------------------------------------------------------------ finance */
@@ -122,7 +130,7 @@
 .finance__more { margin-top: var(--sp-6); }
 
 /* ------------------------------------------------------------------- how it works */
-.how { border-top: var(--hairline) solid var(--c-border); }
+.how { border-top: 0; }
 .how__title { margin-top: var(--sp-4); }
 .how__sub { margin-top: var(--sp-4); }
 .how__steps {
@@ -136,9 +144,11 @@
 
 .diagram { width: 100%; height: auto; overflow: visible; }
 .diagram__label text {
-  font-family: var(--font-mono); font-size: 8px;
-  fill: var(--c-text-secondary); letter-spacing: 0.04em;
+  font-family: var(--font-mono); font-size: 13px;
+  fill: var(--c-text-secondary); letter-spacing: 0.02em;
 }
+.diagram__label .diagram__big { font-size: 20px; letter-spacing: -0.01em; }
+.diagram__label .diagram__badtext { fill: var(--c-alert); }
 .diagram__label .diagram__hash { fill: var(--c-accent-text); }
 .diagram__label .diagram__strong { fill: var(--c-text-primary); font-weight: var(--fw-medium); }
 .diagram__accent { color: var(--c-accent); }
@@ -146,15 +156,6 @@
 .diagram__bad { color: var(--c-alert); }
 
 @media (max-width: 768px) { .how__steps { grid-template-columns: minmax(0, 1fr); gap: var(--sp-7); } }
-
-/* ------------------------------------------------------------------ divider
-   Full bleed, no copy. Sized by aspect ratio so it never pushes the fold. */
-.divider { width: 100%; overflow: hidden; }
-.divider__pic { display: block; }
-.divider__pic img {
-  width: 100%; height: clamp(14rem, 28vw, 26rem);
-  object-fit: cover; object-position: center;
-}
 
 /* ---------------------------------------------------------------- divisions */
 .divisions__title { margin-top: var(--sp-4); }
@@ -270,3 +271,157 @@
 .company__contact { border-top: var(--hairline) solid var(--c-border); }
 .company__entity { margin-top: var(--sp-6); color: var(--c-text-secondary); }
 .pageshell { display: block; }
+
+/* =========================================================== the proof panel
+   Ink ground on a cream page. This is machine output and it should read as a
+   terminal artefact lying on paper, not as another card. `.on-inverse` (see
+   tokens.css) swaps the text, accent, verified and border tokens, so the
+   component markup is unchanged and every reversed pair still passes AA.
+
+   The panel is the widest single element in the hero on purpose. It is the
+   argument; the headline is only the claim. */
+.proof {
+  border: var(--hairline) solid var(--c-border);
+  border-radius: var(--radius);
+  min-width: 0;
+  container-type: inline-size;
+}
+.proof__head {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: var(--sp-4);
+  padding: var(--sp-5) var(--sp-6);
+  border-bottom: var(--hairline) solid var(--c-border);
+}
+.proof__body { padding: var(--sp-6); display: grid; gap: var(--sp-4); }
+
+/* Two real columns. The label column is sized in ch of the mono face so the
+   values align on a common left edge at every width. */
+.proof__row {
+  display: grid;
+  grid-template-columns: 14ch minmax(0, 1fr);
+  gap: var(--sp-5);
+  align-items: baseline;
+}
+.proof__k {
+  font-family: var(--font-mono); font-size: var(--t-1);
+  letter-spacing: var(--tr-eyebrow); text-transform: uppercase;
+  color: var(--c-text-secondary);
+}
+.proof__v {
+  font-family: var(--font-mono);
+  font-size: var(--t-2);
+  font-variant-numeric: tabular-nums slashed-zero;
+  color: var(--c-text-primary);
+  overflow-wrap: anywhere;
+  cursor: default;
+}
+/* Middle-elided by default; the full value on hover. The copy button always
+   writes the untruncated values, so nothing here is the only route to them. */
+.proof__full { display: none; }
+.proof__v:hover .proof__short { display: none; }
+.proof__v:hover .proof__full { display: inline; }
+
+.proof__foot {
+  padding: var(--sp-5) var(--sp-6);
+  border-top: var(--hairline) solid var(--c-border);
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: var(--sp-4);
+}
+.proof__copy { background: var(--c-text-primary); color: var(--c-surface); }
+.proof__copy:hover { background: var(--c-accent-text); color: var(--c-surface); }
+.proof__note {
+  padding: 0 var(--sp-6) var(--sp-6);
+  font-size: var(--t-1);
+  line-height: var(--lh-body);
+  color: var(--c-text-secondary);
+  max-width: 68ch;
+}
+
+@container (max-width: 34rem) {
+  .proof__row { grid-template-columns: minmax(0, 1fr); gap: var(--sp-1); }
+  .proof__v { font-size: var(--t-1); }
+}
+
+/* ============================================================== dark section
+   The explainer runs on ink. The two dark moments on the page are the machine
+   output and the explanation of it — the value shift tracks what the content
+   is, rather than alternating for its own sake. */
+.section--dark { background: var(--c-surface); color: var(--c-text-primary); }
+.section--dark .diagram__label text { fill: var(--c-text-secondary); }
+
+/* ================================================================= dividers
+   55–65vh. The previous ~200px band read as a crop rather than a pause. */
+.divider { width: 100%; overflow: hidden; background: var(--c-surface-inverse); }
+.divider__pic { display: block; }
+.divider__pic img {
+  width: 100%; height: clamp(22rem, 58vh, 34rem);
+  object-fit: cover; object-position: center;
+}
+@media (max-width: 768px) { .divider__pic img { height: clamp(16rem, 42vh, 22rem); } }
+
+/* ============================================================== arch mark
+   Stands in for the founder portrait at the same 4:5 the photograph will
+   occupy, so dropping the real image in changes nothing around it. */
+.founder__portrait--mark { background: var(--c-surface); border-color: var(--c-border); }
+.archmark { width: 100%; height: 100%; display: block; color: var(--c-accent); }
+.archmark__base { fill: var(--c-accent); }
+
+/* ========================================================== divisions table
+   The strongest element on the page, pushed further: the whole row is the
+   target and the whole row responds, the name column holds a tabular left
+   edge at every breakpoint, and below 768px it becomes a stacked block rather
+   than a squeezed table. */
+.divisions__list { border-top: var(--hairline) solid var(--c-border); }
+.divisions__row {
+  display: grid;
+  grid-template-columns: 16rem minmax(0, 1fr) var(--sp-6);
+  gap: var(--sp-5);
+  align-items: baseline;
+  padding: var(--sp-5) var(--sp-4);
+  margin-inline: calc(var(--sp-4) * -1);
+  border-bottom: var(--hairline) solid var(--c-border);
+  border-radius: var(--radius);
+  transition: background-color var(--dur-fast) var(--ease),
+              color var(--dur-fast) var(--ease);
+}
+.divisions__row:hover,
+.divisions__row:focus-visible { background: var(--c-surface-raised); }
+.divisions__row:hover .divisions__name { color: var(--c-accent-text); }
+.divisions__go {
+  color: var(--c-accent-text); justify-self: end;
+  transition: transform var(--dur-fast) var(--ease);
+}
+.divisions__row:hover .divisions__go { transform: translateX(var(--sp-1)); }
+
+@media (max-width: 900px) { .divisions__row { grid-template-columns: 12rem minmax(0, 1fr) var(--sp-6); } }
+@media (max-width: 768px) {
+  .divisions__row {
+    grid-template-columns: minmax(0, 1fr) var(--sp-6);
+    gap: var(--sp-2) var(--sp-4);
+    padding-block: var(--sp-5);
+  }
+  .divisions__name { grid-column: 1; grid-row: 1; }
+  .divisions__go   { grid-column: 2; grid-row: 1; align-self: center; }
+  .divisions__tag  { grid-column: 1 / -1; grid-row: 2; }
+}
+
+/* ====================================================== the break in the grid
+   Every other section on this page is capped at --content (1200px) and left
+   aligned. The divisions list is not: it keeps the same left edge, and its
+   right edge runs out to --shell (1440px), past the alignment every section
+   above and below it holds.
+
+   The reasoning is that this table is the index of the entire company — it is
+   the one element that is about all five divisions rather than one of them,
+   and it earns a wider measure than a section that speaks for a single
+   product. Extending only the right edge keeps the reading start aligned with
+   everything else, so the break reads as reach rather than as misalignment,
+   and the rows run out toward the margin the arrows already point at.
+
+   It only engages once the viewport can actually hold the shell; below that
+   there is no spare width and the section behaves like every other. */
+@media (min-width: 1440px) {
+  .divisions__list {
+    margin-right: calc((var(--content) - var(--shell)) / 2);
+  }
+}
