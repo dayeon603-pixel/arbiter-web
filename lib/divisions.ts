@@ -188,6 +188,6 @@ export const financeDivision = divisions[0]
 /** Nav is three entries plus one CTA, per the IA. */
 export const navLinks = [
   { label: 'Finance', href: '/finance' },
-  { label: 'Divisions', href: '/#divisions' },
+  { label: 'Divisions', href: '/divisions' },
   { label: 'Company', href: '/company' },
 ]

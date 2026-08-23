@@ -12,7 +12,15 @@ import { receiptPlainText, receiptRows, sampleReceipt } from '@/lib/receipt'
  * are load-bearing — a product whose entire claim is independent verifiability
  * cannot show an unverifiable artefact.
  */
-export default function ProofPanel({ id }: { id?: string }) {
+export default function ProofPanel({
+  id,
+  /** Where "How verification works" points. The homepage has the explainer
+   *  section inline; other pages link back to it on the homepage. */
+  explainerHref = '#how-it-works',
+}: {
+  id?: string
+  explainerHref?: string
+}) {
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
@@ -55,7 +63,7 @@ export default function ProofPanel({ id }: { id?: string }) {
         <button type="button" className="btn btn--secondary" onClick={copy}>
           {copied ? 'Copied' : 'Copy receipt'}
         </button>
-        <a className="named-link" href="/verify">
+        <a className="named-link" href={explainerHref}>
           How verification works
           <span className="named-link__arrow" aria-hidden="true">
             →

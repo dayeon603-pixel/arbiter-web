@@ -63,7 +63,13 @@
 /* ---------------------------------------------------------------------- hero
    Headline occupies seven of twelve columns. The remaining five are left
    empty rather than filled — the proof panel below reclaims them. */
-.hero { padding-block: calc(var(--rhythm) + var(--sp-8)) var(--sp-9); }
+/* border:0 and overflow:visible are not decoration — the legacy stylesheet
+   still sets a border-bottom and overflow:hidden on .hero, and that border
+   was drawing straight through the receipt panel. */
+.hero {
+  padding-block: calc(var(--rhythm) + var(--sp-8)) var(--sp-9);
+  border: 0; overflow: visible;
+}
 .hero__inner { display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: var(--gutter); }
 .hero__inner > * { grid-column: span 7; }
 .hero__title { margin-top: var(--sp-4); }
@@ -211,3 +217,56 @@
   .footer__grid { grid-template-columns: 1fr 1fr; }
   .footer__brandcol { grid-column: 1 / -1; }
 }
+
+/* ============================================================== interaction
+   Every interactive element carries hover, active, and focus-visible. Focus
+   rings are drawn in the ink token, which measures 17.91:1 on the cream
+   ground — an accent-coloured ring would be the one thing on the page that
+   fails to stand out where it matters most. */
+.btn:active { transform: translateY(1px); }
+.named-link:active { color: var(--c-accent-text); }
+
+.card { position: relative; }
+.card:hover { border-color: var(--c-border-strong); }
+.card:has(a:focus-visible) { border-color: var(--c-text-primary); }
+
+/* Division rows: the whole row is the target, and the whole row responds. */
+.divisions__row {
+  position: relative;
+  padding-inline: var(--sp-4);
+  margin-inline: calc(var(--sp-4) * -1);
+  border-radius: var(--radius);
+  transition: background-color var(--dur-fast) var(--ease),
+              color var(--dur-fast) var(--ease);
+}
+.divisions__row:hover { background: var(--c-surface-raised); }
+.divisions__row:active { background: var(--c-surface-raised); }
+.divisions__go { transition: transform var(--dur-fast) var(--ease); }
+.divisions__row:hover .divisions__go { transform: translateX(var(--sp-1)); }
+
+.nav__links a:active { color: var(--c-accent-text); }
+.footer__col a:active { color: var(--c-accent-text); }
+
+/* ============================================================== page header */
+.pagehead { padding-block: calc(var(--rhythm) + var(--sp-8)) var(--sp-8); }
+.pagehead__rule {
+  display: block; width: var(--sp-7); height: var(--sp-1);
+  background: var(--c-accent); border-radius: var(--radius);
+  margin-bottom: var(--sp-5);
+}
+.pagehead__title { margin-top: var(--sp-4); max-width: 20ch; }
+.pagehead__sub { margin-top: var(--sp-5); }
+
+/* ============================================================ division page */
+.divpage__photo { width: 100%; overflow: hidden; }
+.divpage__photo img { width: 100%; height: clamp(18rem, 42vw, 34rem); object-fit: cover; }
+.divpage__cards { margin-top: var(--sp-7); align-items: start; }
+.divpage__for { border-top: var(--hairline) solid var(--c-border); }
+.divpage__next { border-top: var(--hairline) solid var(--c-border); }
+.divpage__next .divisions__list { margin-top: var(--sp-6); }
+.divpage__cta { margin-top: var(--sp-7); }
+
+/* ============================================================= company page */
+.company__contact { border-top: var(--hairline) solid var(--c-border); }
+.company__entity { margin-top: var(--sp-6); color: var(--c-text-secondary); }
+.pageshell { display: block; }

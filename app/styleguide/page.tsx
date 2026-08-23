@@ -277,7 +277,7 @@ export default function Styleguide() {
         </div>
 
         <h3 className="h4" style={{ margin: 'var(--sp-8) 0 var(--sp-4)' }}>Proof panel</h3>
-        <ProofPanel />
+        <ProofPanel explainerHref="/#how-it-works" />
       </section>
 
       {/* --------------------------------------------------------- inverse */}
