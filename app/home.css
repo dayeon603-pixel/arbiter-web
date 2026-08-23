@@ -1,0 +1,213 @@
+/* ============================================================================
+   Homepage and shared site chrome. Tokens only.
+   ========================================================================= */
+
+/* ----------------------------------------------------------------------- nav
+   Transparent over the hero, solid with a hairline past 80px. */
+.nav {
+  position: fixed; inset: 0 0 auto; z-index: 50;
+  border-bottom: var(--hairline) solid transparent;
+  transition: background-color var(--dur-fast) var(--ease),
+              border-color var(--dur-fast) var(--ease);
+}
+.nav--solid {
+  background: var(--c-surface);
+  border-bottom-color: var(--c-border);
+}
+.nav__inner { display: flex; align-items: center; justify-content: space-between; height: var(--sp-8); }
+.nav__brand { display: inline-flex; align-items: center; }
+
+.wordmark {
+  font-family: var(--font-sans);
+  font-weight: var(--fw-semibold);
+  font-size: var(--t-2);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+/* Manual kerning. Uniform tracking leaves RB open and TE tight at this weight. */
+.wordmark__kern-rb { letter-spacing: 0.19em; }
+.wordmark__kern-it { letter-spacing: 0.24em; }
+.wordmark__kern-te { letter-spacing: 0.235em; }
+
+.nav__links {
+  display: flex; align-items: center; gap: var(--sp-6);
+  font-family: var(--font-sans); font-size: var(--t-2);
+  letter-spacing: var(--tr-body); text-transform: none;
+}
+.nav__links a { color: var(--c-text-secondary); transition: color var(--dur-fast) var(--ease); }
+.nav__links a:hover { color: var(--c-text-primary); }
+.nav__links .nav__cta { color: var(--c-surface); padding: var(--sp-2) var(--sp-4); }
+.nav__links .nav__cta:hover { color: var(--c-surface); }
+
+.nav__toggle {
+  display: none;
+  font-family: var(--font-mono); font-size: var(--t-1);
+  letter-spacing: var(--tr-eyebrow); text-transform: uppercase;
+  color: var(--c-text-primary);
+}
+.nav__sheet {
+  position: fixed; inset: 0; z-index: 60;
+  background: var(--c-surface);
+  display: flex; flex-direction: column;
+}
+.nav__sheet-head { display: flex; align-items: center; justify-content: space-between; height: var(--sp-8); }
+.nav__sheet-links { display: flex; flex-direction: column; gap: var(--sp-5); padding-top: var(--sp-7); }
+.nav__sheet-links a:not(.btn) { font-size: var(--t-5); letter-spacing: var(--tr-heading); }
+.nav__sheet-links .btn { align-self: flex-start; margin-top: var(--sp-4); }
+
+@media (max-width: 768px) {
+  .nav__links { display: none; }
+  .nav__toggle { display: block; }
+}
+
+/* ---------------------------------------------------------------------- hero
+   Headline occupies seven of twelve columns. The remaining five are left
+   empty rather than filled — the proof panel below reclaims them. */
+.hero { padding-block: calc(var(--rhythm) + var(--sp-8)) var(--sp-9); }
+.hero__inner { display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: var(--gutter); }
+.hero__inner > * { grid-column: span 7; }
+.hero__title { margin-top: var(--sp-4); }
+.hero__sub { margin-top: var(--sp-5); max-width: 44ch; }
+.hero__actions { display: flex; flex-wrap: wrap; gap: var(--sp-4); margin-top: var(--sp-7); }
+
+@media (max-width: 1024px) { .hero__inner > * { grid-column: span 10; } }
+@media (max-width: 768px)  { .hero__inner { grid-template-columns: minmax(0, 1fr); } .hero__inner > * { grid-column: 1 / -1; } }
+
+/* --------------------------------------------------------------- proof band
+   The deliberate asymmetry.
+
+   The panel spans columns 5–12 and is pulled up by exactly the hero's bottom
+   padding, so its top edge lands level with the hero's last baseline and it
+   occupies the columns the seven-column headline left empty. The receipt is
+   the argument, not an illustration of it, so it collides with the claim
+   instead of queueing politely underneath it.
+
+   It starts at column 5, not 4, because the CTA row extends to roughly the
+   fourth column and an overlap that covers a button is a bug, not a choice.
+   Below 1024px the overlap is dropped entirely — there is no spare width for
+   it, and a panel sitting on top of the buttons is worse than a plain stack. */
+.proofband { padding-block: 0 var(--rhythm); }
+.proofband__panel {
+  grid-column: 5 / -1;
+  margin-top: calc(var(--sp-9) * -1);
+  position: relative; z-index: 1;
+}
+@media (max-width: 1024px) {
+  .proofband__panel { grid-column: 3 / -1; margin-top: 0; }
+}
+@media (max-width: 768px) {
+  .proofband { padding-top: var(--sp-7); }
+  .proofband__panel { grid-column: 1 / -1; margin-top: 0; }
+}
+
+/* ------------------------------------------------------------------ finance */
+.finance { border-top: var(--hairline) solid var(--c-border); }
+.finance__title { margin-top: var(--sp-4); }
+.finance__sub { margin-top: var(--sp-4); }
+.finance__cards { margin-top: var(--sp-7); align-items: start; }
+.finance__lead { grid-row: span 2; height: 100%; }
+.finance__cards > .card:not(.finance__lead) { grid-column: 8 / -1; }
+@media (max-width: 768px) {
+  .finance__lead { grid-row: auto; height: auto; }
+  .finance__cards > .card:not(.finance__lead) { grid-column: 1 / -1; }
+}
+.finance__lead .card__title { font-size: var(--t-4); }
+.finance__nolink { margin-top: auto; }
+.finance__more { margin-top: var(--sp-6); }
+
+/* ------------------------------------------------------------------- how it works */
+.how { border-top: var(--hairline) solid var(--c-border); }
+.how__title { margin-top: var(--sp-4); }
+.how__sub { margin-top: var(--sp-4); }
+.how__steps {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-6); margin-top: var(--sp-8);
+}
+.how__step { border-top: var(--hairline) solid var(--c-border-strong); padding-top: var(--sp-5); }
+.how__art { margin-bottom: var(--sp-5); color: var(--c-text-primary); }
+.how__n { margin-bottom: var(--sp-3); }
+.how__step-title { margin-bottom: var(--sp-3); }
+
+.diagram { width: 100%; height: auto; overflow: visible; }
+.diagram__label text {
+  font-family: var(--font-mono); font-size: 8px;
+  fill: var(--c-text-secondary); letter-spacing: 0.04em;
+}
+.diagram__label .diagram__hash { fill: var(--c-accent-text); }
+.diagram__label .diagram__strong { fill: var(--c-text-primary); font-weight: var(--fw-medium); }
+.diagram__accent { color: var(--c-accent); }
+.diagram__ok { color: var(--c-verified); }
+.diagram__bad { color: var(--c-alert); }
+
+@media (max-width: 768px) { .how__steps { grid-template-columns: minmax(0, 1fr); gap: var(--sp-7); } }
+
+/* ------------------------------------------------------------------ divider
+   Full bleed, no copy. Sized by aspect ratio so it never pushes the fold. */
+.divider { width: 100%; overflow: hidden; }
+.divider__pic { display: block; }
+.divider__pic img {
+  width: 100%; height: clamp(14rem, 28vw, 26rem);
+  object-fit: cover; object-position: center;
+}
+
+/* ---------------------------------------------------------------- divisions */
+.divisions__title { margin-top: var(--sp-4); }
+.divisions__list { margin-top: var(--sp-7); border-top: var(--hairline) solid var(--c-border); }
+.divisions__row {
+  display: grid;
+  grid-template-columns: 14rem minmax(0, 1fr) auto;
+  gap: var(--sp-5); align-items: baseline;
+  padding-block: var(--sp-5);
+  border-bottom: var(--hairline) solid var(--c-border);
+  transition: color var(--dur-fast) var(--ease);
+}
+.divisions__row:hover { color: var(--c-accent-text); }
+.divisions__row:hover .divisions__go { transform: translateX(var(--sp-1)); }
+.divisions__go { color: var(--c-accent-text); }
+@media (max-width: 768px) {
+  .divisions__row { grid-template-columns: minmax(0, 1fr) auto; gap: var(--sp-2) var(--sp-4); }
+  .divisions__name { grid-column: 1; }
+  .divisions__tag { grid-column: 1 / -1; }
+}
+
+/* ------------------------------------------------------------------ founder */
+.founder { border-top: var(--hairline) solid var(--c-border); }
+.founder__portrait {
+  border: var(--hairline) solid var(--c-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  background: var(--c-surface-raised);
+}
+.founder__portrait img { width: 100%; height: 100%; object-fit: cover; }
+.founder__placeholder { width: 100%; height: 100%; color: var(--c-border-strong); }
+.founder__name { margin-top: var(--sp-3); }
+.founder__p { margin-top: var(--sp-4); }
+.founder__contact { margin-top: var(--sp-6); }
+.founder__meta { margin-top: var(--sp-6); color: var(--c-text-secondary); }
+@media (max-width: 768px) { .founder__portrait { max-width: 18rem; } }
+
+/* ------------------------------------------------------------------- footer */
+.footer { border-top: var(--hairline) solid var(--c-border); background: var(--c-surface); }
+.footer__grid {
+  display: grid; grid-template-columns: 2fr repeat(4, 1fr);
+  gap: var(--sp-6) var(--gutter);
+  padding-block: var(--sp-8);
+}
+.footer__note { margin-top: var(--sp-3); max-width: 30ch; }
+.footer__col h2 { margin-bottom: var(--sp-4); }
+.footer__col li + li { margin-top: var(--sp-2); }
+.footer__col a { font-size: var(--t-2); color: var(--c-text-secondary); transition: color var(--dur-fast) var(--ease); }
+.footer__col a:hover { color: var(--c-text-primary); }
+.footer__biz { border-top: var(--hairline) solid var(--c-border); padding-block: var(--sp-5); }
+.footer__reg, .footer__notice { color: var(--c-text-secondary); }
+.footer__notice { margin-top: var(--sp-2); }
+.footer__bar { border-top: var(--hairline) solid var(--c-border); }
+.footer__bar-inner {
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--sp-3);
+  padding-block: var(--sp-5); color: var(--c-text-secondary);
+}
+@media (max-width: 900px) {
+  .footer__grid { grid-template-columns: 1fr 1fr; }
+  .footer__brandcol { grid-column: 1 / -1; }
+}

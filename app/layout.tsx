@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Instrument_Sans, JetBrains_Mono } from 'next/font/google'
 import './tokens.css'
 import './base.css'
+import './home.css'
 import './globals.css'
 
 /**
