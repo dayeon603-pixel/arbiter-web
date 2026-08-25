@@ -34,6 +34,21 @@ export type Division = {
   id: 'finance' | 'cybersecurity' | 'agriculture' | 'health' | 'research'
   slug: string
   sectorLabel: string
+  /**
+   * Registered entity for this sector, once one exists. `null` means it is not
+   * separately incorporated — see lib/structure.ts. Nothing in the UI may
+   * imply incorporation while this is null.
+   */
+  entity: null | { name: string; jurisdiction: string; registration: string }
+  /**
+   * The sector's own accent. Each is AA on both grounds; the pair is recorded
+   * here so a change re-runs the same check. They share a muted, low-chroma
+   * range on purpose — the set should read as one group of companies, not as
+   * five unrelated brands.
+   */
+  accent: { light: string; dark: string }
+  /** Which mark this sector uses. See components/site/SectorMark.tsx. */
+  mark: 'arch' | 'chain' | 'wave' | 'field' | 'pulse' | 'grid'
   /** null until a division name is chosen; UI falls back to sectorLabel. */
   displayName: string | null
   /** Homepage index line. One sentence, ≤ 18 words. */
@@ -62,6 +77,9 @@ export const nameOf = (d: Division): string => d.displayName ?? d.sectorLabel
 export const divisions: Division[] = [
   {
     id: 'finance',
+    entity: null,
+    accent: { light: '#8A6212', dark: '#C9962B' },  /* 5.20 / 7.08 */
+    mark: 'chain',
     slug: 'finance',
     sectorLabel: 'Finance',
     displayName: null,
@@ -102,6 +120,9 @@ export const divisions: Division[] = [
   },
   {
     id: 'cybersecurity',
+    entity: null,
+    accent: { light: '#2C5470', dark: '#7FA8C8' },  /* 7.64 / 7.49 */
+    mark: 'wave',
     slug: 'cybersecurity',
     sectorLabel: 'Cybersecurity',
     displayName: null,
@@ -130,6 +151,9 @@ export const divisions: Division[] = [
   },
   {
     id: 'agriculture',
+    entity: null,
+    accent: { light: '#4A6122', dark: '#9DBE62' },  /* 6.60 / 8.96 */
+    mark: 'field',
     slug: 'agriculture',
     sectorLabel: 'Agriculture',
     displayName: null,
@@ -158,6 +182,9 @@ export const divisions: Division[] = [
   },
   {
     id: 'health',
+    entity: null,
+    accent: { light: '#8A4230', dark: '#E0937E' },  /* 6.87 / 7.76 */
+    mark: 'pulse',
     slug: 'health',
     sectorLabel: 'Health',
     displayName: null,
@@ -177,6 +204,9 @@ export const divisions: Division[] = [
   },
   {
     id: 'research',
+    entity: null,
+    accent: { light: '#4A4A82', dark: '#9C9CD6' },  /* 7.69 / 7.31 */
+    mark: 'grid',
     slug: 'research',
     sectorLabel: 'Research',
     displayName: null,
@@ -208,6 +238,6 @@ export const financeDivision = divisions[0]
 /** Nav is three entries plus one CTA, per the IA. */
 export const navLinks = [
   { label: 'Finance', href: '/finance' },
-  { label: 'Divisions', href: '/divisions' },
+  { label: 'Sectors', href: '/divisions' },
   { label: 'Company', href: '/company' },
 ]

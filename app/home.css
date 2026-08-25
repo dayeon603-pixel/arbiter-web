@@ -425,3 +425,31 @@
     margin-right: calc((var(--content) - var(--shell)) / 2);
   }
 }
+
+/* ======================================================== sector identity
+   Each sector carries its own mark and accent so it reads as its own company.
+   The marks share one construction — same square, same stroke, all built from
+   the arch in the parent wordmark — so the set still reads as one group. */
+.pagehead__id { display: flex; align-items: flex-start; gap: var(--sp-4); }
+.pagehead__mark { color: var(--c-accent-text); flex: none; }
+.pagehead__name { display: block; }
+.pagehead__relation { display: block; margin-top: var(--sp-1); color: var(--c-text-secondary); }
+
+.divisions__row { grid-template-columns: var(--sp-8) 14rem minmax(0, 1fr) var(--sp-6); }
+.divisions__mark { color: var(--c-accent-text); display: flex; align-items: center; }
+.divisions__sub { margin-top: var(--sp-4); }
+.company__structure { border-top: var(--hairline) solid var(--c-border); }
+
+@media (max-width: 900px) { .divisions__row { grid-template-columns: var(--sp-7) 11rem minmax(0, 1fr) var(--sp-6); } }
+@media (max-width: 768px) {
+  .divisions__row { grid-template-columns: var(--sp-7) minmax(0, 1fr) var(--sp-6); }
+  .divisions__mark { grid-column: 1; grid-row: 1; }
+  .divisions__name { grid-column: 2; grid-row: 1; }
+  .divisions__go   { grid-column: 3; grid-row: 1; align-self: center; }
+  .divisions__tag  { grid-column: 2 / -1; grid-row: 2; }
+}
+
+/* The standalone sectors page leads straight into the list; the page header
+   already carries the rhythm above it, so the section does not repeat it. */
+.divisions__page { padding-top: 0; }
+.divisions__page .divisions__list { margin-top: 0; }

@@ -3,9 +3,11 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import PageShell from '@/components/site/PageShell'
 import PageHeader from '@/components/site/PageHeader'
+import SectorMark from '@/components/site/SectorMark'
 import Photo from '@/components/site/Photo'
 import { divisions, nameOf } from '@/lib/divisions'
 import { contactHref } from '@/lib/site'
+import { relationLine } from '@/lib/structure'
 
 /**
  * One template for all five divisions, generated from lib/divisions.ts.
@@ -34,7 +36,24 @@ export default function DivisionPage({ params }: { params: { division: string } 
 
   return (
     <PageShell>
-      <PageHeader accent eyebrow={nameOf(d)} title={d.tagline} subhead={d.subhead} />
+      {/* The sector's own accent scopes to this page only. Every component
+          below reads --c-accent-text, so one variable makes the whole page
+          the sector's rather than the parent's. */}
+      <div
+        className="divpage"
+        style={{
+          ['--c-accent-text' as string]: d.accent.light,
+          ['--c-accent' as string]: d.accent.light,
+        }}
+      >
+      <PageHeader
+        accent
+        eyebrow={nameOf(d)}
+        title={d.tagline}
+        subhead={d.subhead}
+        mark={<SectorMark mark={d.mark} size={48} />}
+        relation={relationLine}
+      />
 
       <div className="divpage__photo">
         <Photo image={d.heroImage} sizes="100vw" priority />
@@ -80,7 +99,7 @@ export default function DivisionPage({ params }: { params: { division: string } 
 
       <section className="section divpage__next" aria-labelledby="dp-next">
         <div className="content">
-          <h2 className="h2" id="dp-next">The other divisions</h2>
+          <h2 className="h2" id="dp-next">The other sectors</h2>
           <ul className="divisions__list">
             {others.map((o) => (
               <li key={o.id}>
@@ -99,6 +118,7 @@ export default function DivisionPage({ params }: { params: { division: string } 
           </p>
         </div>
       </section>
+      </div>
     </PageShell>
   )
 }

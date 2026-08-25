@@ -10,12 +10,12 @@ export default function Footer() {
         <div className="footer__brandcol">
           <Wordmark />
           <p className="small footer__note">
-            Decision infrastructure for regulated domains.
+            Decision infrastructure for regulated domains. Five sectors, one standard of proof.
           </p>
         </div>
 
-        <nav className="footer__col" aria-label="Divisions">
-          <h2 className="eyebrow">Divisions</h2>
+        <nav className="footer__col" aria-label="Sectors">
+          <h2 className="eyebrow">Sectors</h2>
           <ul>
             {divisions.map((d) => (
               <li key={d.id}>

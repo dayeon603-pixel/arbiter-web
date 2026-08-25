@@ -60,7 +60,7 @@ export default function FinanceBlock() {
 
         <p className="finance__more">
           <Link className="named-link" href={`/${d.slug}`}>
-            See the {nameOf(d).toLowerCase()} division
+            See the {nameOf(d).toLowerCase()} sector
             <span className="named-link__arrow" aria-hidden="true">→</span>
           </Link>
         </p>

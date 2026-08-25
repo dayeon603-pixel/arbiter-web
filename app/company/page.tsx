@@ -3,6 +3,7 @@ import PageShell from '@/components/site/PageShell'
 import PageHeader from '@/components/site/PageHeader'
 import Founder from '@/components/site/Founder'
 import { contactEmail, contactHref, legal } from '@/lib/site'
+import { structureNote } from '@/lib/structure'
 
 export const metadata: Metadata = {
   title: 'Company — Arbiter',
@@ -18,6 +19,21 @@ export default function CompanyPage() {
         title="Built before it was a company"
         subhead="The engine was working, tested software before there was an entity to hold it. Nothing here started as a business plan waiting for a build."
       />
+
+      <section className="section company__structure" aria-labelledby="co-structure">
+        <div className="content grid">
+          <h2 className="h2" id="co-structure" style={{ ['--col-span' as string]: 5 }}>
+            How this is put together
+          </h2>
+          <div style={{ ['--col-span' as string]: 7 }}>
+            <p className="body-sec measure">{structureNote}</p>
+            <p className="machine company__entity">
+              {legal.businessNameKo}({legal.businessNameEn}) · 대표 {legal.representativeKo} ·
+              사업자등록번호 {legal.registrationNumber} · {legal.jurisdiction}
+            </p>
+          </div>
+        </div>
+      </section>
 
       <section className="section" aria-labelledby="co-standard">
         <div className="content grid">

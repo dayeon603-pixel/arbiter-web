@@ -2,28 +2,37 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import PageShell from '@/components/site/PageShell'
 import PageHeader from '@/components/site/PageHeader'
+import SectorMark from '@/components/site/SectorMark'
 import { divisions, nameOf } from '@/lib/divisions'
+import { groupLine } from '@/lib/structure'
 
 export const metadata: Metadata = {
-  title: 'Divisions — Arbiter',
+  title: 'Sectors — Arbiter',
   description:
-    'Five divisions applying one standard of proof: finance, cybersecurity, agriculture, health, and research.',
+    'Five sectors applying one standard of proof: finance, cybersecurity, agriculture, health, and research.',
 }
 
 export default function DivisionsPage() {
   return (
     <PageShell>
       <PageHeader
-        eyebrow="Divisions"
-        title="Five divisions, one standard of proof"
-        subhead="Different domains, the same requirement: take an ambiguous input, apply the rules, and keep evidence a third party can check."
+        eyebrow="Sectors"
+        title="Five sectors, one standard of proof"
+        subhead={groupLine}
       />
-      <section className="section" aria-label="All divisions">
+      <section className="section divisions__page" aria-label="All sectors">
         <div className="content">
           <ul className="divisions__list">
             {divisions.map((d) => (
               <li key={d.id}>
-                <Link href={`/${d.slug}`} className="divisions__row">
+                <Link
+                  href={`/${d.slug}`}
+                  className="divisions__row"
+                  style={{ ['--c-accent-text' as string]: d.accent.light }}
+                >
+                  <span className="divisions__mark" aria-hidden="true">
+                    <SectorMark mark={d.mark} size={30} />
+                  </span>
                   <span className="divisions__name h4">{nameOf(d)}</span>
                   <span className="divisions__tag body-sec">{d.tagline}</span>
                   <span className="divisions__go named-link__arrow" aria-hidden="true">→</span>
