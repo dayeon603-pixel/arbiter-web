@@ -38,8 +38,8 @@ export default function Footer() {
         <nav className="footer__col" aria-label="Resources">
           <h2 className="eyebrow">Resources</h2>
           <ul>
-            <li><a href={externalLinks.spec}>Docs</a></li>
-            <li><a href={externalLinks.verifier}>Security</a></li>
+            <li><a href={externalLinks.spec}>Format spec</a></li>
+            <li><a href={externalLinks.verifier}>Verifier</a></li>
           </ul>
         </nav>
 
