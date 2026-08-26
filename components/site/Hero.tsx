@@ -1,4 +1,4 @@
-import ProofPanel from '@/components/ui/ProofPanel'
+import LiveVerifier from '@/components/ui/LiveVerifier'
 import { contactHref, externalLinks } from '@/lib/site'
 
 /**
@@ -38,7 +38,7 @@ export default function Hero({ variant = 'split' }: { variant?: 'split' | 'stack
       <div className="content hero__inner">
         {text}
         <div className="hero__panel">
-          <ProofPanel />
+          <LiveVerifier />
         </div>
       </div>
     </section>

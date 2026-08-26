@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import ProofPanel from '@/components/ui/ProofPanel'
+import LiveVerifier from '@/components/ui/LiveVerifier'
 import { contrastRows, palette, spaceScale, typeScale } from '@/lib/tokens'
 import './styleguide.css'
 
@@ -276,8 +276,8 @@ export default function Styleguide() {
           </article>
         </div>
 
-        <h3 className="h4" style={{ margin: 'var(--sp-8) 0 var(--sp-4)' }}>Proof panel</h3>
-        <ProofPanel explainerHref="/#how-it-works" />
+        <h3 className="h4" style={{ margin: 'var(--sp-8) 0 var(--sp-4)' }}>Live verifier</h3>
+        <LiveVerifier />
       </section>
 
       {/* --------------------------------------------------------- inverse */}

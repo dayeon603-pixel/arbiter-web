@@ -272,76 +272,6 @@
 .company__entity { margin-top: var(--sp-6); color: var(--c-text-secondary); }
 .pageshell { display: block; }
 
-/* =========================================================== the proof panel
-   Ink ground on a cream page. This is machine output and it should read as a
-   terminal artefact lying on paper, not as another card. `.on-inverse` (see
-   tokens.css) swaps the text, accent, verified and border tokens, so the
-   component markup is unchanged and every reversed pair still passes AA.
-
-   The panel is the widest single element in the hero on purpose. It is the
-   argument; the headline is only the claim. */
-.proof {
-  border: var(--hairline) solid var(--c-border);
-  border-radius: var(--radius);
-  min-width: 0;
-  container-type: inline-size;
-}
-.proof__head {
-  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
-  gap: var(--sp-4);
-  padding: var(--sp-5) var(--sp-6);
-  border-bottom: var(--hairline) solid var(--c-border);
-}
-.proof__body { padding: var(--sp-6); display: grid; gap: var(--sp-4); }
-
-/* Two real columns. The label column is sized in ch of the mono face so the
-   values align on a common left edge at every width. */
-.proof__row {
-  display: grid;
-  grid-template-columns: 14ch minmax(0, 1fr);
-  gap: var(--sp-5);
-  align-items: baseline;
-}
-.proof__k {
-  font-family: var(--font-mono); font-size: var(--t-1);
-  letter-spacing: var(--tr-eyebrow); text-transform: uppercase;
-  color: var(--c-text-secondary);
-}
-.proof__v {
-  font-family: var(--font-mono);
-  font-size: var(--t-2);
-  font-variant-numeric: tabular-nums slashed-zero;
-  color: var(--c-text-primary);
-  overflow-wrap: anywhere;
-  cursor: default;
-}
-/* Middle-elided by default; the full value on hover. The copy button always
-   writes the untruncated values, so nothing here is the only route to them. */
-.proof__full { display: none; }
-.proof__v:hover .proof__short { display: none; }
-.proof__v:hover .proof__full { display: inline; }
-
-.proof__foot {
-  padding: var(--sp-5) var(--sp-6);
-  border-top: var(--hairline) solid var(--c-border);
-  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
-  gap: var(--sp-4);
-}
-.proof__copy { background: var(--c-text-primary); color: var(--c-surface); }
-.proof__copy:hover { background: var(--c-accent-text); color: var(--c-surface); }
-.proof__note {
-  padding: 0 var(--sp-6) var(--sp-6);
-  font-size: var(--t-1);
-  line-height: var(--lh-body);
-  color: var(--c-text-secondary);
-  max-width: 68ch;
-}
-
-@container (max-width: 34rem) {
-  .proof__row { grid-template-columns: minmax(0, 1fr); gap: var(--sp-1); }
-  .proof__v { font-size: var(--t-1); }
-}
-
 /* ============================================================== dark section
    The explainer runs on ink. The two dark moments on the page are the machine
    output and the explanation of it — the value shift tracks what the content
@@ -453,3 +383,84 @@
    already carries the rhythm above it, so the section does not repeat it. */
 .divisions__page { padding-top: 0; }
 .divisions__page .divisions__list { margin-top: 0; }
+
+/* ============================================================ live verifier
+   The homepage centrepiece. Ink ground on cream, same as the static panel it
+   replaces, but this one actually runs the checks in the reader's browser. */
+.lv {
+  border: var(--hairline) solid var(--c-border);
+  border-radius: var(--radius);
+  min-width: 0;
+  container-type: inline-size;
+}
+.lv__head {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: var(--sp-4);
+  padding: var(--sp-5) var(--sp-6);
+  border-bottom: var(--hairline) solid var(--c-border);
+}
+.lv__status {
+  font-family: var(--font-mono); font-size: var(--t-1);
+  letter-spacing: var(--tr-eyebrow); text-transform: uppercase;
+}
+.lv__status[data-state='ok']      { color: var(--c-verified); }
+.lv__status[data-state='bad']     { color: var(--c-alert); }
+.lv__status[data-state='pending'] { color: var(--c-text-secondary); }
+
+.lv__fields { padding: var(--sp-6) var(--sp-6) var(--sp-5); display: grid; gap: var(--sp-3); }
+.lv__fields > div {
+  display: grid; grid-template-columns: 12ch minmax(0, 1fr);
+  gap: var(--sp-5); align-items: baseline;
+}
+.lv__fields dt {
+  font-family: var(--font-mono); font-size: var(--t-1);
+  letter-spacing: var(--tr-eyebrow); text-transform: uppercase;
+  color: var(--c-text-secondary);
+}
+.lv__fields dd {
+  margin: 0;
+  font-family: var(--font-mono); font-size: var(--t-2);
+  font-variant-numeric: tabular-nums slashed-zero;
+  color: var(--c-text-primary);
+  overflow-wrap: anywhere;
+}
+/* The edited field and the hash it no longer produces, marked so the cause and
+   the effect read as the same event. Scoped through .lv__fields because the
+   element rule above it would otherwise win on specificity. */
+.lv__fields dd.lv__edited { color: var(--c-alert); }
+
+.lv__checks {
+  padding: var(--sp-5) var(--sp-6);
+  border-top: var(--hairline) solid var(--c-border);
+  display: grid; gap: var(--sp-3);
+}
+.lv__check {
+  display: grid; grid-template-columns: var(--sp-5) auto minmax(0, 1fr);
+  gap: var(--sp-3); align-items: baseline;
+  color: var(--c-verified);
+}
+.lv__check--bad { color: var(--c-alert); }
+.lv__mark { display: flex; align-items: center; }
+.lv__check-label {
+  font-family: var(--font-mono); font-size: var(--t-1);
+  letter-spacing: var(--tr-eyebrow); text-transform: uppercase;
+}
+.lv__check-detail { color: var(--c-text-secondary); font-size: var(--t-1); }
+.lv__pending { color: var(--c-text-secondary); font-size: var(--t-1); font-family: var(--font-mono); }
+
+.lv__foot {
+  padding: var(--sp-5) var(--sp-6);
+  border-top: var(--hairline) solid var(--c-border);
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-4);
+}
+.lv__more { margin-left: auto; }
+.lv__note {
+  padding: 0 var(--sp-6) var(--sp-6);
+  font-size: var(--t-1); line-height: var(--lh-body);
+  color: var(--c-text-secondary); max-width: 68ch;
+}
+@container (max-width: 34rem) {
+  .lv__fields > div { grid-template-columns: minmax(0, 1fr); gap: var(--sp-1); }
+  .lv__fields dd { font-size: var(--t-1); }
+  .lv__more { margin-left: 0; }
+}
