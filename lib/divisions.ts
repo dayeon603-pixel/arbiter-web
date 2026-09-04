@@ -49,8 +49,13 @@ export type Division = {
   accent: { light: string; dark: string }
   /** Which mark this sector uses. See components/site/SectorMark.tsx. */
   mark: 'arch' | 'chain' | 'wave' | 'field' | 'pulse' | 'grid'
-  /** null until a division name is chosen; UI falls back to sectorLabel. */
+  /**
+   * The field this sector actually works in, which is narrower than the
+   * industry `sectorLabel` names. Falls back to sectorLabel when null.
+   */
   displayName: string | null
+  /** Short form for the nav, where the full field name is too long. */
+  navLabel?: string
   /** Homepage index line. One sentence, ≤ 18 words. */
   tagline: string
   /** Division page subhead. One sentence, ≤ 25 words. */
@@ -78,12 +83,13 @@ export const divisions: Division[] = [
   {
     id: 'finance',
     entity: null,
+    navLabel: 'Finance',
     accent: { light: '#8A6212', dark: '#C9962B' },  /* 5.20 / 7.08 */
     mark: 'chain',
     slug: 'finance',
     sectorLabel: 'Finance',
-    displayName: null,
-    tagline: 'Decisions about money, recorded so an examiner can re-derive them years later.',
+    displayName: 'Financial compliance',
+    tagline: 'Sanctions and trade decisions an examiner can re-derive years later.',
     subhead:
       'Screening and trade decisions become signed, hash-chained receipts that a third party can re-derive offline.',
     audience:
@@ -121,30 +127,29 @@ export const divisions: Division[] = [
   {
     id: 'cybersecurity',
     entity: null,
+    navLabel: 'Fraud',
     accent: { light: '#2C5470', dark: '#7FA8C8' },  /* 7.64 / 7.49 */
     mark: 'wave',
     slug: 'cybersecurity',
     sectorLabel: 'Cybersecurity',
-    displayName: null,
-    tagline: 'Catching a voice-phishing scam on the phone, while the call is still live.',
+    displayName: 'Fraud defence',
+    tagline: 'Stopping a voice-phishing scam, and recovering the money when it lands.',
     subhead:
-      'On-device detection of the two surfaces platforms cannot see: the messenger thread and the bank transfer screen.',
+      'One product across the whole window: on-device detection while the call is live, and the recovery sequence for the hour after a transfer.',
     audience:
       'Phone users a scam can reach, starting with the elderly, and the banks and fintechs that carry the loss.',
     products: [
       {
-        name: 'HALO',
-        headline: 'Catches the scam mid-call',
-        note: 'Reads the messenger thread and the transfer screen on-device, and warns the family.',
-        href: '/halo',
-        linkLabel: 'Read about HALO',
-      },
-      {
         name: 'Goldentime',
-        headline: 'The first hour, in order',
-        note: 'The time-critical recovery steps, sequenced so the actions that recover money come first.',
+        headline: 'Before the transfer, and after',
+        note: 'Reads the messenger thread and the transfer screen on-device, then runs the recovery steps in the order that gets money back.',
         href: '/goldentime',
         linkLabel: 'Read about Goldentime',
+        detail: [
+          'A scam and its recovery are one window, not two products. Goldentime watches the two surfaces the platforms structurally cannot see — the messenger conversation and the bank transfer screen — and warns a trusted family member while the call is still happening. Everything is analysed on the device, so no audio and no conversation leaves the phone.',
+          'When a transfer goes through anyway, the same app becomes the recovery copilot. The hour after money is sent decides whether it can be clawed back, and the order of the steps is the product: freeze the receiving account, report to the authorities, preserve the evidence. It is written for someone in shock, not for someone reading a manual.',
+          'It detects and it guides. It never silently blocks a call or moves money on its own.',
+        ],
       },
     ],
     heroImage: { base: 'cyber', alt: '', width: 1800, height: 1200 },
@@ -152,12 +157,13 @@ export const divisions: Division[] = [
   {
     id: 'agriculture',
     entity: null,
+    navLabel: 'Food',
     accent: { light: '#4A6122', dark: '#9DBE62' },  /* 6.60 / 8.96 */
     mark: 'field',
     slug: 'agriculture',
     sectorLabel: 'Agriculture',
-    displayName: null,
-    tagline: 'Cold storage and crop diagnosis for farms the grid and the agronomist never reached.',
+    displayName: 'Food security',
+    tagline: 'Cold storage for the last village the grid never reached.',
     subhead:
       'Up to a third of a smallholder harvest spoils before it can be sold, for want of refrigeration.',
     audience:
@@ -169,13 +175,11 @@ export const divisions: Division[] = [
         note: 'A solar pod billed per day through mobile money, sized for one village.',
         href: '/harvestguard',
         linkLabel: 'Read about HarvestGuard',
-      },
-      {
-        name: 'FarmPilot',
-        headline: 'Names the disease from one photo',
-        note: 'Runs on the phone, offline, with its measured accuracy stated in the demo.',
-        href: '/farmpilot',
-        linkLabel: 'Read about FarmPilot',
+        detail: [
+          'The technology to stop a harvest rotting is a century old and still has not reached the smallholder farmer. Only a small fraction of fresh produce in sub-Saharan Africa ever touches cold storage, and families are pushed into distress sales the day they harvest.',
+          'A solar-powered pod runs where the grid does not, billed pay-as-you-go through mobile money — no upfront cost, no wiring, no standing subscription. It is sized for the shared, sub-village scale that large cold hubs skip.',
+          'Every use also records what a farmer stored, sold and paid. That record is the first credential a lender has ever had for someone the formal banking system cannot see.',
+        ],
       },
     ],
     heroImage: { base: 'agriculture', alt: '', width: 1800, height: 1011 },
@@ -183,12 +187,13 @@ export const divisions: Division[] = [
   {
     id: 'health',
     entity: null,
+    navLabel: 'Health',
     accent: { light: '#8A4230', dark: '#E0937E' },  /* 6.87 / 7.76 */
     mark: 'pulse',
     slug: 'health',
     sectorLabel: 'Health',
-    displayName: null,
-    tagline: 'Catching the error that gets a claim denied, before the claim is submitted.',
+    displayName: 'Healthcare claims',
+    tagline: 'Catching the error that gets a claim denied, before it is submitted.',
     subhead:
       'Reads the documents healthcare runs on and flags what would be denied, at submission rather than months later.',
     audience: 'U.S. healthcare providers and the billing companies that serve them.',
@@ -205,12 +210,13 @@ export const divisions: Division[] = [
   {
     id: 'research',
     entity: null,
+    navLabel: 'Research',
     accent: { light: '#4A4A82', dark: '#9C9CD6' },  /* 7.69 / 7.31 */
     mark: 'grid',
     slug: 'research',
     sectorLabel: 'Research',
-    displayName: null,
-    tagline: 'Measuring where a model gets more capable and less able to tell when it is wrong.',
+    displayName: 'AI safety',
+    tagline: 'Measuring where a model grows more capable and less able to tell it is wrong.',
     subhead:
       'A model can improve at a task while getting worse at knowing when it has failed. We measure that gap.',
     audience:
@@ -235,9 +241,10 @@ export const divisions: Division[] = [
 
 export const financeDivision = divisions[0]
 
-/** Nav is three entries plus one CTA, per the IA. */
+/** Nav is three entries plus one CTA, per the IA. The lead sector is derived
+ *  rather than hardcoded, so reordering the array reorders the nav. */
 export const navLinks = [
-  { label: 'Finance', href: '/finance' },
+  { label: divisions[0].navLabel ?? divisions[0].sectorLabel, href: `/${divisions[0].slug}` },
   { label: 'Sectors', href: '/divisions' },
   { label: 'Company', href: '/company' },
 ]
