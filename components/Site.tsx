@@ -7,6 +7,7 @@ import Lenis from 'lenis'
 import GradientCanvas from './GradientCanvas'
 import LogoMark from './LogoMark'
 import BusinessCard from './BusinessCard'
+import LiveVerifier from './LiveVerifier'
 import { sectors, hero, company, founder, navLinks, contactHref, legal, type Sector } from '@/lib/data'
 
 const EASE = [0.16, 0.7, 0.18, 1] as const
@@ -299,6 +300,7 @@ export default function Site() {
       <main>
         <Hero />
         <StatBand />
+        <LiveVerifier />
         {sectors.map((s, i) => (<SectorBlock key={s.id} s={s} index={i} />))}
         <Company />
         <Founder />
