@@ -69,15 +69,6 @@
 .logpanel h2{font-size:.95rem;margin-bottom:.5rem}
 .logpanel .kv{margin:.3rem 0}
 .roothex{font-family:var(--mono);font-size:.72rem;color:var(--muted);overflow-wrap:anywhere}
-  .pastewrap{margin:14px 0 0;display:grid;gap:8px}
-  .pastelabel{font-size:12px;color:var(--dim)}
-  #pastejson{width:100%;font-family:var(--mono),ui-monospace,monospace;font-size:12px;
-    line-height:1.55;padding:10px 12px;border:1px solid var(--line);border-radius:8px;
-    background:var(--bg);color:var(--ink);resize:vertical}
-  #pastejson:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-  .pasteactions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-  .pasteerr{font-size:12px;color:#a3211a}
-  .pasteerr.ok{color:#19673f}
 </style>
 </head>
 <body>
@@ -93,16 +84,6 @@
     <button class="tamper" id="tamper">Flip one byte</button>
     <button id="restore">Restore</button>
     <label class="file">Load your own bundle&hellip; <input id="file" type="file" accept="application/json" hidden></label>
-    <button id="pastetoggle" aria-expanded="false" aria-controls="pastebox">Paste JSON&hellip;</button>
-  </div>
-  <div class="pastewrap" id="pastebox" hidden>
-    <label class="pastelabel" for="pastejson">Paste a receipt or a bundle. Nothing leaves this page.</label>
-    <textarea id="pastejson" spellcheck="false" rows="7"
-      placeholder='{"receipts":[{"receipt_id":"rcpt:p2","prev_hash":"...","verdict":{...},"this_hash":"..."}]}'></textarea>
-    <div class="pasteactions">
-      <button class="primary" id="pasterun">Verify pasted JSON</button>
-      <span class="pasteerr" id="pasteerr" role="status" aria-live="polite"></span>
-    </div>
   </div>
   <p class="note" id="meta"></p>
 
@@ -805,37 +786,6 @@ document.getElementById("file").onchange = (e) => {
   fr.readAsText(f); // local read, no network
 };
 document.querySelector("label.file").addEventListener("click", e => document.getElementById("file").click());
-
-// Paste path. Accepts a whole bundle, a bare array of receipts, or one receipt
-// object, and normalises all three to the shape render() expects. Verification
-// itself is untouched: pasted input runs the same checks as an uploaded file.
-const pasteBox = document.getElementById("pastebox");
-const pasteToggle = document.getElementById("pastetoggle");
-const pasteErr = document.getElementById("pasteerr");
-pasteToggle.onclick = () => {
-  const open = pasteBox.hasAttribute("hidden");
-  if (open) { pasteBox.removeAttribute("hidden"); document.getElementById("pastejson").focus(); }
-  else { pasteBox.setAttribute("hidden", ""); }
-  pasteToggle.setAttribute("aria-expanded", String(open));
-};
-document.getElementById("pasterun").onclick = () => {
-  const raw = document.getElementById("pastejson").value.trim();
-  pasteErr.className = "pasteerr";
-  if (!raw) { pasteErr.textContent = "Paste some JSON first."; return; }
-  let parsed;
-  try { parsed = JSON.parse(raw); }
-  catch (err) { pasteErr.textContent = "That is not valid JSON: " + err.message; return; }
-  if (Array.isArray(parsed)) parsed = { receipts: parsed };
-  else if (parsed && parsed.receipt_id && !parsed.receipts) parsed = { receipts: [parsed] };
-  if (!parsed || !Array.isArray(parsed.receipts) || !parsed.receipts.length) {
-    pasteErr.textContent = "No receipts found. Expected a bundle, an array, or one receipt object.";
-    return;
-  }
-  bundle = parsed;
-  pasteErr.className = "pasteerr ok";
-  pasteErr.textContent = "Loaded " + parsed.receipts.length + " receipt" + (parsed.receipts.length === 1 ? "" : "s") + ".";
-  render();
-};
 
 if (!(crypto && crypto.subtle)) document.getElementById("offline").textContent = "WebCrypto unavailable \u2014 open in a modern browser.";
 render();

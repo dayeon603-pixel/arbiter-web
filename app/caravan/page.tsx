@@ -1,22 +1,117 @@
 import type { Metadata } from 'next'
-import ProductPage from '@/components/site/ProductPage'
-import { caravan } from '@/lib/data'
-import { divisions } from '@/lib/divisions'
+import Link from 'next/link'
+import { caravan, contactHref } from '@/lib/data'
+import DeckEmbed from '@/components/DeckEmbed'
 
 export const metadata: Metadata = {
   title: 'Caravan — Arbiter',
   description: caravan.tagline,
 }
 
-const division = divisions.find((d) => d.id === 'finance')!
-
-const deck = {
-  src: '/decks/caravan-deck',
-  label: 'Caravan · Overview',
-  slides: 4,
-  caption: 'High-level overview',
-}
-
 export default function CaravanPage() {
-  return <ProductPage product={caravan} division={division} deck={deck} />
+  return (
+    <>
+      <header className="nav">
+        <div className="wrap nav__inner">
+          <Link href="/" className="wordmark">ARBITER</Link>
+          <nav className="nav__links" aria-label="Primary">
+            <Link href="/#finance">Finance</Link>
+            <Link href="/#company">Company</Link>
+            <a href={contactHref('Caravan — Inquiry')} className="nav__cta">Contact</a>
+          </nav>
+        </div>
+      </header>
+
+      <main className="cv">
+        <section className="wrap cv__hero">
+          <p className="eyebrow">{caravan.eyebrow}</p>
+          <h1 className="cv__name">{caravan.name}</h1>
+          <p className="cv__tagline">{caravan.tagline}</p>
+          <p className="cv__lead">{caravan.lead}</p>
+          <div className="cv__actions">
+            <a href={caravan.links.app} target="_blank" rel="noopener noreferrer" className="btn btn--solid">Open the live app&nbsp;→</a>
+            <a href={caravan.links.demo} target="_blank" rel="noopener noreferrer" className="btn-link">Offline-verifiable demo</a>
+          </div>
+        </section>
+
+        <section className="wrap cv__block">
+          <DeckEmbed src="/decks/caravan-deck" label="Caravan · Overview" slides={4} caption="High-level overview" />
+        </section>
+
+        <section className="wrap cv__block">
+          <div className="cv__block-head">
+            <span className="sector__fig">FIG. 01</span>
+            <span className="sector__rule" />
+            {caravan.problem.label}
+          </div>
+          <p className="cv__body">{caravan.problem.body}</p>
+        </section>
+
+        <section className="wrap cv__block">
+          <div className="cv__block-head">
+            <span className="sector__fig">FIG. 02</span>
+            <span className="sector__rule" />
+            {caravan.how.label}
+          </div>
+          <div className="cv__points">
+            {caravan.how.points.map((pt, i) => (
+              <div key={i} className="cv__point">
+                <span className="cv__point-num">{String(i + 1).padStart(2, '0')}</span>
+                <h3 className="cv__point-h">{pt.h}</h3>
+                <p className="cv__point-p">{pt.p}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="wrap cv__block">
+          <div className="cv__block-head">
+            <span className="sector__fig">FIG. 03</span>
+            <span className="sector__rule" />
+            {caravan.twoSided.label}
+          </div>
+          <p className="cv__body">{caravan.twoSided.body}</p>
+        </section>
+
+        <section className="wrap cv__block">
+          <div className="cv__block-head">
+            <span className="sector__fig">FIG. 04</span>
+            <span className="sector__rule" />
+            {caravan.pricing.label}
+          </div>
+          <p className="cv__body">{caravan.pricing.body}</p>
+        </section>
+
+        <section className="wrap cv__block">
+          <div className="cv__block-head">
+            <span className="sector__fig">FIG. 05</span>
+            <span className="sector__rule" />
+            {caravan.northStar.label}
+          </div>
+          <p className="cv__body">{caravan.northStar.body}</p>
+        </section>
+
+        <section className="wrap cv__block">
+          <div className="cv__block-head">
+            <span className="sector__fig">FIG. 06</span>
+            <span className="sector__rule" />
+            {caravan.status.label}
+          </div>
+          <p className="cv__body">{caravan.status.body}</p>
+        </section>
+
+        <section className="wrap cv__cta">
+          <Link href="/#finance" className="btn btn--ghost">← Back to Finance</Link>
+          <a href={contactHref('Caravan — Inquiry')} className="btn btn--solid">Get in touch</a>
+        </section>
+      </main>
+
+      <footer className="footer">
+        <div className="wrap footer__bar-only">
+          <span>© 2026 Arbiter</span>
+          <Link href="/">arbiter.company →</Link>
+        </div>
+      </footer>
+    </>
+  )
 }

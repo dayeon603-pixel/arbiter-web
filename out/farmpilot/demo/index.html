@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0e9e63">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FarmPilot">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<title>FarmPilot — Interactive Demo</title>
+<style>
+  :root{
+    --g:#16b277; --g2:#0e9e63; --g3:#0b7d4e; --teal:#22d3b0; --ink:#14311e; --ink2:#33473a;
+    --mut:#6b8a7a; --bg:#eef6f0; --card:#ffffff; --line:#e2ede6; --gold:#e08a00; --danger:#d9743a;
+    --chipbg:#eef8f1; --shadow:0 6px 18px rgba(20,80,50,.08);
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+  html,body{ height:100%; }
+  body{ font-family:-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Apple SD Gothic Neo",sans-serif;
+    background:radial-gradient(120% 120% at 50% 0%, #16351f 0%, #0c2416 60%, #081a10 100%);
+    color:var(--ink); display:flex; align-items:center; justify-content:center; min-height:100%; padding:24px; overflow:hidden; }
+  .device{ width:392px; height:812px; border-radius:52px; background:#0a1610; padding:12px;
+    box-shadow:0 40px 90px -20px rgba(0,0,0,.7), inset 0 0 0 2px rgba(255,255,255,.06); position:relative; flex:none; }
+  .device::before{ content:""; position:absolute; top:12px; left:50%; transform:translateX(-50%); width:150px; height:26px; background:#0a1610; border-radius:0 0 18px 18px; z-index:40; }
+  .app{ width:100%; height:100%; border-radius:40px; overflow:hidden; background:var(--bg); display:flex; flex-direction:column; position:relative; }
+  @media (max-width:520px){ body{ padding:0; } .device{ width:100vw; height:100dvh; border-radius:0; padding:0; box-shadow:none; } .device::before{ display:none; } .app{ border-radius:0; } }
+  .status{ height:44px; display:flex; align-items:flex-end; justify-content:space-between; padding:0 26px 6px; font-size:13.5px; font-weight:700; color:var(--ink); flex:none; }
+  .status .r{ display:flex; gap:6px; align-items:center; } .status svg{ display:block; }
+
+  .screens{ flex:1; position:relative; overflow:hidden; }
+  .screen{ position:absolute; inset:0; display:flex; flex-direction:column; opacity:0; pointer-events:none; transform:translateY(10px) scale(.997); transition:opacity .26s ease, transform .26s ease; }
+  .screen.active{ opacity:1; pointer-events:auto; transform:none; }
+  .hd{ padding:10px 20px 18px; color:#fff; position:relative; flex:none; background:linear-gradient(155deg,#17a56b 0%,#0f8f61 60%,#0b7d55 100%); border-radius:0 0 26px 26px; box-shadow:0 8px 20px rgba(11,120,80,.22); }
+  .hd .eyebrow{ font-size:11.5px; font-weight:800; letter-spacing:.09em; opacity:.92; text-transform:uppercase; display:flex; align-items:center; gap:7px; }
+  .hd .eyebrow svg{ width:15px; height:15px; }
+  .hd h1{ font-size:23px; font-weight:800; letter-spacing:-.01em; margin-top:4px; }
+  .hd .sub{ font-size:12.5px; opacity:.92; margin-top:3px; }
+  .hd .info,.hd .back{ position:absolute; top:12px; width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,.18); display:grid; place-items:center; cursor:pointer; }
+  .hd .info svg,.hd .back svg{ width:17px; height:17px; }
+  .hd .info{ right:16px; } .hd .back{ left:14px; } .hd.withback{ padding-left:54px; }
+  .body{ flex:1; overflow-y:auto; overflow-x:hidden; padding:16px 16px 22px; -webkit-overflow-scrolling:touch; } .body::-webkit-scrollbar{ width:0; }
+
+  .card{ background:var(--card); border-radius:16px; padding:15px 16px; box-shadow:var(--shadow); margin-bottom:12px; }
+  .card.tap{ cursor:pointer; transition:transform .12s; } .card.tap:active{ transform:scale(.985); }
+  .row{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .t13{ font-size:14px; font-weight:800; display:flex; align-items:center; gap:8px; } .t13 svg{ width:17px; height:17px; }
+  .t11{ font-size:12px; color:var(--mut); line-height:1.55; }
+  .pill{ font-size:11px; font-weight:800; padding:4px 10px; border-radius:99px; white-space:nowrap; }
+  .pill.ok{ color:var(--g2); background:#e7fbef; } .pill.warn{ color:#b76e00; background:#fff2df; } .pill.dim{ color:#5b8a74; background:#eef4f0; } .pill.bad{ color:#b5401a; background:#fde7dc; }
+  .chip{ display:inline-flex; align-items:center; gap:5px; font-size:12px; background:var(--chipbg); border:1px solid #d7ecdf; color:#256b45; font-weight:700; padding:6px 11px; border-radius:9px; margin:6px 6px 0 0; }
+  .chip svg{ width:13px; height:13px; }
+  .btn{ display:flex; align-items:center; justify-content:center; gap:8px; width:100%; border:none; cursor:pointer; background:linear-gradient(150deg,#17a56b,#12b487); color:#fff; font-weight:800; font-size:15px; padding:15px; border-radius:14px; box-shadow:0 8px 18px rgba(20,120,80,.26); transition:transform .12s, filter .12s; margin-bottom:10px; }
+  .btn svg{ width:18px; height:18px; }
+  .btn:last-child{ margin-bottom:0; } .btn:active{ transform:scale(.98); filter:brightness(.97); } .btn:disabled{ opacity:.7; }
+  .btn.ghost{ background:#fff; color:var(--g3); box-shadow:var(--shadow); border:1px solid var(--line); }
+  .btn.sm{ padding:11px 14px; font-size:13.5px; border-radius:12px; }
+  .btnrow{ display:flex; gap:10px; } .btnrow .btn{ margin-bottom:0; }
+  .sec-title{ font-size:12px; font-weight:800; letter-spacing:.06em; color:var(--mut); text-transform:uppercase; margin:16px 2px 9px; display:flex; align-items:center; justify-content:space-between; } .sec-title:first-child{ margin-top:2px; } .sec-title .add{ color:var(--g2); font-size:12px; cursor:pointer; font-weight:800; }
+  .bar{ height:8px; border-radius:99px; background:#e8efe9; overflow:hidden; margin:9px 0 5px; } .bar > i{ display:block; height:100%; border-radius:99px; background:linear-gradient(90deg,var(--g),var(--teal)); width:0; transition:width .9s cubic-bezier(.2,.8,.2,1); }
+
+  .cb{ display:grid; place-items:center; border-radius:12px; background:hsl(var(--h) 44% 92%); color:hsl(var(--h) 48% 34%); font-weight:800; flex:none; }
+  .crops{ display:flex; gap:10px; overflow-x:auto; padding-bottom:4px; } .crops::-webkit-scrollbar{ display:none; }
+  .cropcard{ flex:none; width:90px; background:#fff; border-radius:15px; box-shadow:var(--shadow); padding:12px 8px 11px; text-align:center; cursor:pointer; transition:transform .12s; } .cropcard:active{ transform:scale(.96); }
+  .cropcard .cb{ width:38px; height:38px; font-size:17px; margin:0 auto; } .cropcard .n{ font-size:12px; font-weight:800; margin-top:7px; } .cropcard .s{ font-size:9.5px; margin-top:2px; line-height:1.25; }
+  .cropadd{ flex:none; width:90px; border:2px dashed #bcd3c4; border-radius:15px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; color:var(--g2); font-weight:800; font-size:12px; cursor:pointer; background:transparent; } .cropadd svg{ width:22px; height:22px; }
+
+  .grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:11px; }
+  .gtile{ background:#fff; border-radius:15px; box-shadow:var(--shadow); padding:13px 6px; text-align:center; cursor:pointer; border:none; transition:transform .12s; } .gtile:active{ transform:scale(.95); }
+  .gtile .ic{ width:42px; height:42px; margin:0 auto 8px; border-radius:12px; display:grid; place-items:center; background:#eef9f2; color:var(--g2); } .gtile .ic svg{ width:21px; height:21px; } .gtile .l{ font-size:11px; font-weight:700; color:var(--ink2); line-height:1.2; }
+
+  .metrics{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .metric .v{ font-size:22px; font-weight:900; color:var(--g2); } .metric .l{ font-size:11.5px; color:var(--mut); margin-top:2px; }
+  .alert{ background:linear-gradient(135deg,#fff6ec,#fdeede); border:1px solid #f6d9b8; }
+
+  .task{ display:flex; align-items:center; gap:11px; padding:11px 0; border-bottom:1px solid var(--line); } .task:last-child{ border-bottom:none; }
+  .task .ic{ width:34px; height:34px; border-radius:10px; background:#eef9f2; color:var(--g2); display:grid; place-items:center; flex:none; } .task .ic svg{ width:17px; height:17px; }
+  .task .x{ flex:1; min-width:0; } .task .x b{ font-size:13.5px; } .task .x span{ font-size:11.5px; color:var(--mut); display:block; margin-top:1px; }
+  .task.done .x b{ text-decoration:line-through; color:var(--mut); }
+  .check{ width:24px; height:24px; border-radius:50%; border:2px solid #cfe0d6; display:grid; place-items:center; cursor:pointer; flex:none; color:#fff; }
+  .check svg{ width:13px; height:13px; opacity:0; } .check.on{ background:var(--g2); border-color:var(--g2); } .check.on svg{ opacity:1; }
+
+  .viewfinder{ height:230px; border-radius:16px; position:relative; overflow:hidden; background:#12251a; display:grid; place-items:center; }
+  .viewfinder img,.viewfinder video{ width:100%; height:100%; object-fit:cover; }
+  .viewfinder .frame{ position:absolute; inset:26px; border:2px solid rgba(255,255,255,.8); border-radius:14px; pointer-events:none; }
+  .viewfinder .hint{ position:absolute; bottom:12px; left:0; right:0; text-align:center; color:#fff; font-size:12px; font-weight:700; text-shadow:0 1px 4px rgba(0,0,0,.5); }
+  .viewfinder .scan{ position:absolute; left:8%; right:8%; height:2px; background:linear-gradient(90deg,transparent,#c7ff9a,transparent); box-shadow:0 0 14px #b6f24c; top:20%; opacity:0; } .viewfinder.scanning .scan{ opacity:1; animation:scan 1.1s ease-in-out infinite; }
+  @keyframes scan{ 0%{top:16%} 50%{top:80%} 100%{top:16%} }
+  .samples{ display:flex; gap:9px; margin-top:10px; } .samples img{ width:100%; aspect-ratio:1; object-fit:cover; border-radius:12px; cursor:pointer; border:2px solid transparent; transition:.15s; } .samples img:active{ transform:scale(.96); }
+
+  .chat{ display:flex; flex-direction:column; gap:9px; padding-bottom:6px; }
+  .bub{ max-width:82%; font-size:13.5px; line-height:1.45; padding:10px 13px; border-radius:16px; }
+  .bub.me{ align-self:flex-end; background:linear-gradient(135deg,#17a56b,#14b487); color:#fff; border-bottom-right-radius:5px; }
+  .bub.ai{ align-self:flex-start; background:#fff; color:var(--ink); border-bottom-left-radius:5px; box-shadow:var(--shadow); }
+  .bub.typing{ display:flex; gap:4px; align-items:center; padding:13px 15px; } .bub.typing span{ width:7px; height:7px; border-radius:50%; background:#b7ccbe; animation:blink 1.2s infinite; }
+  .bub.typing span:nth-child(2){ animation-delay:.2s } .bub.typing span:nth-child(3){ animation-delay:.4s } @keyframes blink{ 0%,60%,100%{opacity:.3} 30%{opacity:1} }
+  .quick{ display:flex; gap:8px; overflow-x:auto; padding:8px 16px 4px; flex:none; } .quick::-webkit-scrollbar{ display:none; }
+  .quick button{ white-space:nowrap; border:1px solid var(--line); background:#fff; color:var(--g3); font-weight:700; font-size:12.5px; padding:8px 13px; border-radius:99px; cursor:pointer; }
+  .composer{ display:flex; align-items:center; gap:9px; padding:10px 14px 14px; flex:none; background:var(--bg); }
+  .composer input{ flex:1; border:1px solid var(--line); background:#fff; border-radius:22px; padding:11px 15px; font-size:14px; outline:none; }
+  .composer .mic,.composer .send{ width:44px; height:44px; border-radius:50%; border:none; flex:none; cursor:pointer; background:linear-gradient(135deg,#17a56b,#14b487); color:#fff; display:grid; place-items:center; } .composer .mic{ background:#fff; color:var(--g3); box-shadow:var(--shadow); }
+
+  .kpis{ display:grid; grid-template-columns:1fr 1fr; gap:10px; } .kpi{ background:#fff; border-radius:14px; padding:13px 15px; box-shadow:var(--shadow); } .kpi .v{ font-size:21px; font-weight:900; } .kpi .l{ font-size:11.5px; color:var(--mut); margin-top:2px; }
+  .seg{ display:flex; background:#e6efe9; border-radius:12px; padding:4px; gap:4px; margin-bottom:14px; overflow-x:auto; } .seg::-webkit-scrollbar{ display:none; } .seg button{ flex:1; min-width:70px; border:none; background:transparent; padding:9px; border-radius:9px; font-weight:800; font-size:13px; color:var(--mut); cursor:pointer; white-space:nowrap; } .seg button.on{ background:#fff; color:var(--ink); box-shadow:0 2px 6px rgba(20,80,50,.1); }
+  .rec{ background:linear-gradient(135deg,#17a56b,#12b487); color:#fff; } .rec b{ font-size:16px; } .rec .d{ font-size:12px; opacity:.94; margin-top:3px; line-height:1.5; }
+
+  /* calendar */
+  .cal-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .cal-top b{ font-size:15px; } .cal-nav{ display:flex; gap:8px; } .cal-nav button{ width:32px; height:32px; border-radius:9px; border:1px solid var(--line); background:#fff; color:var(--g3); cursor:pointer; display:grid; place-items:center; } .cal-nav svg{ width:15px; height:15px; }
+  .cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+  .cal-dow{ text-align:center; font-size:10px; font-weight:800; color:var(--mut); padding:1px 0 3px; }
+  .cal-day{ height:42px; border-radius:11px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; font-size:13px; font-weight:600; color:var(--ink2); cursor:pointer; position:relative; background:#f4f9f5; }
+  .cal-day.empty{ background:transparent; cursor:default; } .cal-day.today{ background:var(--g2); color:#fff; box-shadow:0 3px 9px rgba(14,158,99,.32); } .cal-day.sel:not(.today){ outline:2px solid var(--g2); outline-offset:-2px; }
+  .cal-day .evd{ display:flex; gap:3px; height:5px; align-items:center; } .cal-day .evd i{ width:5px; height:5px; border-radius:50%; }
+  .dt-spray{ background:#d9743a } .dt-diagnose{ background:#0e9e63 } .dt-sell{ background:#e0a800 } .dt-water{ background:#2f9bd6 } .dt-fert{ background:#8a6bd6 } .dt-harvest{ background:#b5401a } .dt-custom{ background:#6b8a7a }
+
+  .heat{ display:grid; grid-template-columns:repeat(8,1fr); gap:3px; margin-top:8px; } .heat i{ aspect-ratio:1; border-radius:4px; }
+  .zone{ display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); font-size:13px; font-weight:600; color:var(--ink2); } .zone:last-child{ border-bottom:none; } .zone .n{ width:22px; height:22px; border-radius:7px; background:#eef9f2; color:var(--g2); display:grid; place-items:center; font-weight:800; font-size:12px; flex:none; }
+  .map-wrap{ border-radius:16px; overflow:hidden; border:1px solid var(--line); box-shadow:var(--shadow); }
+  .map-wrap iframe{ display:block; width:100%; height:210px; border:0; }
+  .legend{ display:flex; gap:12px; flex-wrap:wrap; margin-top:6px; } .legend span{ font-size:11px; color:var(--mut); display:flex; align-items:center; gap:5px; } .legend i{ width:9px; height:9px; border-radius:50%; }
+
+  /* community */
+  .prof{ display:flex; align-items:center; gap:13px; }
+  .avatar{ width:54px; height:54px; border-radius:50%; background:linear-gradient(135deg,#17a56b,#14b487); display:grid; place-items:center; color:#fff; font-size:22px; font-weight:800; flex:none; }
+  .avatar.sm{ width:40px; height:40px; font-size:16px; }
+  .idtag{ font-size:12px; font-weight:800; color:var(--g2); background:#eef8f1; padding:3px 9px; border-radius:8px; display:inline-block; margin-top:3px; }
+  .memrow{ display:flex; justify-content:space-between; gap:12px; padding:6px 0; font-size:12.5px; border-bottom:1px solid var(--line); } .memrow:last-of-type{ border-bottom:none; } .memrow span{ color:var(--mut); flex:none; } .memrow b{ flex:1; min-width:0; text-align:right; word-break:break-word; }
+
+  .setrow{ display:flex; align-items:center; gap:12px; padding:13px 0; border-bottom:1px solid var(--line); } .setrow:last-child{ border-bottom:none; } .setrow .x{ flex:1; min-width:0; } .setrow .x b{ font-size:14px; } .setrow .x span{ font-size:11.5px; color:var(--mut); display:block; margin-top:1px; }
+  .switch{ width:46px; height:28px; border-radius:99px; background:#d3e2d8; position:relative; cursor:pointer; transition:.2s; flex:none; } .switch.on{ background:var(--g2); } .switch::after{ content:''; position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%; background:#fff; transition:.2s; box-shadow:0 1px 3px rgba(0,0,0,.2); } .switch.on::after{ left:21px; }
+
+  .tabbar{ height:66px; display:flex; background:#fff; border-top:1px solid var(--line); flex:none; padding-bottom:env(safe-area-inset-bottom); }
+  .tab{ flex:1; border:none; background:none; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; color:#9db0a4; font-size:10px; font-weight:700; cursor:pointer; } .tab svg{ width:22px; height:22px; } .tab.on{ color:var(--g2); }
+
+  .toast{ position:absolute; left:50%; bottom:86px; transform:translate(-50%,20px); background:#14311e; color:#fff; font-size:13px; font-weight:600; padding:11px 16px; border-radius:12px; opacity:0; pointer-events:none; transition:.3s; z-index:70; box-shadow:0 10px 24px rgba(0,0,0,.3); max-width:80%; text-align:center; } .toast.show{ opacity:1; transform:translate(-50%,0); }
+  .sheet-bg{ position:absolute; inset:0; background:rgba(10,25,16,.5); opacity:0; pointer-events:none; transition:.28s; z-index:60; } .sheet-bg.show{ opacity:1; pointer-events:auto; }
+  .sheet{ position:absolute; left:0; right:0; bottom:0; background:#fff; border-radius:22px 22px 0 0; padding:20px 20px 28px; transform:translateY(100%); transition:transform .32s cubic-bezier(.2,.8,.2,1); z-index:61; max-height:86%; overflow-y:auto; } .sheet.show{ transform:none; } .sheet::-webkit-scrollbar{ width:0; }
+  .sheet h3{ font-size:18px; font-weight:800; margin-bottom:8px; } .sheet p{ font-size:13.5px; color:var(--ink2); line-height:1.55; margin-bottom:10px; } .sheet .grab{ width:40px; height:4px; background:#dbe6df; border-radius:99px; margin:0 auto 16px; }
+  .search,.inp,.sel{ width:100%; border:1px solid var(--line); background:var(--bg); border-radius:12px; padding:12px 15px; font-size:15px; outline:none; margin-bottom:12px; -webkit-appearance:none; }
+  .inp-l{ font-size:11.5px; font-weight:700; color:var(--mut); margin-bottom:5px; }
+  .croplist{ display:grid; grid-template-columns:1fr 1fr; gap:9px; } .cl{ display:flex; align-items:center; gap:9px; background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:10px 12px; font-weight:700; font-size:13.5px; cursor:pointer; } .cl:active{ background:#e3f1e8; } .cl .cb{ width:24px; height:24px; font-size:12px; } .cl.has{ opacity:.45; }
+  .langlist .cl{ grid-column:1/3; justify-content:space-between; }
+  a{ color:var(--g2); }
+</style>
+</head>
+<body>
+<div class="device">
+  <div class="app" id="app">
+    <div class="status">
+      <span id="clock">9:41</span>
+      <span class="r">
+        <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="7" width="3" height="5" rx="1" fill="#14311e"/><rect x="4.5" y="4.5" width="3" height="7.5" rx="1" fill="#14311e"/><rect x="9" y="2" width="3" height="10" rx="1" fill="#14311e"/><rect x="13.5" y="0" width="3" height="12" rx="1" fill="#14311e"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 2.5C10.3 2.5 12.4 3.4 14 4.9L15 3.8C13.1 2 10.7 1 8 1S2.9 2 1 3.8L2 4.9C3.6 3.4 5.7 2.5 8 2.5Z" fill="#14311e"/><path d="M8 5.5C9.4 5.5 10.7 6 11.7 7L8 11 4.3 7C5.3 6 6.6 5.5 8 5.5Z" fill="#14311e"/></svg>
+        <svg width="26" height="12" viewBox="0 0 26 12"><rect x="1" y="1" width="21" height="10" rx="3" fill="none" stroke="#14311e" stroke-opacity=".5"/><rect x="3" y="3" width="16" height="6" rx="1.5" fill="#14311e"/><rect x="23" y="4" width="2" height="4" rx="1" fill="#14311e" fill-opacity=".5"/></svg>
+      </span>
+    </div>
+
+    <div class="screens">
+      <!-- HOME -->
+      <section class="screen active" id="s-home">
+        <div class="hd"><div class="eyebrow" id="ic-brand">FarmPilot</div><h1 id="home-h1">Good morning, Minjun</h1><div class="sub" id="home-sub">Haenam · Jeollanam-do</div><div class="info" id="ic-info" onclick="openSheet('sheet')"></div></div>
+        <div class="body">
+          <div class="sec-title"><span data-i18n="mycrops">My crops</span> <span class="add" onclick="openAdd()" data-i18n="add_crop">+ Add crop</span></div>
+          <div class="crops" id="crops"></div>
+          <div class="card alert" style="margin-top:14px"><div class="row"><span class="t13" id="ic-risk"><span data-i18n="risk_today">Disease risk today</span></span><span class="pill warn" data-i18n="high">High</span></div><div class="t11" style="margin-top:6px" data-i18n="risk_msg">Warm, humid nights and two leaf-wetness windows are forecast in 48 hours. Powdery mildew is favored on your barley.</div><button class="btn sm" style="margin-top:12px" onclick="go('fieldscan')" id="ic-dgnow"><span data-i18n="alert_scout">Scout my field now</span></button></div>
+          <div class="sec-title" data-i18n="everything">Everything FarmPilot does</div>
+          <div class="grid" id="home-grid"></div>
+          <div class="sec-title" data-i18n="season">This season</div>
+          <div class="metrics"><div class="card metric" style="margin:0"><div class="v">99.8%</div><div class="l" data-i18n="m_conf">last diagnosis confidence</div></div><div class="card metric" style="margin:0"><div class="v">+12%</div><div class="l" data-i18n="m_hold">expected price if you hold</div></div></div>
+        </div>
+      </section>
+
+      <!-- OVERVIEW / PROFIT -->
+      <section class="screen" id="s-overview">
+        <div class="hd"><div class="eyebrow" id="ic-ov"><span data-i18n="fn_overview">Overview</span></div><h1 data-i18n="ov_title">Your farm, in numbers</h1><div class="sub" data-i18n="ov_sub">This season · demo figures</div></div>
+        <div class="body" id="ov-body"></div>
+      </section>
+
+      <!-- DIAGNOSE -->
+      <section class="screen" id="s-diagnose">
+        <div class="hd withback"><div class="back" id="ic-back1" onclick="go('home')"></div><div class="eyebrow" id="ic-dg"><span data-i18n="fn_diagnosis">AI Diagnosis</span></div><h1 data-i18n="dg_title">Point, shoot, diagnose</h1><div class="sub" id="dg-sub" data-i18n="dg_sub">On-device · offline · ~10 seconds</div></div>
+        <div class="body">
+          <div class="viewfinder" id="vf"><img id="vfimg" src="assets/leaf1.jpg" alt="leaf"><video id="vfvid" playsinline muted autoplay style="display:none"></video><div class="frame"></div><div class="scan"></div><div class="hint" id="vfhint" data-i18n="dg_hint">Take a photo, upload one, or try a sample</div></div>
+          <div class="btnrow" style="margin-top:12px"><button class="btn" id="cambtn" onclick="camAction()"><span data-i18n="camera">Camera</span></button><button class="btn ghost" onclick="document.getElementById('file').click()"><span data-i18n="upload">Upload</span></button></div>
+          <input type="file" id="file" accept="image/*" capture="environment" style="display:none" onchange="onUpload(event)">
+          <div class="t11" style="margin:12px 2px 4px" data-i18n="dg_sample">Or try a sample leaf:</div>
+          <div class="samples"><img src="assets/leaf1.jpg" onclick="diagnoseSample(0)" alt=""><img src="assets/leaf2.jpg" onclick="diagnoseSample(1)" alt=""><img src="assets/leaf3.jpg" onclick="diagnoseSample(2)" alt=""></div>
+          <canvas id="cvs" style="display:none"></canvas>
+          <div id="result"></div>
+        </div>
+      </section>
+
+      <!-- FIELD SCAN -->
+      <section class="screen" id="s-fieldscan">
+        <div class="hd withback"><div class="back" id="ic-back8" onclick="go('home')"></div><div class="eyebrow" id="ic-fs"><span data-i18n="fn_fieldscan">Field Scan</span></div><h1 data-i18n="fs_title">Cover the whole field</h1><div class="sub" data-i18n="fs_sub">Weather-directed scouting, not plant-by-plant</div></div>
+        <div class="body">
+          <div class="card alert"><div class="row"><span class="t13" id="ic-fsrisk"><span data-i18n="fs_risk">Today's infection risk</span></span><span class="pill warn" id="fs-risklv">High</span></div><div class="t11" style="margin-top:6px" id="fs-riskmsg"></div></div>
+          <div class="sec-title" data-i18n="fs_scout">Where to scout</div>
+          <div class="card"><div class="t11" style="margin-bottom:4px" data-i18n="fs_scout_msg">Disease clusters, so a few checks at the right spots represent the whole field. Scan these zones:</div><div id="fs-zones"></div></div>
+          <button class="btn" onclick="startFieldScan()" id="fs-btn"><span data-i18n="fs_scan">Scan a row (video sweep)</span></button>
+          <div id="fs-result"></div>
+          <div class="t11" style="text-align:center;margin-top:4px" data-i18n="fs_note">Demo: production samples video frames on-device and fuses weather and satellite (AlphaEarth) risk. You never photograph every plant.</div>
+        </div>
+      </section>
+
+      <!-- ADVISOR -->
+      <section class="screen" id="s-advisor">
+        <div class="hd withback"><div class="back" id="ic-back2" onclick="go('home')"></div><div class="eyebrow" id="ic-ad"><span data-i18n="fn_advisor">AI Advisor</span></div><h1 data-i18n="ad_title">Ask anything</h1><div class="sub" data-i18n="ad_sub">Voice &amp; dialect · in any language</div></div>
+        <div class="body" id="chatbody"><div id="mem"></div><div class="chat" id="chat"></div></div>
+        <div class="quick" id="quick"></div>
+        <div class="composer"><button class="mic" id="ic-mic" onclick="toast(t('listening'))" aria-label="voice"></button><input id="msg" data-i18n-ph="ad_ph" placeholder="Message…" onkeydown="if(event.key==='Enter'){ask(this.value); this.value='';}"><button class="send" id="ic-send" onclick="var m=document.getElementById('msg'); ask(m.value); m.value='';" aria-label="send"></button></div>
+      </section>
+
+      <!-- MARKET -->
+      <section class="screen" id="s-market">
+        <div class="hd withback"><div class="back" id="ic-back3" onclick="go('home')"></div><div class="eyebrow" id="ic-mk"><span data-i18n="fn_sell">Sell-timing</span></div><h1 data-i18n="mk_title">When &amp; how to sell</h1><div class="sub" id="mkt-sub">Malting barley · 8-week outlook</div></div>
+        <div class="body">
+          <div class="seg" id="seg"></div>
+          <div class="kpis"><div class="kpi"><div class="v" id="k-price">₩24,800</div><div class="l" data-i18n="mk_cur">current wholesale (demo)</div></div><div class="kpi"><div class="v" id="k-exp" style="color:var(--g2)">+12%</div><div class="l" data-i18n="mk_exp">expected in 4 weeks</div></div></div>
+          <div class="card" style="margin-top:12px"><div class="t11" style="margin-bottom:8px" id="chart-cap">Wholesale price · next 8 weeks</div><svg id="chart" viewBox="0 0 300 120" style="width:100%;height:130px"></svg></div>
+          <div class="card rec" id="rec"><b id="rec-title">Hold 4–5 weeks</b><div class="d" id="rec-d">Price is rising toward a peak.</div></div>
+          <button class="btn ghost" onclick="toast(t('alert_set'))" id="ic-alert"><span data-i18n="mk_alertbtn">Alert me at the optimal window</span></button>
+          <div class="t11" style="margin-top:10px;text-align:center" data-i18n="mk_src">Price series is illustrative demo data, modeled on KAMIS wholesale structure.</div>
+        </div>
+      </section>
+
+      <!-- CALENDAR -->
+      <section class="screen" id="s-calendar">
+        <div class="hd withback"><div class="back" id="ic-back4" onclick="go('home')"></div><div class="eyebrow" id="ic-cl"><span data-i18n="fn_calendar">Farm Calendar</span></div><h1 data-i18n="cl_title">Plan &amp; track every task</h1><div class="sub" data-i18n="cl_sub">Tap a day to see or add tasks</div></div>
+        <div class="body">
+          <div class="card">
+            <div class="cal-top"><b id="cal-month">Month</b><div class="cal-nav"><button id="cal-prev"></button><button id="cal-next"></button></div></div>
+            <div class="cal-grid" id="cal-dow"></div>
+            <div class="cal-grid" id="cal-grid" style="margin-top:3px"></div>
+            <div class="legend" id="cal-legend"></div>
+          </div>
+          <div class="sec-title"><span id="cal-daylabel" data-i18n="cl_today">Today</span> <span class="add" onclick="addTaskForSelected()" data-i18n="cl_add">+ Add task</span></div>
+          <div class="card" id="cal-list"></div>
+          <div class="sec-title" data-i18n="cl_smart">Smart auto-tasks</div>
+          <div class="card"><div class="t11" data-i18n="cl_smart_msg">FarmPilot auto-adds spray reminders from your diagnosis, a sell-window task from the price forecast, and a scout task when nearby disease risk rises. These carry a colored dot on the calendar.</div></div>
+        </div>
+      </section>
+
+      <!-- DISEASE MAP -->
+      <section class="screen" id="s-map">
+        <div class="hd withback"><div class="back" id="ic-back5" onclick="go('home')"></div><div class="eyebrow" id="ic-mp"><span data-i18n="fn_map">Disease Map</span></div><h1 data-i18n="mp_title">Your area, live</h1><div class="sub" data-i18n="mp_sub">Haenam, Jeollanam-do · 34.57°N, 126.60°E</div></div>
+        <div class="body">
+          <div class="map-wrap"><iframe title="map" loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=126.44%2C34.46%2C126.76%2C34.68&layer=mapnik&marker=34.573%2C126.599"></iframe></div>
+          <div class="legend" style="margin:8px 2px 0"><span><i style="background:#d9743a"></i><span data-i18n="mp_out">Outbreak reported</span></span><span><i style="background:#0e9e63"></i><span data-i18n="mp_you">Your farm</span></span></div>
+          <div class="card" style="margin-top:12px"><div class="row"><span class="t13" id="ic-mildew"><span data-i18n="mp_mildew">Powdery mildew spreading</span></span><span class="pill warn">3 km</span></div><div class="t11" style="margin-top:6px" data-i18n="mp_mildew_msg">Reported near Gangjin and Haenam this week. Your farm is inside the spread radius, so a preventive spray is recommended.</div><button class="btn sm" style="margin-top:12px" onclick="addPrevention()" id="ic-prev"><span data-i18n="mp_prev">Add a prevention plan</span></button></div>
+          <div class="sec-title" data-i18n="mp_refs">Live references</div>
+          <div class="card">
+            <a class="setrow" style="text-decoration:none;color:inherit" href="https://ncpms.rda.go.kr" target="_blank" rel="noopener"><div class="ic task-ic" id="ic-ref1"></div><div class="x"><b data-i18n="mp_ref1">RDA pest &amp; disease surveillance</b><span>ncpms.rda.go.kr · 국가농작물병해충관리시스템</span></div><span style="color:var(--mut)">↗</span></a>
+            <a class="setrow" style="text-decoration:none;color:inherit" id="news-link" href="https://news.google.com/search?q=%EB%B3%B4%EB%A6%AC%20%ED%9D%B0%EA%B0%80%EB%A3%A8%EB%B3%91" target="_blank" rel="noopener"><div class="ic task-ic" id="ic-ref2"></div><div class="x"><b data-i18n="mp_ref2">Latest news on this disease</b><span data-i18n="mp_ref2s">Live Google News search</span></div><span style="color:var(--mut)">↗</span></a>
+            <a class="setrow" style="text-decoration:none;color:inherit" href="https://www.nongsaro.go.kr" target="_blank" rel="noopener"><div class="ic task-ic" id="ic-ref3"></div><div class="x"><b data-i18n="mp_ref3">RDA Nongsaro knowledge base</b><span>nongsaro.go.kr</span></div><span style="color:var(--mut)">↗</span></a>
+          </div>
+          <div class="t11" style="text-align:center" data-i18n="mp_note">Map pins are illustrative demo data; the sources above are live and real.</div>
+        </div>
+      </section>
+
+      <!-- TRADE -->
+      <section class="screen" id="s-trade">
+        <div class="hd withback"><div class="back" id="ic-back6" onclick="go('home')"></div><div class="eyebrow" id="ic-td"><span data-i18n="fn_trade">Trade &amp; Linkage</span></div><h1 data-i18n="td_title">Sell your harvest, step by step</h1><div class="sub" data-i18n="td_sub">Concrete channels, not guesswork</div></div>
+        <div class="body">
+          <div class="card">
+            <div class="t13" style="margin-bottom:4px" data-i18n="td_post">1 · Post what you have</div>
+            <div class="t11" style="margin-bottom:10px" data-i18n="td_post_msg">Tell us the crop, grade, and volume. We match it to the buyers below and benchmark the price against KAMIS.</div>
+            <div class="inp-l" data-i18n="td_crop">Crop</div><select class="sel" id="td-crop"></select>
+            <div class="row" style="gap:10px"><div style="flex:1"><div class="inp-l" data-i18n="td_grade">Grade</div><select class="sel" id="td-grade"><option>특 (Top)</option><option>상 (High)</option><option>보통 (Standard)</option></select></div><div style="flex:1"><div class="inp-l" data-i18n="td_qty">Volume (kg)</div><input class="inp" id="td-qty" inputmode="numeric" value="2000"></div></div>
+            <button class="btn" onclick="findBuyers()" id="ic-find"><span data-i18n="td_find">Find buyers &amp; price</span></button>
+          </div>
+          <div id="td-result"></div>
+          <div class="sec-title" data-i18n="td_channels">2 · Choose a channel</div>
+          <div class="card" id="td-channels"></div>
+          <div class="sec-title" data-i18n="td_group">3 · Sell together</div>
+          <div class="card"><div class="row"><span class="t13" id="ic-group"><span data-i18n="td_group_h">Group shipment nearby</span></span><span class="pill ok">4 farms</span></div><div class="t11" style="margin-top:6px" data-i18n="td_group_msg">Four barley farms within 8 km are pooling to hit the 10-ton minimum a maltster needs. Join to reach contract volume you cannot alone.</div><button class="btn sm" style="margin-top:12px" onclick="toast(t('td_joined'))" id="ic-join"><span data-i18n="td_join">Join the group shipment</span></button></div>
+        </div>
+      </section>
+
+      <!-- COMMUNITY (Expert Network + social) -->
+      <section class="screen" id="s-experts">
+        <div class="hd withback"><div class="back" id="ic-back7" onclick="go('home')"></div><div class="eyebrow" id="ic-cm"><span data-i18n="fn_community">Community</span></div><h1 data-i18n="cm_title">Your network</h1><div class="sub" data-i18n="cm_sub">Add farmers &amp; experts, share your ID</div></div>
+        <div class="body">
+          <div class="card">
+            <div class="prof"><div class="avatar" id="cm-av">M</div><div class="x" style="flex:1"><b id="cm-name" style="font-size:15px">Minjun</b><div id="cm-region" class="t11">Haenam · Barley, Rice</div><span class="idtag" id="cm-id">@minjun_haenam</span></div></div>
+            <div class="btnrow" style="margin-top:13px"><button class="btn sm" onclick="openSheet('sharesheet')" id="ic-share"><span data-i18n="cm_share">Share my profile</span></button><button class="btn ghost sm" onclick="openSheet('addidsheet')" id="ic-addid"><span data-i18n="cm_addid">Add by ID</span></button></div>
+          </div>
+          <div class="card"><div class="t11" data-i18n="cm_expert_msg">When the AI abstains on a hard case, escalate to a specialist below. Some are online now, others are open to outreach.</div></div>
+          <div class="sec-title"><span data-i18n="cm_experts">Experts available</span> <span class="add" id="cm-expcount"></span></div>
+          <div class="card" id="cm-experts"></div>
+          <div class="sec-title"><span data-i18n="cm_connections">My connections</span> <span class="add" id="cm-count"></span></div>
+          <div class="card" id="cm-list"></div>
+          <div class="sec-title" data-i18n="cm_suggest">People near you</div>
+          <div class="card" id="cm-suggest"></div>
+        </div>
+      </section>
+
+      <!-- PROFILE / SETTINGS -->
+      <section class="screen" id="s-profile">
+        <div class="hd"><div class="eyebrow" id="ic-pf"><span data-i18n="tab_me">Me</span></div><h1 id="pf-h1">Minjun's farm</h1><div class="sub" id="pf-sub">Haenam · Jeollanam-do</div></div>
+        <div class="body">
+          <div class="card"><div class="setrow" style="border:none; padding-bottom:0"><div class="avatar" id="pf-av">M</div><div class="x"><b id="pf-name">Minjun</b><span id="pf-region">Haenam · Jeollanam-do</span></div><button class="btn ghost sm" style="width:auto; margin:0" onclick="openEdit()" data-i18n="edit">Edit</button></div></div>
+          <div class="sec-title"><span data-i18n="mycrops">My crops</span> <span class="add" onclick="openAdd()" data-i18n="add">+ Add</span></div>
+          <div class="card" id="pf-crops"></div>
+          <div class="sec-title" data-i18n="language">Language</div>
+          <div class="card"><div class="setrow tap" style="cursor:pointer" onclick="openLang()"><div class="ic task-ic" id="ic-lang"></div><div class="x"><b data-i18n="app_lang">App language</b><span id="lang-current">English</span></div><span style="color:var(--mut)">›</span></div></div>
+          <div class="sec-title" data-i18n="notifications">Notifications</div>
+          <div class="card">
+            <div class="setrow"><div class="x"><b data-i18n="n_disease">Disease alerts</b><span data-i18n="n_disease_s">When risk rises near your farm</span></div><div class="switch on" data-k="disease" onclick="toggle(this)"></div></div>
+            <div class="setrow"><div class="x"><b data-i18n="n_price">Price / sell-window alerts</b><span data-i18n="n_price_s">When your crop hits the target</span></div><div class="switch on" data-k="price" onclick="toggle(this)"></div></div>
+            <div class="setrow"><div class="x"><b data-i18n="n_weekly">Weekly summary</b><span data-i18n="n_weekly_s">Every Monday morning</span></div><div class="switch" data-k="weekly" onclick="toggle(this)"></div></div>
+          </div>
+          <div class="sec-title" data-i18n="about">About</div>
+          <div class="card">
+            <div class="setrow tap" onclick="openSheet('sheet')" style="cursor:pointer"><div class="x"><b data-i18n="about_demo">About this demo</b><span data-i18n="about_demo_s">Sample demo, not final UI</span></div><span style="color:var(--mut)">›</span></div>
+            <div class="setrow"><div class="x"><b data-i18n="version">Version</b><span data-i18n="version_s">Demo v3 · on-device 6 MB model</span></div><span class="pill ok">97.8%</span></div>
+            <div class="setrow tap" onclick="resetDemo()" style="cursor:pointer; color:var(--danger)"><div class="x"><b style="color:var(--danger)" data-i18n="reset">Reset demo data</b><span data-i18n="reset_s">Clear crops &amp; settings</span></div><span>↺</span></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <nav class="tabbar" id="tabbar"></nav>
+
+    <div class="toast" id="toast"></div>
+    <div class="sheet-bg" id="sheetbg" onclick="closeSheets()"></div>
+
+    <div class="sheet" id="sheet"><div class="grab"></div><h3 data-i18n="about_demo">About this demo</h3>
+      <p data-i18n="sheet_p1"><b>This is a working sample demo</b> of FarmPilot, not the final product UI. Every screen is interactive.</p>
+      <p data-i18n="sheet_p2">The diagnosis engine is real: a 6&nbsp;MB on-device CNN at 97.8% validation accuracy on public crop-disease data. In this demo, camera and upload results use a lightweight on-image heuristic; the production model runs the full CNN on-device.</p>
+      <p>FarmPilot · Arbiter &nbsp;·&nbsp; <a href="about.html" data-i18n="sheet_about">About the project →</a></p>
+      <button class="btn" onclick="closeSheets()" data-i18n="gotit">Got it</button></div>
+
+    <div class="sheet" id="addsheet"><div class="grab"></div><h3 data-i18n="add_crop_h">Add a crop</h3><input class="search" id="cropsearch" data-i18n-ph="search_crops" placeholder="Search crops…" oninput="renderCatalog(this.value)"><div class="croplist" id="croplist"></div></div>
+
+    <div class="sheet" id="cropsheet"><div class="grab"></div><h3 id="cs-name">Crop</h3><p id="cs-desc" data-i18n="cs_desc">Jump to a function for this crop.</p>
+      <button class="btn" onclick="cropGo('diagnose')" data-i18n="cs_diagnose">Diagnose this crop</button>
+      <button class="btn ghost" onclick="cropGo('market')" data-i18n="cs_market">Sell-timing outlook</button>
+      <button class="btn ghost" onclick="cropGo('calendar')" data-i18n="cs_calendar">Farm calendar</button>
+      <button class="btn ghost" style="color:var(--danger); border-color:#f0d3c6" onclick="removeCrop()" data-i18n="cs_remove">Remove from my crops</button></div>
+
+    <div class="sheet" id="editsheet"><div class="grab"></div><h3 data-i18n="edit_profile">Edit profile</h3>
+      <div class="inp-l" data-i18n="f_name">Name</div><input class="inp" id="e-name">
+      <div class="inp-l" data-i18n="f_farm">Farm name</div><input class="inp" id="e-farm">
+      <div class="inp-l" data-i18n="f_region">Region</div><input class="inp" id="e-region">
+      <button class="btn" onclick="saveEdit()" data-i18n="save">Save</button></div>
+
+    <div class="sheet" id="langsheet"><div class="grab"></div><h3 data-i18n="choose_lang">Choose language</h3>
+      <input class="search" id="langsearch" data-i18n-ph="search_lang" placeholder="Search language…" oninput="renderLangs(this.value)">
+      <div class="croplist langlist" id="langlist"></div>
+      <button class="btn ghost" style="margin-top:6px" onclick="moreLangs()" data-i18n="more_lang">+ More languages</button></div>
+
+    <div class="sheet" id="sharesheet"><div class="grab"></div><h3 data-i18n="share_h">Share my profile</h3>
+      <p data-i18n="share_p">Send your FarmPilot ID to a nearby farmer, like AirDrop, or copy it into KakaoTalk.</p>
+      <div class="card" style="text-align:center;box-shadow:none;border:1px solid var(--line)"><div class="avatar" id="share-av" style="margin:0 auto 8px">M</div><b id="share-name">Minjun</b><div class="idtag" id="share-id" style="margin-top:6px">@minjun_haenam</div></div>
+      <div class="inp-l" data-i18n="share_near">Nearby, tap to send</div>
+      <div class="card" id="share-near" style="box-shadow:none;border:1px solid var(--line)"></div>
+      <button class="btn" onclick="copyId()" id="ic-copy"><span data-i18n="share_copy">Copy my ID</span></button></div>
+
+    <div class="sheet" id="addidsheet"><div class="grab"></div><h3 data-i18n="addid_h">Add by ID</h3>
+      <p data-i18n="addid_p">Type a farmer or expert ID (for example @jiwoo_gangjin) to add them to your network.</p>
+      <input class="inp" id="addid-input" placeholder="@id">
+      <button class="btn" onclick="addById()" data-i18n="addid_btn">Add to my network</button></div>
+  </div>
+</div>
+
+<script>
+  /* ================= icons ================= */
+  var IC={
+    brand:'<path d="M12 3c4 3 6 6 6 10a6 6 0 0 1-12 0c0-4 2-7 6-10Z"/><path d="M12 22V9"/>',
+    info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="7.5" r=".6" fill="currentColor"/>',
+    back:'<path d="M15 5l-7 7 7 7"/>',
+    home:'<path d="M3 10l9-7 9 7v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+    overview:'<path d="M4 19V5"/><path d="M4 19h16"/><rect x="7" y="11" width="3" height="5"/><rect x="12" y="7" width="3" height="9"/><rect x="17" y="13" width="3" height="3"/>',
+    me:'<circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/>',
+    diagnosis:'<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
+    advisor:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+    sell:'<path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/>',
+    calendar:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/>',
+    map:'<path d="M9 20l-6 2V6l6-2 6 2 6-2v16l-6 2-6-2z"/><path d="M9 4v16M15 6v16"/>',
+    trade:'<path d="M4 8h13l-3-3M20 16H7l3 3"/>',
+    community:'<circle cx="9" cy="8" r="3"/><path d="M3 20v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1"/><circle cx="17" cy="7" r="2.4"/><path d="M15.5 13.2A4 4 0 0 1 21 17v1"/>',
+    settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 0 1-4 0v-.1a1.6 1.6 0 0 0-2.7-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 4.6 15H4.5a2 2 0 0 1 0-4h.1a1.6 1.6 0 0 0 1.1-2.7l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.6 1.6 0 0 0 12 4.6a2 2 0 0 1 4 0v.1a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0 1.1 2.7h.1a2 2 0 0 1 0 4h-.1a1.6 1.6 0 0 0-1.1 1z"/>',
+    risk:'<path d="M12 3l9 16H3z"/><path d="M12 10v4M12 17v.5"/>',
+    check:'<path d="M4 12l5 5L20 6"/>',
+    plus:'<path d="M12 5v14M5 12h14"/>',
+    mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+    send:'<path d="M4 12l16-8-6 16-3-6-7-2z"/>',
+    camera:'<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
+    scan:'<path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M4 12h16"/>',
+    upload:'<path d="M12 15V3m0 0l-4 4m4-4l4 4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>',
+    chev:'<path d="M9 6l6 6-6 6"/>',
+    spray:'<path d="M9 5h4v4H9z"/><path d="M13 6h3l2 3M11 9v11M8 20h6"/><circle cx="18" cy="5" r="1"/><circle cx="20" cy="7" r="1"/>',
+    water:'<path d="M12 3c3 4 6 7 6 11a6 6 0 0 1-12 0c0-4 3-7 6-11z"/>',
+    fert:'<path d="M12 21c-4 0-7-3-7-7 0-2 1-4 3-6M12 21c4 0 7-3 7-7 0-4-3-8-7-11-1 1-2 2-3 3"/>',
+    harvest:'<path d="M4 20c6-2 10-6 12-14M6 12c4 0 6 2 8 6"/>',
+    ref:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+    news:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/>',
+    share:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/>',
+    person:'<circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/>',
+    lang:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
+    coop:'<path d="M3 21h18M5 21V10l7-5 7 5v11"/><path d="M9 21v-6h6v6"/>',
+    factory:'<path d="M3 21V9l6 4V9l6 4V5l6 4v12z"/>',
+    market:'<path d="M4 9h16l-1 12H5z"/><path d="M8 9V6a4 4 0 0 1 8 0v3"/>',
+    truck:'<rect x="1" y="6" width="13" height="10" rx="1"/><path d="M14 9h4l3 3v4h-7z"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',
+    users:'<circle cx="9" cy="8" r="3"/><path d="M3 20v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1"/>'
+  };
+  function svg(n){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+(IC[n]||'')+'</svg>'; }
+  function setIcon(id,n){ var el=document.getElementById(id); if(el) el.insertAdjacentHTML('afterbegin', svg(n)+' '); }
+
+  /* ================= i18n ================= */
+  var LANGS=[{c:'en',n:'English'},{c:'ko',n:'한국어'},{c:'vi',n:'Tiếng Việt'}];
+  var T={
+    en:{tab_home:'Home',tab_overview:'Overview',tab_me:'Me',
+      mem_title:'What FarmPilot remembers',mem_farmer:'Farmer',mem_region:'Region',mem_crops:'Crops',mem_lastdx:'Last diagnosis',mem_lang:'Language',mem_none:'none yet',mem_note:'Stored on your device. The advisor uses this to personalize its answers.',
+      cm_experts:'Experts available',expert_pathologist:'Plant pathologist',expert_professor:'Professor, Crop Science',expert_scientist:'Research scientist (RDA)',expert_advisor:'Crop-protection advisor',expert_extension:'Extension officer',expert_soil:'Soil & fertility scientist',
+      st_online:'Available now',st_outreach:'Open to outreach',st_busy:'Busy',act_message:'Message',act_outreach:'Request',
+      fs_riskmsg:'Warm, humid nights and two leaf-wetness windows in 48h favor mildew and blight. Best scouted early morning.',
+      fs_scanning:'Scanning {n} plants...',fs_result:'Field result',fs_infrate:'plants show early disease',fs_heat:'Infection heatmap',fs_hotmsg:'Infection is clustered in the north-east corner, not spread evenly.',fs_spotwin:'Spot-spraying just that corner treats the disease while cutting agrochemical use across the rest of the field.',fs_addtask:'Add spot-spray to Calendar',
+      z_corner:'Low, shaded corner',z_center:'Dense center rows',z_edge:'Windward field edge',
+      dg_severity:'Severity',dg_decision:'Spray decision',dec_below:'Below threshold, monitor only',dec_spot:'At threshold, spot-spray the affected zone',dec_spot_d:'Only the infected patch needs it, which cuts chemical use.',dec_treat:'Above threshold, treat now to protect yield',dec_pls:'Check the pre-harvest interval (PLS) before spraying.'}, /* JS-only keys seeded; rest filled from DOM by captureEn */
+    ko:{ tab_home:'홈',tab_overview:'현황',tab_me:'내 정보',mycrops:'내 작물',add_crop:'+ 작물 추가',add:'+ 추가',
+      risk_today:'오늘의 병해 위험',high:'높음',risk_msg:'습한 아침입니다. 보리에 흰가루병 조건이 형성되고 있어요. 초기 증상을 살펴 진단하세요.',diagnose_now:'지금 진단하기',
+      everything:'FarmPilot 전체 기능',season:'이번 시즌',m_conf:'최근 진단 신뢰도',m_hold:'보유 시 예상 가격',
+      fn_diagnosis:'AI 진단',fn_advisor:'AI 상담',fn_sell:'출하 시기',fn_calendar:'영농 캘린더',fn_map:'병해 지도',fn_trade:'거래·연계',fn_community:'커뮤니티',fn_overview:'현황',
+      ov_title:'우리 농장, 숫자로',ov_sub:'이번 시즌 · 데모 수치',
+      dg_title:'찍고, 바로 진단',dg_sub:'온디바이스 · 오프라인 · 약 10초',dg_hint:'사진을 찍거나 업로드하거나 샘플을 눌러보세요',camera:'카메라',upload:'업로드',dg_sample:'샘플 잎으로 시도:',
+      ad_title:'무엇이든 물어보세요',ad_sub:'음성·방언 · 모든 언어',ad_ph:'메시지 입력…',
+      mk_title:'언제, 어떻게 팔까',mk_cur:'현재 도매가 (데모)',mk_exp:'4주 후 예상',mk_alertbtn:'최적 시점에 알림 받기',mk_src:'가격 시계열은 KAMIS 도매 구조를 본뜬 예시 데모 데이터입니다.',
+      cl_title:'모든 작업을 계획·기록',cl_sub:'날짜를 눌러 작업을 보거나 추가하세요',cl_today:'오늘',cl_add:'+ 작업 추가',cl_smart:'스마트 자동 작업',cl_smart_msg:'FarmPilot이 진단 결과로 방제 알림을, 가격 예측으로 출하 시점 작업을, 인근 병해 위험이 오르면 예찰 작업을 자동으로 추가합니다. 캘린더에 색 점으로 표시됩니다.',
+      mp_title:'우리 지역, 실시간',mp_sub:'전남 해남 · 34.57°N, 126.60°E',mp_out:'발생 보고',mp_you:'내 농장',mp_mildew:'흰가루병 확산 중',mp_mildew_msg:'이번 주 강진·해남 인근에서 보고되었습니다. 확산 반경 안에 있어 예방 방제를 권장합니다.',mp_prev:'예방 계획 추가',mp_refs:'실시간 참고자료',mp_ref1:'농진청 병해충 예찰',mp_ref2:'이 병해 최신 뉴스',mp_ref2s:'실시간 구글 뉴스 검색',mp_ref3:'농사로 지식정보',mp_note:'지도 핀은 예시 데모 데이터이며, 위 출처는 실제 링크입니다.',
+      td_title:'단계별로 출하하기',td_sub:'막연함이 아닌 구체적 채널',td_post:'1 · 내 물량 등록',td_post_msg:'작물·등급·물량을 입력하면 아래 매입처와 매칭하고 KAMIS 기준으로 가격을 비교합니다.',td_crop:'작물',td_grade:'등급',td_qty:'물량 (kg)',td_find:'매입처·가격 찾기',td_channels:'2 · 채널 선택',td_group:'3 · 공동 출하',td_group_h:'인근 공동 출하',td_group_msg:'8km 이내 보리 농가 4곳이 가공업체 최소 10톤을 맞추려 모으고 있습니다. 혼자서는 어려운 계약 물량에 함께 도달하세요.',td_join:'공동 출하 참여',
+      cm_title:'내 네트워크',cm_sub:'농가·전문가 추가, 내 ID 공유',cm_share:'내 프로필 공유',cm_addid:'ID로 추가',cm_expert:'작물보호 전문가',online:'● 온라인',cm_expert_msg:'AI가 어려운 케이스에서 판단을 보류하면 아래 전문가로 에스컬레이션하세요. 일부는 지금 온라인, 일부는 연락 가능합니다.',cm_talk:'전문가와 상담',cm_connections:'내 연결',cm_suggest:'근처 사람들',cm_connecting:'전문가와 연결 중…',
+      mem_title:'FarmPilot이 기억하는 정보',mem_farmer:'농민',mem_region:'지역',mem_crops:'작물',mem_lastdx:'최근 진단',mem_lang:'언어',mem_none:'아직 없음',mem_note:'기기에 저장됩니다. 상담이 이 정보로 답변을 맞춤화합니다.',
+      cm_experts:'연결 가능한 전문가',expert_pathologist:'식물병리학자',expert_professor:'작물학 교수',expert_scientist:'연구원 (농진청)',expert_advisor:'작물보호 자문가',expert_extension:'농업기술센터 지도사',expert_soil:'토양·비료 연구자',
+      st_online:'지금 가능',st_outreach:'연락 가능',st_busy:'바쁨',act_message:'메시지',act_outreach:'요청',
+      tab_me:'내 정보',edit:'수정',language:'언어',app_lang:'앱 언어',notifications:'알림',n_disease:'병해 알림',n_disease_s:'농장 인근 위험이 오를 때',n_price:'가격·출하 시점 알림',n_price_s:'작물이 목표가에 도달할 때',n_weekly:'주간 요약',n_weekly_s:'매주 월요일 아침',about:'정보',about_demo:'데모 안내',about_demo_s:'실제 UI가 아닌 샘플 데모',version:'버전',version_s:'데모 v3 · 온디바이스 6MB 모델',reset:'데모 데이터 초기화',reset_s:'작물·설정 삭제',
+      sheet_p1:'<b>이것은 작동하는 샘플 데모</b>이며 최종 제품 UI가 아닙니다. 모든 화면이 상호작용합니다.',sheet_p2:'진단 엔진은 실제입니다. 공개 병해 데이터에서 97.8% 검증 정확도의 6MB 온디바이스 CNN입니다. 이 데모의 카메라·업로드 결과는 가벼운 이미지 휴리스틱을 쓰며, 실제 제품은 전체 CNN을 온디바이스로 실행합니다.',sheet_about:'프로젝트 소개 →',gotit:'확인',
+      add_crop_h:'작물 추가',search_crops:'작물 검색…',cs_desc:'이 작물의 기능으로 이동하세요.',cs_diagnose:'이 작물 진단',cs_market:'출하 시기 전망',cs_calendar:'영농 캘린더',cs_remove:'내 작물에서 제거',
+      edit_profile:'프로필 수정',f_name:'이름',f_farm:'농장 이름',f_region:'지역',save:'저장',
+      choose_lang:'언어 선택',search_lang:'언어 검색…',more_lang:'+ 더 많은 언어',
+      share_h:'내 프로필 공유',share_p:'가까운 농가에 AirDrop처럼 FarmPilot ID를 보내거나 카카오톡에 복사하세요.',share_near:'근처, 눌러서 전송',share_copy:'내 ID 복사',
+      addid_h:'ID로 추가',addid_p:'농가 또는 전문가 ID(예: @jiwoo_gangjin)를 입력해 네트워크에 추가하세요.',addid_btn:'네트워크에 추가',
+      fn_fieldscan:'필드 스캔',fs_title:'밭 전체를 커버',fs_sub:'개별 진단이 아닌 날씨 기반 예찰',fs_risk:'오늘의 감염 위험',fs_scout:'어디를 살필까',fs_scout_msg:'병해는 군집으로 나타나므로 요지 몇 곳만 확인해도 밭 전체를 대표합니다. 이 구역을 스캔하세요:',fs_scan:'이랑 스캔 (영상 스윕)',fs_note:'데모: 실제 제품은 온디바이스로 영상 프레임을 샘플링하고 날씨·위성(AlphaEarth) 위험을 결합합니다. 모든 주를 촬영할 필요가 없습니다.',alert_scout:'내 밭 예찰하기',risk_msg:'앞으로 48시간 동안 따뜻하고 습한 밤과 두 번의 잎 젖음 구간이 예보됩니다. 보리에 흰가루병이 유리합니다.',
+      fs_riskmsg:'48시간 내 따뜻·습한 밤과 두 번의 잎 젖음 구간이 흰가루·마름병에 유리합니다. 이른 아침 예찰이 좋습니다.',fs_scanning:'{n}주 스캔 중...',fs_result:'밭 결과',fs_infrate:'주에서 초기 병해 발현',fs_heat:'감염 히트맵',fs_hotmsg:'감염이 북동쪽 모서리에 군집되어 있고 고르게 퍼지지 않았습니다.',fs_spotwin:'그 모서리만 부분 방제하면 병해를 잡으면서 나머지 밭의 농약 사용을 줄일 수 있습니다.',fs_addtask:'부분 방제를 캘린더에 추가',
+      z_corner:'낮고 그늘진 모서리',z_center:'빽빽한 중앙 이랑',z_edge:'바람받이 밭 가장자리',
+      dg_severity:'심각도',dg_decision:'방제 결정',dec_below:'임계 이하, 관찰만',dec_spot:'임계 도달, 발병 구역만 부분 방제',dec_spot_d:'감염된 부분만 방제하면 되어 농약을 줄입니다.',dec_treat:'임계 초과, 수량 보호를 위해 즉시 방제',dec_pls:'방제 전 안전사용기간(PLS)을 확인하세요.' },
+    vi:{ tab_home:'Trang chủ',tab_overview:'Tổng quan',tab_me:'Tôi',mycrops:'Cây trồng của tôi',add_crop:'+ Thêm cây',add:'+ Thêm',
+      risk_today:'Nguy cơ bệnh hôm nay',high:'Cao',risk_msg:'Sáng ẩm, điều kiện cho bệnh phấn trắng trên lúa mạch đang hình thành. Hãy kiểm tra và chẩn đoán sớm.',diagnose_now:'Chẩn đoán ngay',
+      everything:'Tất cả tính năng FarmPilot',season:'Mùa vụ này',m_conf:'độ tin cậy chẩn đoán gần nhất',m_hold:'giá dự kiến nếu giữ hàng',
+      fn_diagnosis:'Chẩn đoán AI',fn_advisor:'Cố vấn AI',fn_sell:'Thời điểm bán',fn_calendar:'Lịch nông vụ',fn_map:'Bản đồ bệnh',fn_trade:'Giao dịch',fn_community:'Cộng đồng',fn_overview:'Tổng quan',
+      ov_title:'Nông trại của bạn qua số liệu',ov_sub:'Mùa này · số liệu demo',
+      dg_title:'Chụp và chẩn đoán',dg_sub:'Trên thiết bị · ngoại tuyến · ~10 giây',dg_hint:'Chụp ảnh, tải lên, hoặc thử mẫu',camera:'Máy ảnh',upload:'Tải lên',dg_sample:'Thử lá mẫu:',
+      ad_title:'Hỏi bất cứ điều gì',ad_sub:'Giọng nói & phương ngữ · mọi ngôn ngữ',ad_ph:'Nhắn tin…',
+      mk_title:'Bán khi nào & thế nào',mk_cur:'giá sỉ hiện tại (demo)',mk_exp:'dự kiến sau 4 tuần',mk_alertbtn:'Báo tôi vào thời điểm tối ưu',mk_src:'Chuỗi giá là dữ liệu demo minh họa, mô phỏng theo cấu trúc sỉ KAMIS.',
+      cl_title:'Lên kế hoạch & theo dõi',cl_sub:'Chạm một ngày để xem hoặc thêm việc',cl_today:'Hôm nay',cl_add:'+ Thêm việc',cl_smart:'Việc tự động thông minh',cl_smart_msg:'FarmPilot tự thêm nhắc phun thuốc từ chẩn đoán, việc bán hàng từ dự báo giá, và việc kiểm tra khi nguy cơ bệnh quanh vùng tăng. Chúng có chấm màu trên lịch.',
+      mp_title:'Khu vực của bạn, trực tiếp',mp_sub:'Haenam, Jeollanam-do · 34.57°N, 126.60°E',mp_out:'Có báo cáo dịch',mp_you:'Nông trại của bạn',mp_mildew:'Bệnh phấn trắng lan rộng',mp_mildew_msg:'Được báo cáo gần Gangjin và Haenam tuần này. Trại bạn nằm trong bán kính lây lan, nên phun phòng ngừa.',mp_prev:'Thêm kế hoạch phòng ngừa',mp_refs:'Nguồn trực tiếp',mp_ref1:'Giám sát sâu bệnh RDA',mp_ref2:'Tin mới về bệnh này',mp_ref2s:'Tìm kiếm Google News trực tiếp',mp_ref3:'Cơ sở tri thức Nongsaro',mp_note:'Ghim bản đồ là dữ liệu demo; các nguồn trên là thật.',
+      td_title:'Bán hàng theo từng bước',td_sub:'Kênh cụ thể, không mơ hồ',td_post:'1 · Đăng hàng của bạn',td_post_msg:'Nhập cây trồng, phẩm cấp, khối lượng. Chúng tôi khớp với người mua bên dưới và so giá theo KAMIS.',td_crop:'Cây trồng',td_grade:'Phẩm cấp',td_qty:'Khối lượng (kg)',td_find:'Tìm người mua & giá',td_channels:'2 · Chọn kênh',td_group:'3 · Bán chung',td_group_h:'Gộp lô gần bạn',td_group_msg:'Bốn trại lúa mạch trong 8 km đang gộp để đạt tối thiểu 10 tấn cho nhà chế biến. Tham gia để đạt khối lượng hợp đồng.',td_join:'Tham gia lô chung',
+      cm_title:'Mạng lưới của bạn',cm_sub:'Thêm nông dân & chuyên gia, chia sẻ ID',cm_share:'Chia sẻ hồ sơ',cm_addid:'Thêm bằng ID',cm_expert:'Chuyên gia bảo vệ cây trồng',online:'● Trực tuyến',cm_expert_msg:'Khi AI chưa chắc ở ca khó, chuyển lên chuyên gia bên dưới. Một số đang trực tuyến, số khác nhận liên hệ.',cm_talk:'Nói chuyện với chuyên gia',cm_connections:'Kết nối của tôi',cm_suggest:'Người gần bạn',cm_connecting:'Đang kết nối chuyên gia…',
+      mem_title:'FarmPilot ghi nhớ',mem_farmer:'Nông dân',mem_region:'Khu vực',mem_crops:'Cây trồng',mem_lastdx:'Chẩn đoán gần nhất',mem_lang:'Ngôn ngữ',mem_none:'chưa có',mem_note:'Lưu trên thiết bị. Cố vấn dùng để cá nhân hóa câu trả lời.',
+      cm_experts:'Chuyên gia sẵn sàng',expert_pathologist:'Nhà bệnh học thực vật',expert_professor:'Giáo sư cây trồng',expert_scientist:'Nhà khoa học (RDA)',expert_advisor:'Cố vấn bảo vệ cây trồng',expert_extension:'Cán bộ khuyến nông',expert_soil:'Nhà khoa học đất',
+      st_online:'Sẵn sàng ngay',st_outreach:'Nhận liên hệ',st_busy:'Bận',act_message:'Nhắn',act_outreach:'Yêu cầu',
+      tab_me:'Tôi',edit:'Sửa',language:'Ngôn ngữ',app_lang:'Ngôn ngữ ứng dụng',notifications:'Thông báo',n_disease:'Cảnh báo bệnh',n_disease_s:'Khi nguy cơ tăng gần trại',n_price:'Cảnh báo giá / thời điểm bán',n_price_s:'Khi cây đạt giá mục tiêu',n_weekly:'Tóm tắt tuần',n_weekly_s:'Mỗi sáng thứ Hai',about:'Giới thiệu',about_demo:'Về bản demo',about_demo_s:'Bản demo mẫu, không phải UI cuối',version:'Phiên bản',version_s:'Demo v3 · mô hình 6MB trên thiết bị',reset:'Đặt lại dữ liệu demo',reset_s:'Xóa cây trồng & cài đặt',
+      sheet_p1:'<b>Đây là bản demo mẫu hoạt động</b> của FarmPilot, không phải UI sản phẩm cuối. Mọi màn hình đều tương tác.',sheet_p2:'Bộ máy chẩn đoán là thật: CNN 6MB trên thiết bị đạt 97.8% độ chính xác trên dữ liệu bệnh công khai. Trong demo, kết quả máy ảnh/tải lên dùng heuristic nhẹ; sản phẩm thật chạy toàn bộ CNN trên thiết bị.',sheet_about:'Về dự án →',gotit:'Đã hiểu',
+      add_crop_h:'Thêm cây trồng',search_crops:'Tìm cây trồng…',cs_desc:'Chuyển đến chức năng cho cây này.',cs_diagnose:'Chẩn đoán cây này',cs_market:'Dự báo thời điểm bán',cs_calendar:'Lịch nông vụ',cs_remove:'Xóa khỏi cây của tôi',
+      edit_profile:'Sửa hồ sơ',f_name:'Tên',f_farm:'Tên nông trại',f_region:'Khu vực',save:'Lưu',
+      choose_lang:'Chọn ngôn ngữ',search_lang:'Tìm ngôn ngữ…',more_lang:'+ Thêm ngôn ngữ',
+      share_h:'Chia sẻ hồ sơ',share_p:'Gửi ID FarmPilot cho nông dân gần đó như AirDrop, hoặc sao chép vào KakaoTalk.',share_near:'Gần đây, chạm để gửi',share_copy:'Sao chép ID',
+      addid_h:'Thêm bằng ID',addid_p:'Nhập ID nông dân hoặc chuyên gia (ví dụ @jiwoo_gangjin) để thêm vào mạng lưới.',addid_btn:'Thêm vào mạng lưới',
+      fn_fieldscan:'Quét đồng',fs_title:'Phủ cả cánh đồng',fs_sub:'Trinh sát theo thời tiết, không từng cây',fs_risk:'Nguy cơ nhiễm hôm nay',fs_scout:'Nơi cần trinh sát',fs_scout_msg:'Bệnh mọc thành cụm, nên vài điểm kiểm tra đúng chỗ đại diện cả ruộng. Quét các vùng này:',fs_scan:'Quét một hàng (video)',fs_note:'Demo: sản phẩm thật lấy mẫu khung hình video trên thiết bị và kết hợp rủi ro thời tiết + vệ tinh (AlphaEarth). Bạn không cần chụp mọi cây.',alert_scout:'Trinh sát ruộng của tôi',risk_msg:'48 giờ tới dự báo đêm ấm ẩm và hai đợt ướt lá, thuận lợi cho bệnh phấn trắng trên lúa mạch.',
+      fs_riskmsg:'Trong 48 giờ, đêm ấm ẩm và hai đợt ướt lá thuận lợi cho phấn trắng và mốc sương. Nên trinh sát sáng sớm.',fs_scanning:'Đang quét {n} cây...',fs_result:'Kết quả ruộng',fs_infrate:'cây có bệnh sớm',fs_heat:'Bản đồ nhiệt lây nhiễm',fs_hotmsg:'Lây nhiễm tụ ở góc đông bắc, không đều khắp ruộng.',fs_spotwin:'Chỉ phun điểm góc đó vừa trị bệnh vừa giảm thuốc trên phần còn lại.',fs_addtask:'Thêm phun điểm vào Lịch',
+      z_corner:'Góc thấp, râm',z_center:'Hàng giữa dày',z_edge:'Rìa ruộng đón gió',
+      dg_severity:'Mức độ',dg_decision:'Quyết định phun',dec_below:'Dưới ngưỡng, chỉ theo dõi',dec_spot:'Đến ngưỡng, phun điểm vùng nhiễm',dec_spot_d:'Chỉ cần phun mảng nhiễm, giảm hóa chất.',dec_treat:'Trên ngưỡng, xử lý ngay để bảo vệ năng suất',dec_pls:'Kiểm tra thời gian cách ly trước thu hoạch (PLS).' }
+  };
+  /* dynamic toast strings */
+  var TD={
+    en:{listening:'Listening… (voice demo)',alert_set:'We will alert you when the window opens',td_joined:'You joined the group shipment',cm_connecting:'Connecting you to an expert…',outreach_sent:'Outreach request sent',id_copied:'ID copied to clipboard',sent:'Profile sent',added:'Added to your network',prev_added:'Prevention plan added to Calendar',task_added:'Task added',saved:'Profile saved',removed:'Removed',lang_more:'These three are the demo languages. All language options, 50+ and growing, will be added when the real app ships.',done:'Done',reopened:'Reopened'},
+    ko:{listening:'듣는 중… (음성 데모)',alert_set:'시점이 열리면 알려드릴게요',td_joined:'공동 출하에 참여했습니다',cm_connecting:'전문가와 연결 중…',outreach_sent:'연락 요청을 보냈습니다',id_copied:'ID가 복사되었습니다',sent:'프로필을 보냈습니다',added:'네트워크에 추가되었습니다',prev_added:'예방 계획을 캘린더에 추가했습니다',task_added:'작업이 추가되었습니다',saved:'프로필이 저장되었습니다',removed:'제거됨',lang_more:'이 세 가지는 데모 언어입니다. 50개 이상으로 계속 늘어나는 전체 언어는 실제 앱 출시 때 추가됩니다.',done:'완료',reopened:'다시 열림'},
+    vi:{listening:'Đang nghe… (demo giọng nói)',alert_set:'Chúng tôi sẽ báo khi thời điểm mở ra',td_joined:'Bạn đã tham gia lô chung',cm_connecting:'Đang kết nối chuyên gia…',outreach_sent:'Đã gửi yêu cầu liên hệ',id_copied:'Đã sao chép ID',sent:'Đã gửi hồ sơ',added:'Đã thêm vào mạng lưới',prev_added:'Đã thêm kế hoạch phòng ngừa vào Lịch',task_added:'Đã thêm việc',saved:'Đã lưu hồ sơ',removed:'Đã xóa',lang_more:'Ba ngôn ngữ này là bản demo. Hơn 50 ngôn ngữ sẽ được thêm khi ứng dụng thật ra mắt.',done:'Xong',reopened:'Mở lại'}
+  };
+  var LANG='en';
+  try{ var sl=localStorage.getItem('fp_lang'); if(sl&&T[sl]) LANG=sl; }catch(e){}
+  function t(k){ var d=T[LANG]&&T[LANG][k]; if(d!=null) return d; var td=TD[LANG]&&TD[LANG][k]; if(td!=null) return td; return (T.en[k]!=null?T.en[k]:(TD.en[k]!=null?TD.en[k]:k)); }
+  /* capture English defaults from DOM once */
+  function captureEn(){ document.querySelectorAll('[data-i18n]').forEach(function(el){ var k=el.getAttribute('data-i18n'); if(T.en[k]==null) T.en[k]=el.innerHTML; }); document.querySelectorAll('[data-i18n-ph]').forEach(function(el){ var k=el.getAttribute('data-i18n-ph'); if(T.en[k]==null) T.en[k]=el.getAttribute('placeholder'); }); }
+  function applyI18n(){
+    document.querySelectorAll('[data-i18n]').forEach(function(el){ var k=el.getAttribute('data-i18n'); var v=(T[LANG]&&T[LANG][k]); if(v==null) v=T.en[k]; if(v!=null) el.innerHTML=v; });
+    document.querySelectorAll('[data-i18n-ph]').forEach(function(el){ var k=el.getAttribute('data-i18n-ph'); var v=(T[LANG]&&T[LANG][k]); if(v==null) v=T.en[k]; if(v!=null) el.setAttribute('placeholder',v); });
+    document.documentElement.lang=LANG;
+    var lc=document.getElementById('lang-current'); if(lc){ var f=LANGS.filter(function(l){return l.c===LANG;})[0]; lc.textContent=f?f.n:'English'; }
+  }
+
+  /* ================= nav ================= */
+  function tick(){ var d=new Date(); document.getElementById('clock').textContent = d.getHours()+':'+String(d.getMinutes()).padStart(2,'0'); }
+  tick(); setInterval(tick,10000);
+  var TABS={home:'home',overview:'overview',profile:'me'};
+  var TABDEF=[{id:'home',ic:'home',k:'tab_home'},{id:'overview',ic:'overview',k:'tab_overview'},{id:'profile',ic:'me',k:'tab_me'}];
+  function buildTabs(){ var tb=document.getElementById('tabbar'); tb.innerHTML=''; TABDEF.forEach(function(x){ var b=document.createElement('button'); b.className='tab'+(x.id==='home'?' on':''); b.dataset.tab=x.id; b.innerHTML=svg(x.ic)+'<span data-tk="'+x.k+'">'+t(x.k)+'</span>'; b.onclick=function(){ go(x.id); }; tb.appendChild(b); }); }
+  function go(id){ document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); }); document.getElementById('s-'+id).classList.add('active');
+    var map={home:'home',overview:'overview',profile:'profile'}; var tabId=map[id]||null;
+    document.querySelectorAll('.tab').forEach(function(tt){ tt.classList.toggle('on', tabId && tt.dataset.tab===(id==='profile'?'profile':id)); });
+    document.querySelectorAll('.body').forEach(function(b){ b.scrollTop=0; }); if(id!=='diagnose') stopCam(); closeSheets();
+    if(id==='overview') renderOverview(); if(id==='market') { buildSeg(); } if(id==='fieldscan'){ renderZones(); renderFsRisk(); }
+  }
+  var toastT; function toast(msg){ var el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(function(){ el.classList.remove('show'); },2400); }
+  function openSheet(id){ document.getElementById('sheetbg').classList.add('show'); document.getElementById(id).classList.add('show'); }
+  function closeSheets(){ document.getElementById('sheetbg').classList.remove('show'); document.querySelectorAll('.sheet').forEach(function(s){ s.classList.remove('show'); }); }
+
+  /* ================= profile ================= */
+  var profile; try{ profile=JSON.parse(localStorage.getItem('fp_profile')); }catch(e){}
+  if(!profile) profile={name:'Minjun', farm:"Minjun's farm", region:'Haenam · Jeollanam-do', id:'@minjun_haenam'};
+  if(!profile.id) profile.id='@minjun_haenam';
+  function saveProfile(){ try{ localStorage.setItem('fp_profile',JSON.stringify(profile)); }catch(e){} }
+  function daypart(){ var h=new Date().getHours(); return h<12?'morning':h<18?'afternoon':'evening'; }
+  function greet(){ if(LANG==='ko') return (daypart()==='morning'?'좋은 아침이에요, ':daypart()==='afternoon'?'좋은 오후예요, ':'좋은 저녁이에요, ')+profile.name; if(LANG==='vi') return (daypart()==='morning'?'Chào buổi sáng, ':daypart()==='afternoon'?'Chào buổi chiều, ':'Chào buổi tối, ')+profile.name; return 'Good '+daypart()+', '+profile.name; }
+  function renderProfile(){
+    document.getElementById('home-h1').textContent=greet();
+    document.getElementById('home-sub').textContent=profile.region;
+    document.getElementById('pf-h1').textContent=profile.farm;
+    document.getElementById('pf-sub').textContent=profile.region;
+    document.getElementById('pf-name').textContent=profile.name;
+    document.getElementById('pf-region').textContent=profile.region;
+    document.getElementById('pf-av').textContent=(profile.name||'F').charAt(0).toUpperCase();
+    var ch=(profile.name||'F').charAt(0).toUpperCase();
+    ['cm-av','share-av'].forEach(function(i){ var e=document.getElementById(i); if(e) e.textContent=ch; });
+    document.getElementById('cm-name').textContent=profile.name;
+    document.getElementById('share-name').textContent=profile.name;
+    document.getElementById('cm-region').textContent=profile.region.split('·')[0].trim()+' · '+myCrops.map(function(c){return c.n;}).slice(0,2).join(', ');
+    document.getElementById('cm-id').textContent=profile.id;
+    document.getElementById('share-id').textContent=profile.id;
+    renderPfCrops();
+  }
+  function openEdit(){ document.getElementById('e-name').value=profile.name; document.getElementById('e-farm').value=profile.farm; document.getElementById('e-region').value=profile.region; openSheet('editsheet'); }
+  function saveEdit(){ profile.name=document.getElementById('e-name').value||profile.name; profile.farm=document.getElementById('e-farm').value||profile.farm; profile.region=document.getElementById('e-region').value||profile.region; saveProfile(); renderProfile(); closeSheets(); toast(t('saved')); }
+  function toggle(el){ el.classList.toggle('on'); try{ localStorage.setItem('fp_'+el.dataset.k, el.classList.contains('on')?'1':'0'); }catch(e){} }
+  function resetDemo(){ try{ localStorage.clear(); }catch(e){} location.reload(); }
+
+  /* ================= language ================= */
+  function openLang(){ renderLangs(''); openSheet('langsheet'); }
+  function renderLangs(f){ f=(f||'').toLowerCase(); var el=document.getElementById('langlist'); el.innerHTML='';
+    LANGS.filter(function(l){ return l.n.toLowerCase().indexOf(f)>-1||l.c.indexOf(f)>-1; }).forEach(function(l){ var b=document.createElement('div'); b.className='cl'+(l.c===LANG?' has':''); b.innerHTML='<span>'+l.n+'</span>'+(l.c===LANG?svg('check'):''); b.onclick=function(){ setLang(l.c); }; el.appendChild(b); });
+    if(!el.children.length) el.innerHTML='<div class="t11" style="grid-column:1/3;padding:8px">No match.</div>';
+  }
+  function setLang(c){ if(!T[c]) return; LANG=c; try{ localStorage.setItem('fp_lang',c); }catch(e){} applyI18n();
+    /* re-render dynamic content */ buildTabs(); renderCrops(); renderProfile(); buildSeg(); setCrop(activeCrop); renderCal(); renderQuick(); renderChatIntro(); renderTradeChannels(); fillTradeCrops(); renderCommunity(); renderExperts(); renderShareNear(); renderOverview(); renderZones(); renderFsRisk(); closeSheets(); toast(t('done')); }
+  function moreLangs(){ toast(t('lang_more')); }
+
+  /* ================= crops ================= */
+  var CATALOG=[{n:'Barley'},{n:'Rice'},{n:'Potato'},{n:'Tomato'},{n:'Cabbage'},{n:'Pepper'},{n:'Apple'},{n:'Strawberry'},{n:'Garlic'},{n:'Onion'},{n:'Corn'},{n:'Cucumber'},{n:'Soybean'},{n:'Grape'},{n:'Peach'},{n:'Lettuce'},{n:'Sweet potato'},{n:'Watermelon'},{n:'Pumpkin'},{n:'Carrot'},{n:'Radish'},{n:'Spinach'},{n:'Mushroom'},{n:'Melon'}];
+  var CROPT={ ko:{Barley:'보리',Rice:'벼',Potato:'감자',Tomato:'토마토',Cabbage:'배추',Pepper:'고추',Apple:'사과',Strawberry:'딸기',Garlic:'마늘',Onion:'양파',Corn:'옥수수',Cucumber:'오이',Soybean:'콩',Grape:'포도',Peach:'복숭아',Lettuce:'상추','Sweet potato':'고구마',Watermelon:'수박',Pumpkin:'호박',Carrot:'당근',Radish:'무',Spinach:'시금치',Mushroom:'버섯',Melon:'참외'},
+    vi:{Barley:'Lúa mạch',Rice:'Lúa',Potato:'Khoai tây',Tomato:'Cà chua',Cabbage:'Cải thảo',Pepper:'Ớt',Apple:'Táo',Strawberry:'Dâu',Garlic:'Tỏi',Onion:'Hành',Corn:'Ngô',Cucumber:'Dưa chuột',Soybean:'Đậu nành',Grape:'Nho',Peach:'Đào',Lettuce:'Xà lách','Sweet potato':'Khoai lang',Watermelon:'Dưa hấu',Pumpkin:'Bí đỏ',Carrot:'Cà rốt',Radish:'Củ cải',Spinach:'Cải bó xôi',Mushroom:'Nấm',Melon:'Dưa lê'} };
+  function cropName(n){ if(LANG!=='en'&&CROPT[LANG]&&CROPT[LANG][n]) return CROPT[LANG][n]; return n; }
+  function cropHue(n){ var h=0; for(var i=0;i<n.length;i++) h=(h*31+n.charCodeAt(i))%360; return h; }
+  function cropBadge(n){ return '<span class="cb" style="--h:'+cropHue(n)+'">'+cropName(n).charAt(0)+'</span>'; }
+  var STATUS={ Barley:'2nd spray due', Rice:'Healthy', Potato:'Watch mildew', Tomato:'Diagnosed' };
+  var STATUST={ ko:{'2nd spray due':'2차 방제 예정','Healthy':'건강함','Watch mildew':'흰가루 주의','Diagnosed':'진단됨','Monitoring':'관찰 중'}, vi:{'2nd spray due':'Đến lần phun 2','Healthy':'Khỏe','Watch mildew':'Coi chừng nấm','Diagnosed':'Đã chẩn đoán','Monitoring':'Đang theo dõi'} };
+  function statusText(s){ if(LANG!=='en'&&STATUST[LANG]&&STATUST[LANG][s]) return STATUST[LANG][s]; return s; }
+  var myCrops; try{ myCrops=JSON.parse(localStorage.getItem('fp_crops')); }catch(e){}
+  if(!myCrops||!myCrops.length) myCrops=[{n:'Barley'},{n:'Rice'}];
+  myCrops=myCrops.map(function(c){ return {n:c.n}; });
+  function saveCrops(){ try{ localStorage.setItem('fp_crops',JSON.stringify(myCrops)); }catch(e){} }
+  function renderCrops(){ var el=document.getElementById('crops'); el.innerHTML='';
+    myCrops.forEach(function(c){ var st=STATUS[c.n]||'Monitoring'; var warn=/spray|mildew|diagnos/i.test(st);
+      var d=document.createElement('div'); d.className='cropcard'; d.innerHTML=cropBadge(c.n)+'<div class="n">'+cropName(c.n)+'</div><div class="s" style="color:'+(warn?'#b76e00':'var(--g2)')+'">'+statusText(st)+'</div>'; d.onclick=function(){ openCrop(c); }; el.appendChild(d); });
+    var add=document.createElement('button'); add.className='cropadd'; add.innerHTML=svg('plus')+(LANG==='ko'?'추가':LANG==='vi'?'Thêm':'Add'); add.onclick=openAdd; el.appendChild(add);
+    buildSeg(); renderPfCrops(); fillTradeCrops();
+  }
+  function renderPfCrops(){ var el=document.getElementById('pf-crops'); if(!el) return; el.innerHTML='';
+    myCrops.forEach(function(c){ var t2=document.createElement('div'); t2.className='setrow'; t2.innerHTML='<span class="cb" style="--h:'+cropHue(c.n)+';width:32px;height:32px;font-size:15px">'+cropName(c.n).charAt(0)+'</span><div class="x"><b>'+cropName(c.n)+'</b><span>'+statusText(STATUS[c.n]||'Monitoring')+'</span></div>'; var b=document.createElement('span'); b.textContent='✕'; b.style.cssText='color:var(--mut);cursor:pointer;font-weight:800'; b.onclick=function(){ myCrops=myCrops.filter(function(m){return m.n!==c.n;}); saveCrops(); renderCrops(); toast(t('removed')); }; t2.appendChild(b); el.appendChild(t2); });
+    if(!myCrops.length) el.innerHTML='<div class="t11" style="padding:6px">No crops yet.</div>';
+  }
+  function openAdd(){ document.getElementById('cropsearch').value=''; renderCatalog(''); openSheet('addsheet'); }
+  function renderCatalog(f){ f=(f||'').toLowerCase(); var el=document.getElementById('croplist'); el.innerHTML='';
+    CATALOG.filter(function(c){ return c.n.toLowerCase().indexOf(f)>-1 || cropName(c.n).toLowerCase().indexOf(f)>-1; }).forEach(function(c){ var has=myCrops.some(function(m){return m.n===c.n;});
+      var b=document.createElement('div'); b.className='cl'+(has?' has':''); b.innerHTML=cropBadge(c.n)+cropName(c.n)+(has?' ✓':'');
+      b.onclick=function(){ if(has) return; myCrops.push({n:c.n}); saveCrops(); renderCrops(); closeSheets(); toast('✓ '+cropName(c.n)); }; el.appendChild(b); });
+    if(!el.children.length) el.innerHTML='<div class="t11" style="grid-column:1/3; padding:8px">No match.</div>';
+  }
+  var activeCropObj=null;
+  function openCrop(c){ activeCropObj=c; document.getElementById('cs-name').innerHTML=cropBadge(c.n)+' '+cropName(c.n); openSheet('cropsheet'); }
+  function cropGo(fn){ if(activeCropObj){ if(fn==='market') setCrop(activeCropObj.n); if(fn==='diagnose') document.getElementById('dg-sub').textContent=cropName(activeCropObj.n)+' · on-device · offline'; } go(fn); }
+  function removeCrop(){ if(!activeCropObj) return; myCrops=myCrops.filter(function(m){return m.n!==activeCropObj.n;}); saveCrops(); renderCrops(); closeSheets(); toast(t('removed')); }
+
+  /* ================= home grid ================= */
+  var GRID=[{fn:'diagnose',ic:'diagnosis',k:'fn_diagnosis'},{fn:'fieldscan',ic:'scan',k:'fn_fieldscan'},{fn:'advisor',ic:'advisor',k:'fn_advisor'},{fn:'market',ic:'sell',k:'fn_sell'},{fn:'calendar',ic:'calendar',k:'fn_calendar'},{fn:'map',ic:'map',k:'fn_map'},{fn:'trade',ic:'trade',k:'fn_trade'},{fn:'experts',ic:'community',k:'fn_community'},{fn:'overview',ic:'overview',k:'fn_overview'}];
+  function buildGrid(){ var g=document.getElementById('home-grid'); g.innerHTML=''; GRID.forEach(function(x){ var b=document.createElement('button'); b.className='gtile'; b.innerHTML='<div class="ic">'+svg(x.ic)+'</div><div class="l" data-i18n="'+x.k+'">'+t(x.k)+'</div>'; b.onclick=function(){ go(x.fn); }; g.appendChild(b); }); }
+
+  /* ================= diagnose ================= */
+  var SAMPLES=[
+    {img:'assets/leaf1.jpg',title:'Tomato · Late blight',conf:99.8,healthy:false,sev:34,rx:['Remove infected plants','Fungicide x2 / 7 days','No overhead watering'],note:'Fast-spreading. Act within 48 hours to protect the rest of the field.'},
+    {img:'assets/leaf2.jpg',title:'Potato · Early blight',conf:100,healthy:false,sev:11,rx:['Remove lower infected leaves','Chlorothalonil spray','Rotate next season'],note:'Common and manageable if caught early. Keep foliage dry.'},
+    {img:'assets/leaf3.jpg',title:'Apple · Healthy',conf:100,healthy:true,sev:0,rx:['No action needed','Keep monitoring weekly'],note:'Leaf looks healthy. Keep scouting after rain.'}
+  ];
+  function economicDecision(sev){ if(sev<5) return {label:t('dec_below'),detail:t('dec_pls'),col:'#5b8a74',bg:'#eef4f0'};
+    if(sev<20) return {label:t('dec_spot'),detail:t('dec_spot_d')+' '+t('dec_pls'),col:'#b76e00',bg:'#fff2df'};
+    return {label:t('dec_treat'),detail:t('dec_pls'),col:'#b5401a',bg:'#fde7dc'}; }
+  function setImg(src){ var i=document.getElementById('vfimg'), v=document.getElementById('vfvid'); i.src=src; i.style.display=''; v.style.display='none'; }
+  function startAnalyze(done){ var vf=document.getElementById('vf'); vf.classList.add('scanning'); document.getElementById('vfhint').textContent='Analyzing on-device…'; document.getElementById('result').innerHTML='';
+    setTimeout(function(){ vf.classList.remove('scanning'); document.getElementById('vfhint').textContent='Diagnosis complete'; done(); },1400); }
+  function showResult(d){
+    try{ lastDx={title:d.title, conf:d.conf, healthy:d.healthy}; localStorage.setItem('fp_lastdx',JSON.stringify(lastDx)); }catch(e){}
+    var res=document.getElementById('result');
+    var extra='';
+    if(!d.healthy){ var sev=(d.sev==null?15:d.sev); var dec=economicDecision(sev);
+      extra='<div class="row" style="margin-top:12px"><span class="t11" style="font-weight:800">'+t('dg_severity')+'</span><span class="t11">'+sev+'%</span></div><div class="bar"><i style="width:'+sev+'%;background:linear-gradient(90deg,#e0a800,#d9743a)"></i></div>'
+        +'<div style="margin-top:10px;padding:11px 13px;border-radius:12px;border:1px solid var(--line);background:'+dec.bg+'"><b style="font-size:13px;color:'+dec.col+'">'+t('dg_decision')+': '+dec.label+'</b><div class="t11" style="margin-top:3px">'+dec.detail+'</div></div>'; }
+    res.innerHTML='<div class="card" style="margin-top:14px"><div class="row"><span class="t13">'+d.title+'</span><span class="pill '+(d.healthy?'ok':'warn')+'">'+(d.healthy?'Healthy':'Diagnosed')+'</span></div><div class="bar"><i id="cbar"></i></div><div class="t11">Confidence '+d.conf+'% · on-device, offline</div><div style="margin-top:6px">'+d.rx.map(function(r){return '<span class="chip">'+svg('check')+r+'</span>';}).join('')+'</div><div class="t11" style="margin-top:10px; color:var(--ink2)">'+d.note+'</div>'+extra+'<div class="btnrow" style="margin-top:13px"><button class="btn sm" onclick="toast(\'Playing advice aloud…\')">Hear it</button><button class="btn ghost sm" onclick="addSprayTask();toast(t(\'task_added\'))">Add task</button></div></div>';
+    requestAnimationFrame(function(){ document.getElementById('cbar').style.width=d.conf+'%'; }); res.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+  function diagnoseSample(i){ stopCam(); setImg(SAMPLES[i].img); startAnalyze(function(){ showResult(SAMPLES[i]); }); }
+  function onUpload(ev){ var f=ev.target.files[0]; if(!f) return; var rd=new FileReader(); rd.onload=function(){ stopCam(); setImg(rd.result); startAnalyze(function(){ analyzeImage(rd.result); }); }; rd.readAsDataURL(f); ev.target.value=''; }
+  var stream=null, camOn=false;
+  function camAction(){ if(!camOn) startCam(); else capture(); }
+  function startCam(){ var v=document.getElementById('vfvid'), i=document.getElementById('vfimg');
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ toast('Camera not supported, use Upload'); return; }
+    navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false}).then(function(s){
+      stream=s; v.srcObject=s; v.style.display=''; i.style.display='none'; camOn=true;
+      document.getElementById('cambtn').innerHTML=svg('camera')+'<span>Capture</span>'; document.getElementById('vfhint').textContent='Fill the frame, then Capture';
+    }).catch(function(){ toast('Camera blocked, try Upload'); });
+  }
+  function capture(){ var v=document.getElementById('vfvid'), c=document.getElementById('cvs');
+    c.width=v.videoWidth||640; c.height=v.videoHeight||480; c.getContext('2d').drawImage(v,0,0,c.width,c.height);
+    var data=c.toDataURL('image/jpeg',0.85); stopCam(); setImg(data); startAnalyze(function(){ analyzeImage(data); }); }
+  function stopCam(){ if(stream){ stream.getTracks().forEach(function(tk){ tk.stop(); }); stream=null; } camOn=false;
+    var v=document.getElementById('vfvid'); if(v){ v.srcObject=null; v.style.display='none'; } var b=document.getElementById('cambtn'); if(b) b.innerHTML=svg('camera')+'<span>'+t('camera')+'</span>'; }
+  function clampC(c){ return Math.round(Math.min(99.3, Math.max(87, c))*10)/10; }
+  function mkDisease(name,conf,sev){ var rx=/mildew/i.test(name)?['Improve airflow','Sulfur / tebuconazole spray','Remove affected leaves']:/blight/i.test(name)?['Remove infected leaves','Copper fungicide','Avoid overhead watering']:['Remove affected leaves','Targeted fungicide','Monitor spread'];
+    return {title:'Detected · '+name, conf:clampC(conf), healthy:false, sev:Math.max(4,Math.min(55,Math.round(sev==null?15:sev))), rx:rx, note:'Likely '+name.toLowerCase()+'. Camera results use an on-image heuristic in this demo; the production CNN targets 92%+ on field photos.'}; }
+  function mkHealthy(conf){ return {title:'Looks healthy', conf:clampC(conf), healthy:true, rx:['No action needed','Keep scouting weekly'], note:'No disease signal detected. Keep monitoring, especially after rain.'}; }
+  function analyzeImage(src){ var img=new Image(); img.onload=function(){
+      var s=48, c=document.createElement('canvas'); c.width=s; c.height=s; var ctx=c.getContext('2d'); ctx.drawImage(img,0,0,s,s);
+      var d; try{ d=ctx.getImageData(0,0,s,s).data; }catch(e){ showResult(mkDisease('Leaf blight',92)); return; }
+      var green=0,brown=0,pale=0,tot=0;
+      for(var k=0;k<d.length;k+=4){ var r=d[k],g=d[k+1],b=d[k+2]; tot++;
+        if(g>r+12 && g>b+12 && g>60) green++;
+        else if(r>=g && (r+g)/2 > b+16 && g<190) brown++;
+        if(r>170&&g>150&&b>150) pale++; }
+      var gr=green/tot, br=brown/tot, pr=pale/tot, res;
+      if(pr>0.16 && br<0.35) res=mkDisease('Powdery mildew', 89+pr*24, pr*120);
+      else if(br>0.24) res=mkDisease('Leaf blight', 88+br*22, br*90);
+      else if(br>0.11) res=mkDisease('Early leaf spot', 87+br*30, br*80);
+      else res=mkHealthy(92+gr*7);
+      showResult(res);
+    }; img.onerror=function(){ showResult(mkDisease('Leaf blight',92)); }; img.src=src; }
+
+  /* ================= advisor ================= */
+  var QUICK={en:['White powder on my leaves','Sell now or wait?','How much fungicide?','When is the sell window?'],
+    ko:['잎에 흰 가루가 있어요','지금 팔까요 기다릴까요?','살균제 얼마나?','출하 시점은 언제?'],
+    vi:['Lá có phấn trắng','Bán ngay hay chờ?','Bao nhiêu thuốc?','Khi nào nên bán?']};
+  function renderQuick(){ var q=document.getElementById('quick'); q.innerHTML=''; (QUICK[LANG]||QUICK.en).forEach(function(s){ var b=document.createElement('button'); b.textContent=s; b.onclick=function(){ ask(s); }; q.appendChild(b); }); }
+  var CHATLOG; try{ CHATLOG=JSON.parse(localStorage.getItem('fp_chat')); }catch(e){} if(!CHATLOG) CHATLOG=[];
+  var lastDx; try{ lastDx=JSON.parse(localStorage.getItem('fp_lastdx')); }catch(e){}
+  function saveChat(){ try{ localStorage.setItem('fp_chat', JSON.stringify(CHATLOG.slice(-40))); }catch(e){} }
+  function chatIntro(){ var crops=myCrops.map(function(c){return cropName(c.n);}).join(', ')||'—'; var reg=profile.region.split('·')[0].trim();
+    if(LANG==='ko') return profile.name+'님, FarmPilot 상담입니다. 농장 정보를 이미 알아요: '+reg+'의 '+crops+'. 병해, 방제, 출하 시점을 물어보세요.';
+    if(LANG==='vi') return 'Chào '+profile.name+', tôi là cố vấn FarmPilot. Tôi đã biết trại của bạn: '+crops+' ở '+reg+'. Hỏi về bệnh, phun thuốc hay thời điểm bán.';
+    return "Hi "+profile.name+", I'm your FarmPilot advisor. I already know your farm: "+crops+" in "+reg+". Ask about a disease, spraying, or when to sell."; }
+  function renderMemory(){ var el=document.getElementById('mem'); if(!el) return; var crops=myCrops.map(function(c){return cropName(c.n);}).join(', ')||'—'; var dx=lastDx?lastDx.title:t('mem_none'); var lg=(LANGS.filter(function(l){return l.c===LANG;})[0]||{}).n||'English';
+    el.innerHTML='<div class="card" style="background:#f4f9f5;border:1px solid var(--line);box-shadow:none"><div class="t13" style="margin-bottom:8px">'+svg('person')+t('mem_title')+'</div>'
+      +'<div class="memrow"><span>'+t('mem_farmer')+'</span><b>'+profile.name+'</b></div>'
+      +'<div class="memrow"><span>'+t('mem_region')+'</span><b>'+profile.region+'</b></div>'
+      +'<div class="memrow"><span>'+t('mem_crops')+'</span><b>'+crops+'</b></div>'
+      +'<div class="memrow"><span>'+t('mem_lastdx')+'</span><b>'+dx+'</b></div>'
+      +'<div class="memrow"><span>'+t('mem_lang')+'</span><b>'+lg+'</b></div>'
+      +'<div class="t11" style="margin-top:8px">'+t('mem_note')+'</div></div>'; }
+  function appendBub(txt,who){ var c=document.getElementById('chat'); var b=document.createElement('div'); b.className='bub '+who; b.innerHTML=txt; c.appendChild(b); return b; }
+  function renderChatIntro(){ renderMemory(); var c=document.getElementById('chat'); if(!c) return; c.innerHTML=''; appendBub(chatIntro(),'ai'); CHATLOG.forEach(function(m){ appendBub(m.txt,m.who); }); var body=document.getElementById('chatbody'); if(body) body.scrollTop=body.scrollHeight; }
+  function addBub(txt,who){ var c=document.getElementById('chat'); var b=document.createElement('div'); b.className='bub '+who; b.innerHTML=txt; c.appendChild(b); var body=document.getElementById('chatbody'); body.scrollTop=body.scrollHeight; return b; }
+  function reply(q){ q=q.toLowerCase();
+    var K={
+      en:{mildew:"That sounds like <b>powdery mildew</b>. Snap a photo in Diagnosis for a confident read. If early, two sprays over 7 days is usually enough, go light.",spray:"For early powdery mildew: tebuconazole at label rate, <b>2 applications, 7 days apart</b>. Stay within the pre-harvest residue interval.",sell:"Wholesale barley is <b>rising toward a peak in ~4 weeks</b>. Hold a little longer, check Sell-timing for the full outlook.",when:"Your optimal sell window opens in about <b>4 weeks</b>. Tap the alert in Sell-timing.",hi:"Anytime. Ask me about a disease, spraying, or sell-timing.",def:"I can help with <b>diagnosis</b>, <b>spraying</b>, and <b>sell-timing</b>. Try the Diagnosis screen."},
+      ko:{mildew:"<b>흰가루병</b>으로 보입니다. 진단 화면에서 사진을 찍어 정확히 확인하세요. 초기라면 7일 간격 2회 방제로 대개 충분합니다.",spray:"초기 흰가루병: 테부코나졸 표준 희석, <b>7일 간격 2회</b>. 수확 전 안전사용기간을 지키세요.",sell:"도매 보리 가격이 <b>약 4주 뒤 정점</b>을 향해 오르고 있어요. 조금 더 보유하세요. 출하 시기 화면을 확인하세요.",when:"최적 출하 시점은 약 <b>4주 뒤</b>입니다. 출하 시기 화면에서 알림을 켜세요.",hi:"언제든지요. 병해, 방제, 출하 시점을 물어보세요.",def:"저는 <b>진단</b>, <b>방제</b>, <b>출하 시기</b>를 도와드립니다. 진단 화면을 열어보세요."},
+      vi:{mildew:"Nghe như <b>bệnh phấn trắng</b>. Chụp ảnh ở màn Chẩn đoán để chắc chắn. Nếu sớm, phun 2 lần trong 7 ngày thường là đủ.",spray:"Phấn trắng giai đoạn sớm: tebuconazole theo nhãn, <b>2 lần, cách 7 ngày</b>. Giữ đúng thời gian cách ly trước thu hoạch.",sell:"Giá lúa mạch sỉ <b>đang tăng tới đỉnh sau ~4 tuần</b>. Giữ thêm chút nữa, xem Thời điểm bán.",when:"Thời điểm bán tối ưu mở sau khoảng <b>4 tuần</b>. Bật cảnh báo trong Thời điểm bán.",hi:"Bất cứ lúc nào. Hỏi về bệnh, phun thuốc, hay thời điểm bán.",def:"Tôi giúp <b>chẩn đoán</b>, <b>phun thuốc</b>, và <b>thời điểm bán</b>. Thử màn Chẩn đoán."}
+    }; var L=K[LANG]||K.en;
+    if(/powder|mildew|white|spot|disease|sick|leaf|가루|흰|병|phấn|bệnh|lá/.test(q)){ var pre=''; if(lastDx){ pre=(LANG==='ko'?'기록을 보니 최근 진단은 <b>'+lastDx.title+'</b>였어요. ':LANG==='vi'?'Theo hồ sơ, chẩn đoán gần nhất là <b>'+lastDx.title+'</b>. ':'From your record, your last diagnosis was <b>'+lastDx.title+'</b>. '); } return pre+L.mildew; }
+    if(/fungicide|spray|dose|pesticide|살균|방제|약|thuốc|phun/.test(q)) return L.spray;
+    if(/sell|price|wait|hold|market|팔|가격|기다|출하|bán|giá|chờ/.test(q)) return L.sell;
+    if(/harvest|window|timing|when|시점|언제|khi nào|thời điểm/.test(q)) return L.when;
+    if(/hi|hello|hey|thanks|안녕|고마|xin chào|cảm ơn/.test(q)) return L.hi;
+    return L.def; }
+  function ask(q){ q=(q||'').trim(); if(!q) return; addBub(q,'me'); CHATLOG.push({txt:q,who:'me'}); saveChat();
+    var tp=addBub('<span></span><span></span><span></span>','ai typing'); setTimeout(function(){ tp.remove(); var r=reply(q); addBub(r,'ai'); CHATLOG.push({txt:r,who:'ai'}); saveChat(); },850); }
+
+  /* ================= market (all crops) ================= */
+  var MK_OVER={
+    Barley:{price:24800,exp:12,pts:[52,49,54,46,40,30,20,26,33]},
+    Rice:{price:51200,exp:3,pts:[46,45,46,44,45,44,45,43,44]},
+    Potato:{price:18400,exp:-6,pts:[30,34,40,46,52,58,62,66,70]},
+    Garlic:{price:6200,exp:9,pts:[54,52,50,44,38,32,28,30,34]},
+    Onion:{price:1150,exp:-4,pts:[34,38,42,46,50,54,58,60,62]}
+  };
+  function seededMarket(name){ var h=cropHue(name), h2=0; for(var i=0;i<name.length;i++) h2=(h2*131+name.charCodeAt(i))>>>0;
+    var price=6000+(h2%54)*1000; var exp=((h2>>3)%17)-6; var base=44+((h2>>5)%8); var pts=[]; var down=exp<0;
+    for(var k=0;k<9;k++){ var wobble=((h2>>(k+1))%9)-4; var trend=down?k*3.2:-k*3.0; pts.push(Math.max(14,Math.min(74, base+trend+wobble))); }
+    return {price:price, exp:exp, pts:pts}; }
+  function marketFor(n){ var m=MK_OVER[n]||seededMarket(n); var down=m.exp<0;
+    var unit=(n==='Onion'||n==='Cabbage'||n==='Radish')?'/kg':'';
+    var title,d;
+    if(down){ title=(LANG==='ko'?'곧 판매':LANG==='vi'?'Bán sớm':'Sell soon'); d=(LANG==='ko'?'수확 출하로 가격이 내려가고 있어요. 1~2주 내 물량을 처분하세요.':LANG==='vi'?'Giá đang giảm khi vào vụ. Bán trong 1-2 tuần.':'Price is sliding as harvest floods the market. Move volume in 1-2 weeks.'); }
+    else if(m.exp<5){ title=(LANG==='ko'?'꾸준히 판매':LANG==='vi'?'Bán đều':'Sell steadily'); d=(LANG==='ko'?'곡선이 완만합니다. 정점을 노리기보다 분산 출하하세요.':LANG==='vi'?'Đường giá phẳng, bán rải đều thay vì canh đỉnh.':'A flat curve, spread sales rather than timing a single peak.'); }
+    else { var wk=(LANG==='ko'?'4~5주':LANG==='vi'?'4-5 tuần':'4-5 weeks'); title=(LANG==='ko'?wk+' 보유':LANG==='vi'?'Giữ '+wk:'Hold '+wk); d=(LANG==='ko'?'가격이 정점을 향해 오르고 있어요. 지금 팔면 손해입니다.':LANG==='vi'?'Giá đang tăng tới đỉnh. Bán bây giờ là thiệt.':'Price is rising toward a peak. Selling now leaves money on the table.'); }
+    return {price:'₩'+m.price.toLocaleString('en-US')+unit, exp:(m.exp>=0?'+':'−')+Math.abs(m.exp)+'%', expNum:m.exp, pts:m.pts, title:title, d:d}; }
+  var activeCrop='Barley';
+  function buildSeg(){ var seg=document.getElementById('seg'); if(!seg) return; seg.innerHTML=''; myCrops.forEach(function(c){ var b=document.createElement('button'); b.textContent=cropName(c.n); b.className=(c.n===activeCrop?'on':''); b.onclick=function(){ setCrop(c.n); }; seg.appendChild(b); }); if(!myCrops.some(function(c){return c.n===activeCrop;}) && myCrops[0]) activeCrop=myCrops[0].n; }
+  function drawChart(pts,down){ var w=300,h=120,pad=8,n=pts.length,dx=(w-pad*2)/(n-1); var pk=down?(n-1):pts.indexOf(Math.min.apply(null,pts));
+    var d=pts.map(function(v,i){ return (i?'L':'M')+(pad+i*dx).toFixed(1)+','+v.toFixed(1); }).join(' '); var col=down?'var(--danger)':'var(--g2)'; var px=(pad+pk*dx).toFixed(1), py=pts[pk].toFixed(1);
+    document.getElementById('chart').innerHTML='<defs><linearGradient id="fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+col+'" stop-opacity=".18"/><stop offset="1" stop-color="'+col+'" stop-opacity="0"/></linearGradient></defs><path d="'+d+' L'+(w-pad)+','+h+' L'+pad+','+h+' Z" fill="url(#fill)"/><path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><line x1="'+px+'" y1="4" x2="'+px+'" y2="'+h+'" stroke="var(--gold)" stroke-width="1.4" stroke-dasharray="3 3"/><circle cx="'+px+'" cy="'+py+'" r="4.5" fill="#fff" stroke="var(--gold)" stroke-width="2.5"/>'; }
+  function setCrop(name){ activeCrop=name; var seg=document.getElementById('seg'); if(seg) document.querySelectorAll('#seg button').forEach(function(b){ b.classList.toggle('on', b.textContent===cropName(name)); });
+    var c=marketFor(name), down=c.expNum<0; document.getElementById('mkt-sub').textContent=cropName(name)+' · 8-week outlook'; document.getElementById('k-price').textContent=c.price;
+    var ke=document.getElementById('k-exp'); ke.textContent=c.exp; ke.style.color=down?'var(--danger)':'var(--g2)'; document.getElementById('chart-cap').textContent=(LANG==='ko'?'도매가 · ':LANG==='vi'?'Giá sỉ · ':'Wholesale price · ')+cropName(name).toLowerCase();
+    document.getElementById('rec-title').textContent=c.title; document.getElementById('rec-d').textContent=c.d; document.getElementById('rec').style.background=down?'linear-gradient(135deg,#d9743a,#c85f2c)':'linear-gradient(135deg,#17a56b,#12b487)'; drawChart(c.pts,down); }
+
+  /* ================= calendar ================= */
+  function iso(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+  function addDays(d,n){ var x=new Date(d); x.setDate(x.getDate()+n); return x; }
+  var EVENTS; try{ EVENTS=JSON.parse(localStorage.getItem('fp_events')); }catch(e){}
+  function seedEvents(){ var now=new Date(); var E={};
+    function push(d,ev){ var key=iso(d); (E[key]=E[key]||[]).push(ev); }
+    push(now,{id:'e1',type:'spray',t:'2nd fungicide spray',s:'Tebuconazole · barley',done:false});
+    push(addDays(now,3),{id:'e2',type:'diagnose',t:'Re-diagnose barley',s:'Check mildew progress',done:false});
+    push(addDays(now,2),{id:'e3',type:'water',t:'Irrigation check',s:'Storage humidity',done:false});
+    push(addDays(now,6),{id:'e4',type:'fert',t:'Top-dress nitrogen',s:'Growth stage',done:false});
+    push(addDays(now,28),{id:'e5',type:'sell',t:'Barley sell window opens',s:'Forecast price peak',done:false});
+    push(addDays(now,34),{id:'e6',type:'harvest',t:'Harvest window',s:'Target grade check',done:false});
+    push(addDays(now,-4),{id:'e0',type:'spray',t:'1st spray applied',s:'Logged',done:true});
+    return E; }
+  if(!EVENTS){ EVENTS=seedEvents(); }
+  function saveEvents(){ try{ localStorage.setItem('fp_events',JSON.stringify(EVENTS)); }catch(e){} }
+  var calCur=new Date(); calCur.setDate(1); var calSel=new Date();
+  var TYPET={ ko:{spray:'방제',diagnose:'진단',water:'관수',fert:'시비',sell:'출하',harvest:'수확',custom:'작업'}, vi:{spray:'Phun',diagnose:'Chẩn đoán',water:'Tưới',fert:'Bón',sell:'Bán',harvest:'Thu hoạch',custom:'Việc'}, en:{spray:'Spray',diagnose:'Diagnose',water:'Water',fert:'Fertilize',sell:'Sell',harvest:'Harvest',custom:'Task'} };
+  function typeIcon(ty){ return {spray:'spray',diagnose:'diagnosis',water:'water',fert:'fert',sell:'sell',harvest:'harvest',custom:'check'}[ty]||'check'; }
+  function renderCal(){
+    var dowEl=document.getElementById('cal-dow'); var dows=(LANG==='ko'?['일','월','화','수','목','금','토']:LANG==='vi'?['CN','T2','T3','T4','T5','T6','T7']:['S','M','T','W','T','F','S']);
+    dowEl.innerHTML=dows.map(function(x){return '<div class="cal-dow">'+x+'</div>';}).join('');
+    var y=calCur.getFullYear(), m=calCur.getMonth();
+    var mn=(LANG==='ko'?(y+'년 '+(m+1)+'월'):new Date(y,m,1).toLocaleDateString(LANG==='vi'?'vi-VN':'en-US',{month:'long',year:'numeric'}));
+    document.getElementById('cal-month').textContent=mn;
+    var first=new Date(y,m,1).getDay(), days=new Date(y,m+1,0).getDate(); var todayIso=iso(new Date()), selIso=iso(calSel);
+    var g=document.getElementById('cal-grid'); g.innerHTML='';
+    for(var i=0;i<first;i++){ var e=document.createElement('div'); e.className='cal-day empty'; g.appendChild(e); }
+    for(var day=1;day<=days;day++){ var dd=new Date(y,m,day); var di=iso(dd); var evs=EVENTS[di]||[];
+      var cell=document.createElement('div'); cell.className='cal-day'+(di===todayIso?' today':'')+(di===selIso?' sel':'');
+      var dots=evs.slice(0,3).map(function(ev){ return '<i class="dt-'+ev.type+'"></i>'; }).join('');
+      cell.innerHTML='<span>'+day+'</span><span class="evd">'+dots+'</span>';
+      (function(dd2){ cell.onclick=function(){ calSel=dd2; renderCal(); renderCalList(); }; })(dd);
+      g.appendChild(cell);
+    }
+    var lg=document.getElementById('cal-legend'); var types=['spray','diagnose','sell','water','fert','harvest'];
+    lg.innerHTML=types.map(function(ty){ return '<span><i class="dt-'+ty+'"></i>'+(TYPET[LANG]||TYPET.en)[ty]+'</span>'; }).join('');
+    renderCalList();
+  }
+  function renderCalList(){
+    var lab=document.getElementById('cal-daylabel'); var selIso=iso(calSel); var isToday=selIso===iso(new Date());
+    lab.textContent=isToday?t('cl_today'):calSel.toLocaleDateString(LANG==='ko'?'ko-KR':LANG==='vi'?'vi-VN':'en-US',{month:'short',day:'numeric'});
+    var el=document.getElementById('cal-list'); var evs=EVENTS[selIso]||[]; el.innerHTML='';
+    if(!evs.length){ el.innerHTML='<div class="t11" style="padding:8px 2px">'+(LANG==='ko'?'이 날은 작업이 없습니다. + 로 추가하세요.':LANG==='vi'?'Không có việc ngày này. Nhấn + để thêm.':'No tasks this day. Tap + to add.')+'</div>'; return; }
+    evs.forEach(function(ev){ var d=document.createElement('div'); d.className='task'+(ev.done?' done':'');
+      d.innerHTML='<div class="check'+(ev.done?' on':'')+'">'+svg('check')+'</div><div class="ic">'+svg(typeIcon(ev.type))+'</div><div class="x"><b>'+ev.t+'</b><span>'+ev.s+'</span></div><span class="pill dim">'+(TYPET[LANG]||TYPET.en)[ev.type]+'</span>';
+      d.querySelector('.check').onclick=function(){ ev.done=!ev.done; saveEvents(); renderCal(); toast(ev.done?t('done'):t('reopened')); }; el.appendChild(d); });
+  }
+  function addTaskForSelected(){ var selIso=iso(calSel); (EVENTS[selIso]=EVENTS[selIso]||[]).unshift({id:'c'+Date.now(),type:'custom',t:(LANG==='ko'?'새 작업':LANG==='vi'?'Việc mới':'New task'),s:(LANG==='ko'?'눌러서 완료':LANG==='vi'?'Chạm để hoàn thành':'Tap to complete'),done:false}); saveEvents(); renderCal(); toast(t('task_added')); }
+  function addSprayTask(){ var d=iso(addDays(new Date(),0)); (EVENTS[d]=EVENTS[d]||[]).unshift({id:'s'+Date.now(),type:'spray',t:'Spray (from diagnosis)',s:'Auto-added',done:false}); saveEvents(); }
+  function addPrevention(){ var d=iso(addDays(new Date(),1)); (EVENTS[d]=EVENTS[d]||[]).unshift({id:'p'+Date.now(),type:'spray',t:'Preventive spray',s:'Nearby outbreak',done:false}); saveEvents(); toast(t('prev_added')); }
+  function addSpotSpray(){ var d=iso(addDays(new Date(),0)); (EVENTS[d]=EVENTS[d]||[]).unshift({id:'ss'+Date.now(),type:'spray',t:'Spot-spray north-east zone',s:'From field scan',done:false}); saveEvents(); }
+
+  /* ================= field scan ================= */
+  var ZONES=['z_corner','z_center','z_edge'];
+  function renderZones(){ var el=document.getElementById('fs-zones'); if(!el) return; el.innerHTML=''; ZONES.forEach(function(z,i){ var d=document.createElement('div'); d.className='zone'; d.innerHTML='<span class="n">'+(i+1)+'</span><span>'+t(z)+'</span>'; el.appendChild(d); }); }
+  function renderFsRisk(){ var lv=document.getElementById('fs-risklv'), msg=document.getElementById('fs-riskmsg'); if(!lv) return; lv.textContent=t('high'); lv.className='pill warn'; msg.textContent=t('fs_riskmsg'); }
+  function startFieldScan(){ var btn=document.getElementById('fs-btn'), res=document.getElementById('fs-result'); if(!btn) return; btn.disabled=true; var total=240, n=0;
+    res.innerHTML='<div class="card"><div class="t11" id="fs-count">'+t('fs_scanning').replace('{n}','0')+'</div><div class="bar"><i id="fs-bar" style="width:0"></i></div></div>';
+    var bar=document.getElementById('fs-bar'), cnt=document.getElementById('fs-count');
+    var iv=setInterval(function(){ n+=Math.round(total/15); if(n>total) n=total; cnt.textContent=t('fs_scanning').replace('{n}',n); bar.style.width=Math.round(n/total*100)+'%';
+      if(n>=total){ clearInterval(iv); setTimeout(function(){ showFieldResult(total); btn.disabled=false; },350); } },110);
+  }
+  function showFieldResult(total){ var infPct=8, infected=Math.round(total*infPct/100), sev=Math.round(infPct*1.6);
+    var cells=''; for(var i=0;i<32;i++){ var col=i%8, row=Math.floor(i/8); var hot=(col>=6&&row<=1), mid=(col>=5&&row<=2); var c=hot?'#d9743a':mid?'#e0a800':'#bfe6cd'; cells+='<i style="background:'+c+'"></i>'; }
+    var dec=economicDecision(sev);
+    document.getElementById('fs-result').innerHTML=
+      '<div class="card"><div class="row"><span class="t13">'+t('fs_result')+'</span><span class="pill warn">'+infPct+'%</span></div>'
+      +'<div class="t11" style="margin-top:4px">'+infected+' / '+total+' '+t('fs_infrate')+'</div>'
+      +'<div class="t11" style="margin-top:11px;font-weight:800;color:var(--ink2)">'+t('fs_heat')+'</div><div class="heat">'+cells+'</div>'
+      +'<div class="t11" style="margin-top:7px">'+t('fs_hotmsg')+'</div>'
+      +'<div style="margin-top:11px;padding:11px 13px;border-radius:12px;border:1px solid var(--line);background:'+dec.bg+'"><b style="font-size:13px;color:'+dec.col+'">'+dec.label+'</b><div class="t11" style="margin-top:3px">'+t('fs_spotwin')+'</div></div>'
+      +'<button class="btn sm" style="margin-top:12px" onclick="addSpotSpray();toast(t(\'task_added\'))">'+t('fs_addtask')+'</button></div>';
+    document.getElementById('fs-result').scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+
+  /* ================= trade ================= */
+  function fillTradeCrops(){ var s=document.getElementById('td-crop'); if(!s) return; s.innerHTML=''; myCrops.forEach(function(c){ var o=document.createElement('option'); o.value=c.n; o.textContent=cropName(c.n); s.appendChild(o); }); }
+  var CHAN=[
+    {ic:'coop',k:'ch_coop'},{ic:'factory',k:'ch_mill'},{ic:'market',k:'ch_whole'},{ic:'truck',k:'ch_direct'}
+  ];
+  var CHANT={
+    en:{ch_coop:['Cooperative contract (지역농협)','Guaranteed offtake at a set grade/price. Best for storable barley. Request a contract-farming slot.','Request contract'],
+      ch_mill:['Maltster / processor','Direct supply to a brewery or malt plant. Needs volume (10 t+) and grade. We forward your farm record.','Send my record'],
+      ch_whole:['Public wholesale market','Sell by daily auction. Price benchmarked live to KAMIS. Best when the sell-window is open.','See KAMIS price'],
+      ch_direct:['Direct-to-consumer','List online and ship in small lots for a higher margin. We generate a listing from your crop record.','Create a listing']},
+    ko:{ch_coop:['지역농협 계약재배','정해진 등급·가격으로 판로 보장. 저장성 보리에 최적. 계약재배 신청.','계약 신청'],
+      ch_mill:['맥아 가공·주류사','양조장·맥아 공장 직공급. 물량(10톤+)과 등급 필요. 농장 기록을 전달합니다.','내 기록 보내기'],
+      ch_whole:['공영 도매시장','일일 경매 판매. KAMIS로 실시간 가격 비교. 출하 시점이 열렸을 때 유리.','KAMIS 시세 보기'],
+      ch_direct:['소비자 직거래','온라인 소량 출하로 마진 상승. 작물 기록으로 판매글을 생성합니다.','판매글 만들기']},
+    vi:{ch_coop:['Hợp đồng hợp tác xã','Bao tiêu theo phẩm cấp/giá cố định. Tốt cho lúa mạch trữ được.','Yêu cầu hợp đồng'],
+      ch_mill:['Nhà chế biến / nhà máy mạch nha','Cung cấp trực tiếp cho nhà máy bia/mạch nha. Cần khối lượng và phẩm cấp.','Gửi hồ sơ của tôi'],
+      ch_whole:['Chợ đầu mối công','Bán đấu giá hàng ngày, so giá theo KAMIS. Tốt khi thời điểm bán mở.','Xem giá KAMIS'],
+      ch_direct:['Bán trực tiếp','Đăng bán online lô nhỏ để biên cao hơn. Tạo tin đăng từ hồ sơ cây trồng.','Tạo tin đăng']}
+  };
+  function renderTradeChannels(){ var el=document.getElementById('td-channels'); if(!el) return; el.innerHTML=''; var L=CHANT[LANG]||CHANT.en;
+    CHAN.forEach(function(ch){ var d=L[ch.k]; var row=document.createElement('div'); row.className='task';
+      row.innerHTML='<div class="ic">'+svg(ch.ic)+'</div><div class="x"><b>'+d[0]+'</b><span>'+d[1]+'</span></div>';
+      var b=document.createElement('button'); b.className='pill ok'; b.style.cssText='border:none;cursor:pointer'; b.textContent=d[2];
+      b.onclick=function(){ if(ch.ic==='market'){ window.open('https://www.kamis.or.kr','_blank'); } else toast(d[2]+' ✓'); }; row.appendChild(b); el.appendChild(row); });
+  }
+  function findBuyers(){ var crop=document.getElementById('td-crop').value||'Barley'; var qty=parseInt(document.getElementById('td-qty').value||'0',10)||0;
+    var m=marketFor(crop); var priceNum=parseInt((MK_OVER[crop]||seededMarket(crop)).price,10); var est=(priceNum*qty).toLocaleString('en-US');
+    var el=document.getElementById('td-result');
+    el.innerHTML='<div class="card" style="background:linear-gradient(135deg,#eef8f1,#e7fbef);border:1px solid #cdeede"><div class="row"><span class="t13">'+cropName(crop)+' · '+qty.toLocaleString('en-US')+' kg</span><span class="pill ok">'+(LANG==='ko'?'3곳 매칭':LANG==='vi'?'3 người mua':'3 buyers')+'</span></div><div class="t11" style="margin-top:6px">'+(LANG==='ko'?'KAMIS 기준 예상 총액':LANG==='vi'?'Tổng ước tính theo KAMIS':'Estimated value at KAMIS benchmark')+': <b>₩'+est+'</b> ('+m.exp+' '+(LANG==='ko'?'4주 후':LANG==='vi'?'sau 4 tuần':'in 4 wks')+')</div><div class="t11" style="margin-top:4px">'+m.d+'</div></div>';
+    el.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+
+  /* ================= community ================= */
+  var SUGGEST=[{id:'@jiwoo_gangjin',n:'Jiwoo',r:'Gangjin · Barley',role:'farmer'},{id:'@rda_hong',n:'Dr. Hong',r:'RDA extension officer',role:'expert'},{id:'@sora_haenam',n:'Sora',r:'Haenam · Onion',role:'farmer'},{id:'@malt_partner',n:'Nampo Malt',r:'Buyer · maltster',role:'buyer'}];
+  var CONN; try{ CONN=JSON.parse(localStorage.getItem('fp_conn')); }catch(e){}
+  if(!CONN) CONN=[{id:'@minsu_haenam',n:'Minsu',r:'Haenam · Barley',role:'farmer'},{id:'@agr_kim',n:'Agr. Kim',r:'Crop-protection advisor',role:'expert'}];
+  function saveConn(){ try{ localStorage.setItem('fp_conn',JSON.stringify(CONN)); }catch(e){} }
+  function roleTag(role){ var m={farmer:['dim',LANG==='ko'?'농가':LANG==='vi'?'Nông dân':'Farmer'],expert:['ok',LANG==='ko'?'전문가':LANG==='vi'?'Chuyên gia':'Expert'],buyer:['warn',LANG==='ko'?'매입처':LANG==='vi'?'Người mua':'Buyer']}[role]||['dim','']; return '<span class="pill '+m[0]+'">'+m[1]+'</span>'; }
+  function renderCommunity(){
+    var list=document.getElementById('cm-list'); list.innerHTML=''; document.getElementById('cm-count').textContent=CONN.length+'';
+    CONN.forEach(function(p){ var d=document.createElement('div'); d.className='task';
+      d.innerHTML='<div class="avatar sm">'+p.n.charAt(0)+'</div><div class="x"><b>'+p.n+'</b><span>'+p.r+' · '+p.id+'</span></div>'+roleTag(p.role);
+      d.onclick=function(){ toast((LANG==='ko'?'카카오톡 ID 공유: ':LANG==='vi'?'Chia sẻ ID KakaoTalk: ':'Share KakaoTalk ID: ')+p.id); }; list.appendChild(d); });
+    if(!CONN.length) list.innerHTML='<div class="t11" style="padding:8px">'+(LANG==='ko'?'아직 연결이 없습니다.':LANG==='vi'?'Chưa có kết nối.':'No connections yet.')+'</div>';
+    var sg=document.getElementById('cm-suggest'); sg.innerHTML='';
+    SUGGEST.filter(function(p){ return !CONN.some(function(c){return c.id===p.id;}); }).forEach(function(p){ var d=document.createElement('div'); d.className='task';
+      d.innerHTML='<div class="avatar sm">'+p.n.charAt(0)+'</div><div class="x"><b>'+p.n+'</b><span>'+p.r+' · '+p.id+'</span></div>';
+      var b=document.createElement('button'); b.className='pill ok'; b.style.cssText='border:none;cursor:pointer'; b.innerHTML=svg('plus'); b.style.padding='6px 9px';
+      b.onclick=function(){ CONN.push(p); saveConn(); renderCommunity(); toast(t('added')); }; d.appendChild(b); sg.appendChild(d); });
+    if(!sg.children.length) sg.innerHTML='<div class="t11" style="padding:8px">'+(LANG==='ko'?'주변 사람을 모두 추가했습니다.':LANG==='vi'?'Đã thêm hết người gần đây.':'You added everyone nearby.')+'</div>';
+  }
+  var EXPERTS=[
+    {n:'Dr. Han',role:'expert_pathologist',org:'Plant Pathology Lab · National University',status:'online'},
+    {n:'Prof. Seo',role:'expert_professor',org:'Crop Science Dept. · National University',status:'outreach'},
+    {n:'Dr. Lim',role:'expert_scientist',org:'RDA regional research center',status:'online'},
+    {n:'Advisor Kim',role:'expert_advisor',org:'Licensed · 15 yrs field',status:'online'},
+    {n:'Officer Jung',role:'expert_extension',org:'Haenam 농업기술센터',status:'outreach'},
+    {n:'Dr. Cho',role:'expert_soil',org:'Soil & Fertility Lab',status:'busy'}
+  ];
+  function statusPill(s){ var m={online:['ok','st_online'],outreach:['dim','st_outreach'],busy:['warn','st_busy']}[s]; return '<span class="pill '+m[0]+'">'+t(m[1])+'</span>'; }
+  function renderExperts(){ var el=document.getElementById('cm-experts'); if(!el) return; el.innerHTML='';
+    var avail=EXPERTS.filter(function(e){return e.status!=='busy';}).length; document.getElementById('cm-expcount').textContent=avail+(LANG==='ko'?'명':LANG==='vi'?'':'');
+    EXPERTS.forEach(function(x){ var d=document.createElement('div'); d.className='task';
+      var init=x.n.replace(/^(Dr\.|Prof\.|Advisor|Officer)\s*/,'').charAt(0);
+      d.innerHTML='<div class="avatar sm">'+init+'</div><div class="x"><b>'+x.n+'</b><span>'+t(x.role)+' · '+x.org+'</span></div>';
+      var wrap=document.createElement('div'); wrap.style.cssText='display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex:none';
+      wrap.innerHTML=statusPill(x.status);
+      if(x.status!=='busy'){ var b=document.createElement('button'); b.className='pill '+(x.status==='online'?'ok':'dim'); b.style.cssText='border:none;cursor:pointer'; b.textContent=t(x.status==='online'?'act_message':'act_outreach'); b.onclick=function(){ toast(t(x.status==='online'?'cm_connecting':'outreach_sent')); }; wrap.appendChild(b); }
+      d.appendChild(wrap); el.appendChild(d); });
+  }
+  function renderShareNear(){ var el=document.getElementById('share-near'); if(!el) return; el.innerHTML='';
+    SUGGEST.slice(0,3).forEach(function(p){ var d=document.createElement('div'); d.className='task';
+      d.innerHTML='<div class="avatar sm">'+p.n.charAt(0)+'</div><div class="x"><b>'+p.n+'</b><span>'+p.r+'</span></div>';
+      var b=document.createElement('button'); b.className='pill ok'; b.style.cssText='border:none;cursor:pointer'; b.textContent=(LANG==='ko'?'전송':LANG==='vi'?'Gửi':'Send');
+      b.onclick=function(){ toast(t('sent')+' → '+p.n); }; d.appendChild(b); el.appendChild(d); });
+  }
+  function copyId(){ var id=profile.id; if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(id).then(function(){ toast(t('id_copied')); },function(){ toast(id); }); } else toast(id); }
+  function addById(){ var v=(document.getElementById('addid-input').value||'').trim(); if(!v) return; if(v.charAt(0)!=='@') v='@'+v; var name=v.replace('@','').split('_')[0]; name=name.charAt(0).toUpperCase()+name.slice(1); CONN.push({id:v,n:name,r:(LANG==='ko'?'ID로 추가됨':LANG==='vi'?'Thêm bằng ID':'Added by ID'),role:'farmer'}); saveConn(); document.getElementById('addid-input').value=''; renderCommunity(); closeSheets(); toast(t('added')); }
+
+  /* ================= overview / profit ================= */
+  function renderOverview(){
+    var body=document.getElementById('ov-body'); if(!body) return;
+    var rows=myCrops.map(function(c){ var m=MK_OVER[c.n]||seededMarket(c.n); var yield_=800+(cropHue(c.n)%9)*140; var rev=Math.round(m.price*yield_/1000)*1000/1; var cost=Math.round(rev*(0.52+((cropHue(c.n)%18)/100))); var profit=rev-cost; return {n:c.n,rev:rev,cost:cost,profit:profit}; });
+    var totRev=rows.reduce(function(a,b){return a+b.rev;},0), totCost=rows.reduce(function(a,b){return a+b.cost;},0), net=totRev-totCost;
+    var margin=totRev?Math.round(net/totRev*100):0;
+    function won(x){ return (x<0?'−₩':'₩')+Math.abs(x).toLocaleString('en-US'); }
+    var L={en:{net:'Net profit (season)',rev:'Revenue',cost:'Costs',margin:'Margin',pnl:'Profit & loss by crop',rec:'Recommended actions',demo:'Demo figures, modeled from KAMIS price × typical yield. Real numbers come from your pilot records.'},
+      ko:{net:'순이익 (시즌)',rev:'매출',cost:'비용',margin:'마진',pnl:'작물별 손익',rec:'추천 조치',demo:'KAMIS 가격 × 표준 수량으로 모델링한 데모 수치입니다. 실제 수치는 파일럿 기록에서 나옵니다.'},
+      vi:{net:'Lợi nhuận ròng (mùa)',rev:'Doanh thu',cost:'Chi phí',margin:'Biên',pnl:'Lãi/lỗ theo cây',rec:'Hành động đề xuất',demo:'Số liệu demo từ giá KAMIS × năng suất điển hình. Số thật đến từ hồ sơ thí điểm.'}}[LANG]||{};
+    var recs=[];
+    var barley=rows.filter(function(r){return r.n==='Barley';})[0];
+    recs.push({ic:'sell',t:(LANG==='ko'?'보리 4~5주 보유':LANG==='vi'?'Giữ lúa mạch 4-5 tuần':'Hold barley 4-5 weeks'),s:(LANG==='ko'?'예상 +12% 수취가':LANG==='vi'?'Dự kiến +12% giá':'Forecast +12% price')});
+    recs.push({ic:'spray',t:(LANG==='ko'?'살균제 25% 절감':LANG==='vi'?'Giảm 25% thuốc':'Cut fungicide 25%'),s:(LANG==='ko'?'진단 기반 방제로 비용 절감':LANG==='vi'?'Phun theo chẩn đoán, giảm chi phí':'Diagnosis-triggered spraying lowers cost')});
+    recs.push({ic:'risk',t:(LANG==='ko'?'오늘 예찰':LANG==='vi'?'Kiểm tra hôm nay':'Scout today'),s:(LANG==='ko'?'인근 흰가루병 위험 높음':LANG==='vi'?'Nguy cơ phấn trắng gần cao':'Nearby mildew risk is high')});
+    var html='<div class="kpis"><div class="kpi"><div class="v" style="color:'+(net>=0?'var(--g2)':'var(--danger)')+'">'+won(net)+'</div><div class="l">'+L.net+'</div></div><div class="kpi"><div class="v">'+margin+'%</div><div class="l">'+L.margin+'</div></div></div>';
+    html+='<div class="kpis" style="margin-top:10px"><div class="kpi"><div class="v" style="font-size:18px">'+won(totRev)+'</div><div class="l">'+L.rev+'</div></div><div class="kpi"><div class="v" style="font-size:18px;color:var(--danger)">'+won(totCost)+'</div><div class="l">'+L.cost+'</div></div></div>';
+    html+='<div class="sec-title">'+L.pnl+'</div><div class="card">';
+    rows.forEach(function(r){ html+='<div class="task"><span class="cb" style="--h:'+cropHue(r.n)+';width:32px;height:32px;font-size:15px">'+cropName(r.n).charAt(0)+'</span><div class="x"><b>'+cropName(r.n)+'</b><span>'+L.rev+' '+won(r.rev)+' · '+L.cost+' '+won(r.cost)+'</span></div><span class="pill '+(r.profit>=0?'ok':'bad')+'">'+won(r.profit)+'</span></div>'; });
+    html+='</div>';
+    html+='<div class="sec-title">'+L.rec+'</div><div class="card">';
+    recs.forEach(function(r){ html+='<div class="task"><div class="ic">'+svg(r.ic)+'</div><div class="x"><b>'+r.t+'</b><span>'+r.s+'</span></div></div>'; });
+    html+='</div><div class="t11" style="text-align:center;margin-top:4px">'+L.demo+'</div>';
+    body.innerHTML=html;
+  }
+
+  /* ================= boot ================= */
+  setIcon('ic-brand','brand'); setIcon('ic-info','info'); setIcon('ic-ov','overview');
+  ['ic-back1','ic-back2','ic-back3','ic-back4','ic-back5','ic-back6','ic-back7','ic-back8'].forEach(function(i){ setIcon(i,'back'); });
+  setIcon('ic-dg','diagnosis'); setIcon('ic-ad','advisor'); setIcon('ic-mk','sell'); setIcon('ic-cl','calendar'); setIcon('ic-mp','map'); setIcon('ic-td','trade'); setIcon('ic-cm','community'); setIcon('ic-pf','me'); setIcon('ic-fs','scan'); setIcon('ic-fsrisk','risk');
+  setIcon('ic-risk','risk'); setIcon('ic-mildew','risk'); setIcon('ic-group','users');
+  document.getElementById('cal-prev').innerHTML=svg('back'); document.getElementById('cal-next').innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+IC.chev+'</svg>';
+  document.getElementById('ic-mic').innerHTML=svg('mic'); document.getElementById('ic-send').innerHTML=svg('send');
+  document.getElementById('cambtn').innerHTML=svg('camera')+'<span data-i18n="camera">Camera</span>';
+  ['ic-ref1'].forEach(function(i){ setIcon(i,'ref'); }); setIcon('ic-ref2','news'); setIcon('ic-ref3','ref'); setIcon('ic-lang','lang');
+  document.getElementById('cal-prev').onclick=function(){ calCur.setMonth(calCur.getMonth()-1); renderCal(); };
+  document.getElementById('cal-next').onclick=function(){ calCur.setMonth(calCur.getMonth()+1); renderCal(); };
+
+  captureEn();
+  buildTabs(); buildGrid(); applyI18n();
+  renderCrops(); setCrop('Barley'); renderProfile(); renderCal(); renderQuick(); renderChatIntro();
+  renderTradeChannels(); fillTradeCrops(); renderCommunity(); renderExperts(); renderShareNear(); renderOverview(); renderZones(); renderFsRisk();
+  if('serviceWorker' in navigator){
+    var _refreshing=false;
+    navigator.serviceWorker.addEventListener('controllerchange', function(){ if(_refreshing) return; _refreshing=true; location.reload(); });
+    window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js', {updateViaCache:'none'}).then(function(reg){ reg.update(); }).catch(function(){}); });
+  }
+</script>
+</body>
+</html>
