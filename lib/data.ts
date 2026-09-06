@@ -31,18 +31,16 @@ export const sectors: Sector[] = [
     image: '/img/agriculture.jpg',
     products: [
       { name: 'HarvestGuard', note: 'A solar-powered, pay-as-you-go cold chain for smallholder farmers.', href: '/harvestguard' },
-      { name: 'FarmPilot', note: 'An AI copilot that turns a smartphone into a pocket agronomist for smallholders.', href: '/farmpilot' },
     ],
   },
   {
     id: 'cyber', fig: '03', kicker: 'Cybersecurity & Fraud', stage: 'In development',
-    title: 'Tell a real voice from a synthetic one.',
-    mission: 'Developing systems that detect cloned and synthetic voices in real time, to stop the fastest-growing fraud of the decade: the scam phone call. The work spans the whole kill-chain — verify the voice is human, defend the call while it is happening, and help victims recover afterward — and runs on the device, so the audio never has to leave it.',
+    title: 'Stop the scam, then get the money back.',
+    mission: 'Developing one system for the whole window of a voice-phishing scam: defend the call while it is happening, then guide the recovery in the hour after money moves. It reads the two surfaces the platforms cannot see — the messenger thread and the bank transfer screen — and runs on the device, so the conversation never has to leave it.',
     target: 'Every phone user a scam can reach — starting with the elderly, who are targeted most and recover least — and the banks and fintechs that carry the loss.',
     image: '/img/cyber.jpg',
     products: [
-      { name: 'HALO', note: 'On-device defense that shields elders from voice-phishing, in real time.', href: '/halo' },
-      { name: 'Goldentime', note: 'A recovery copilot for the first hour after a voice-phishing transfer.', href: '/goldentime' },
+      { name: 'Goldentime', note: 'On-device defence during the call, and the recovery sequence after the transfer.', href: '/goldentime' },
     ],
   },
   {
@@ -215,72 +213,28 @@ export const harvestguard = {
   },
 }
 
-export const farmpilot = {
-  eyebrow: 'A product of Arbiter · Agriculture & Food Security',
-  name: 'FarmPilot',
-  tagline: 'A pocket agronomist and market advisor for the world’s smallest farms.',
-  lead: 'FarmPilot turns an ordinary smartphone into an AI copilot for a smallholder farmer: point the camera at a sick plant and it names the disease and a treatment, on the device and offline; it models when and where to sell so a harvest is not sold on the wrong day; and it answers questions by voice, in the farmer’s own dialect. It is built for the hundreds of millions of sub-one-hectare farms — 73.5% of all farms in Korea — that feed much of Asia on the thinnest margins and the least access to expertise.',
-  problem: {
-    label: 'The problem',
-    body: 'The farms that feed Asia have the least support. A pest caught a week late, or a harvest sold on the wrong day, can erase a season’s income — and climate stress is widening both gaps at once, with unfamiliar pests and more volatile yields and prices. Expert agronomy and market timing exist, but not in the field, not in real time, and rarely in a form a busy farmer can act on. The smartphone the farmer already owns is the only piece of infrastructure that reaches every one of these farms.',
-  },
-  how: {
-    label: 'How it works',
-    points: [
-      { h: 'Diagnose, on the device', p: 'A lightweight vision model identifies the pest or disease from a single photo and suggests a treatment, running on the phone itself so it works offline in the field. The diagnosis engine is a working, tested prototype — a MobileNetV3 classifier fine-tuned on public crop-disease data — with its measured accuracy, and the honest gap between clean lab images and messy field photos, disclosed in the demo itself.' },
-      { h: 'Time the market', p: 'FarmPilot models price trend and volatility to turn market data into a plain recommendation about when and where to sell, instead of a spreadsheet a farmer has to read. For storable crops that means holding for a better window; for perishable ones, grading and negotiation.' },
-      { h: 'Talk, in your own language', p: 'A language model answers questions by voice, in the farmer’s own dialect, carrying the farmer from a diagnosis to a decision without a keyboard or a manual — the layer that makes the other two usable for an ageing, low-connectivity user.' },
-    ],
-  },
-  status: {
-    label: 'Status',
-    body: 'FarmPilot is an early, working prototype — built and tested, but pre-pilot and pre-commercial. The disease-diagnosis engine runs today with a measured validation accuracy and a public demo; the market-timing and voice layers are in development. No customers, revenue, or funding are claimed anywhere, and field accuracy on real-world photos is expected to be lower than the controlled-dataset number, which is stated plainly in the demo. The work is honest about what is real and what is still ahead.',
-  },
-}
 
-export const halo = {
-  eyebrow: 'A product of Arbiter · Cybersecurity & Fraud',
-  name: 'HALO',
-  tagline: 'On-device defense that shields elders from voice-phishing, in real time.',
-  lead: 'HALO runs on the phone itself and watches the channels a scam actually travels through — the call, the message, the chat, and the banking screen at the moment of transfer — to catch a scam while it is happening, not after the money is gone. It works entirely on the device, so the conversation never leaves the phone, and it routes a warning to the family the instant something looks wrong. The hard part is not the call or the text, which the platforms already cover; it is the two channels no platform can see — the messenger conversation and the bank screen one tap before a transfer — and that is exactly where HALO lives.',
-  problem: {
-    label: 'The problem',
-    body: 'The fastest-growing fraud of the decade is a phone call, and the people targeted most are elderly. They are convinced they are not being deceived right up to the moment they send the money, and the family only finds out afterward. The defenses that exist watch the call and the text — but the scam is completed somewhere they cannot look: inside the messenger thread and on the banking app’s transfer screen. By the time a blocklist catches a new script, the loss has already spread. Nobody is defending the two surfaces where the money actually leaves.',
-  },
-  how: {
-    label: 'How it works',
-    points: [
-      { h: 'It reads the channels nobody else can', p: 'An on-device language model reads the two surfaces platforms structurally cannot access — the messenger conversation and the pre-transfer bank screen — so it can flag a scam at the exact point of loss, not from a blocklist that is always a step behind.' },
-      { h: 'On-device, so nothing leaves the phone', p: 'The call and the chat are analyzed locally on the device. No audio and no conversation is sent to a server, which solves privacy and latency at the same time and lets the defense work even where a network does not.' },
-      { h: 'A warning that reaches the family in time', p: 'When risk is detected, HALO routes an alert to a trusted family member while the call is still happening — not a report after it. It detects and warns; it never silently blocks or moves money on its own.' },
-    ],
-  },
-  status: {
-    label: 'Status',
-    body: 'HALO is in active development — pre-alpha and pre-commercial. A working prototype and a measured scam-classifier already exist; on-device performance and field pilots are the current work. No customers, revenue, or funding are claimed anywhere. The internal models, datasets, and the specific channels are kept off this public page while the product is still being hardened.',
-  },
-}
 
 export const goldentime = {
   eyebrow: 'A product of Arbiter · Cybersecurity & Fraud',
   name: 'Goldentime',
-  tagline: 'A recovery copilot for the first hour after a voice-phishing transfer.',
-  lead: 'The hour after money is sent decides whether it can be recovered. Goldentime is the copilot a victim and their family open at that moment — it walks them through the exact, time-critical steps in the right order, so the small window to claw the money back is not lost to panic or confusion. It turns a chaotic, high-stakes situation into a guided sequence, so the people least prepared for it can act like the people who handle it every day.',
+  tagline: 'One product for the whole scam window \u2014 during the call, and after the transfer.',
+  lead: 'Goldentime runs on the phone and covers both halves of a voice-phishing scam. While the call is live it reads the surfaces the platforms structurally cannot see \u2014 the messenger conversation and the bank transfer screen \u2014 and routes a warning to a trusted family member before the money moves. If a transfer goes through anyway, the same app becomes the recovery copilot for the hour that decides whether it can be clawed back. Everything is analysed on the device, so no audio and no conversation leaves the phone.',
   problem: {
     label: 'The problem',
-    body: 'When a scam succeeds, the difference between recovering the money and losing it is measured in minutes. But the victim is panicked, often elderly, and does not know that the bank can freeze the receiving account, which agency to call first, or what to preserve as evidence — and the family scrambling to help knows even less. The official steps exist, but they are scattered, slow to find, and written for no one in the moment of crisis. The recoverable window closes while everyone is still figuring out what to do.',
+    body: 'The fastest-growing fraud of the decade is a phone call, and the people targeted most are elderly. The defences that exist watch the call and the text, but the scam is completed somewhere they cannot look: inside the messenger thread and on the banking app\u2019s transfer screen. And when it succeeds, the difference between recovering the money and losing it is measured in minutes \u2014 while the victim is panicked, and the family scrambling to help knows even less. Detection without recovery leaves the victim alone at the worst moment. Recovery without detection arrives after the loss. It is one window, and it was being covered by two half-products.',
   },
   how: {
     label: 'How it works',
     points: [
-      { h: 'The right steps, in the right order, now', p: 'Goldentime gives the victim and family the exact time-critical sequence — freeze the receiving account, report to the authorities, preserve the evidence — instead of a list to decipher under pressure. The order is the product: the actions that recover money come first.' },
-      { h: 'Built for the panicked, not the expert', p: 'The guidance is written for someone in shock: plain, sequenced, and acting in minutes. The people least prepared for this are the ones it is designed for, so they move with the speed the situation demands.' },
-      { h: 'A record that helps the case', p: 'The actions and evidence are captured as a clean, ordered record that supports the bank’s freeze request and the police report — so the recovery effort is not rebuilt from memory after the fact.' },
+      { h: 'It reads the channels nobody else can', p: 'An on-device language model reads the messenger conversation and the pre-transfer bank screen \u2014 the two surfaces platforms structurally cannot access \u2014 so it can flag a scam at the exact point of loss rather than from a blocklist that is always a step behind.' },
+      { h: 'On-device, so nothing leaves the phone', p: 'The call and the chat are analysed locally. No audio and no conversation is sent to a server, which solves privacy and latency at once and lets the defence work even where a network does not. When risk is detected it alerts a trusted family member while the call is still happening.' },
+      { h: 'The right steps, in the right order, now', p: 'If a transfer completes, Goldentime gives the victim and the family the time-critical sequence \u2014 freeze the receiving account, report to the authorities, preserve the evidence \u2014 in the order that recovers money, written for someone in shock rather than someone reading a manual.' },
     ],
   },
   status: {
     label: 'Status',
-    body: 'Goldentime is in active development and pre-commercial. It builds on the same fraud understanding as HALO, applied to the real, time-critical recovery process. No customers, revenue, or funding are claimed anywhere. The specific institutional integrations are kept off this public page while the product is still being built.',
+    body: 'Goldentime is in active development and pre-commercial. It merges two efforts that were previously described separately: the on-device detection work and the recovery copilot. A working prototype and a measured scam-classifier exist; on-device performance, the institutional integrations behind the recovery steps, and field pilots are the current work. No customers, revenue, or funding are claimed anywhere. It detects and it guides \u2014 it never silently blocks a call or moves money on its own.',
   },
 }
 
