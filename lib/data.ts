@@ -5,7 +5,7 @@ export const hero = {
   desc: 'A multi-industry company, registered in the Republic of Korea in 2026.',
 }
 
-/** The fields the company works in. Names and imagery only — no product detail on the front page. */
+/** The fields the company works in. Names and imagery only, no product detail on the front page. */
 export const topics: Topic[] = [
   { id: 'finance', fig: '01', name: 'Finance', image: '/img/finance.jpg' },
   { id: 'biocomputing', fig: '02', name: 'Biocomputing', image: '/img/health.jpg' },
@@ -36,7 +36,7 @@ export const founder = {
 }
 
 /** Build a proper mailto with a subject so "Contact"/"Get in touch" open a ready-to-send email. */
-export const contactHref = (subject = 'Arbiter — Inquiry') =>
+export const contactHref = (subject = 'Arbiter, Inquiry') =>
   `mailto:${founder.contact}?subject=${encodeURIComponent(subject)}`
 
 /**
@@ -72,17 +72,17 @@ export const caravan = {
   eyebrow: 'A product of Arbiter · Finance',
   name: 'Caravan',
   tagline: 'A neutral trust and compliance rail for cross-border trade.',
-  lead: 'Caravan is the independent layer that sits above the marketplaces, brokers, and platforms where cross-border trade actually happens. It takes a proposed trade decision — a shipment, a counterparty, a compliance call — and turns it into a signed, tamper-evident record that anyone in the deal can verify for themselves. The point is neutrality: the same check, applied the same way, owned by no one with a stake in how it comes out. A buyer, a seller, a bank, and a regulator can all look at the same record and agree on what happened, without having to trust each other or the platform underneath them.',
+  lead: 'Caravan is the independent layer that sits above the marketplaces, brokers, and platforms where cross-border trade actually happens. It takes a proposed trade decision, a shipment, a counterparty, a compliance call, and turns it into a signed, tamper-evident record that anyone in the deal can verify for themselves. The point is neutrality: the same check, applied the same way, owned by no one with a stake in how it comes out. A buyer, a seller, a bank, and a regulator can all look at the same record and agree on what happened, without having to trust each other or the platform underneath them.',
   problem: {
     label: 'The problem',
-    body: 'Cross-border trade runs on platforms that profit from the very decisions they record, and the proof of what was decided lives wherever it is most convenient for them. There is no neutral, durable account of who decided what, on whose authority, and whether the record was quietly changed afterward. So when a shipment is disputed, a counterparty is questioned, or a regulator asks for the trail months later, the evidence is either held by an interested party, scattered across systems that do not agree, or simply gone. Every participant ends up rebuilding trust from scratch on every deal — slow, expensive, and impossible to audit. Caravan exists to make that record exist once, neutrally, and hold for everyone.',
+    body: 'Cross-border trade runs on platforms that profit from the very decisions they record, and the proof of what was decided lives wherever it is most convenient for them. There is no neutral, durable account of who decided what, on whose authority, and whether the record was quietly changed afterward. So when a shipment is disputed, a counterparty is questioned, or a regulator asks for the trail months later, the evidence is either held by an interested party, scattered across systems that do not agree, or simply gone. Every participant ends up rebuilding trust from scratch on every deal, slow, expensive, and impossible to audit. Caravan exists to make that record exist once, neutrally, and hold for everyone.',
   },
   how: {
     label: 'How it works',
     points: [
-      { h: 'Signed decisions', p: 'Every decision Caravan records is cryptographically signed, so its origin and the authority behind it can be checked by anyone in the deal. Verification needs no trust in Arbiter and no access to a private system — the signature stands on its own, even years later.' },
+      { h: 'Signed decisions', p: 'Every decision Caravan records is cryptographically signed, so its origin and the authority behind it can be checked by anyone in the deal. Verification needs no trust in Arbiter and no access to a private system, the signature stands on its own, even years later.' },
       { h: 'A record that cannot be quietly changed', p: 'Decisions are written to an append-only, tamper-evident history where each entry is bound to the ones before it. Any later edit, deletion, or reordering is detectable, and the entire trail can be re-checked offline by a counterparty or an examiner without asking Caravan to vouch for it.' },
-      { h: 'A human stays in the loop', p: 'Nothing executes on a machine’s say-so alone. A person reviews and approves each high-stakes decision before it takes effect, and that approval is itself signed and recorded — so the trail shows not just what was decided, but who stood behind it and when.' },
+      { h: 'A human stays in the loop', p: 'Nothing executes on a machine’s say-so alone. A person reviews and approves each high-stakes decision before it takes effect, and that approval is itself signed and recorded, so the trail shows not just what was decided, but who stood behind it and when.' },
     ],
   },
   twoSided: {
@@ -99,7 +99,7 @@ export const caravan = {
   },
   status: {
     label: 'Status',
-    body: 'Caravan runs today as working, tested software, not a slide or a concept. It is solo-built and pre-commercial: no customers, revenue, or funding are claimed anywhere. This page describes what Caravan does and why it matters, deliberately at a high level — the internal mechanics, models, and the specific trade lanes it targets are kept off the public page while the product is still being hardened.',
+    body: 'Caravan runs today as working, tested software, not a slide or a concept. It is solo-built and pre-commercial: no customers, revenue, or funding are claimed anywhere. This page describes what Caravan does and why it matters, deliberately at a high level, the internal mechanics, models, and the specific trade lanes it targets are kept off the public page while the product is still being hardened.',
   },
   links: {
     app: 'https://caravan-app.dayeon603.workers.dev',
@@ -149,17 +149,17 @@ export const harvestguard = {
   eyebrow: 'A product of Arbiter · Agriculture & Food Security',
   name: 'HarvestGuard',
   tagline: 'A solar-powered cold chain for the last village the grid never reached.',
-  lead: 'Up to a third of what a smallholder farmer grows can spoil before it is sold — for want of refrigeration the electrical grid never delivered. HarvestGuard is a solar-powered cold-storage pod built for the village rather than the grid: one small pod serves many farmers, who pay only for the days they use it, with no upfront cost and no wiring. It keeps a harvest edible for weeks instead of days — and every use quietly builds a verified record of a farmer’s yield and payments, the first credential a bank has ever had for someone it otherwise cannot see.',
+  lead: 'Up to a third of what a smallholder farmer grows can spoil before it is sold, for want of refrigeration the electrical grid never delivered. HarvestGuard is a solar-powered cold-storage pod built for the village rather than the grid: one small pod serves many farmers, who pay only for the days they use it, with no upfront cost and no wiring. It keeps a harvest edible for weeks instead of days, and every use quietly builds a verified record of a farmer’s yield and payments, the first credential a bank has ever had for someone it otherwise cannot see.',
   problem: {
     label: 'The problem',
-    body: 'The technology to stop a harvest from rotting is a century old, and it still has not reached the smallholder farmer. Only a small fraction of fresh produce in sub-Saharan Africa ever touches cold storage, and up to half of a farmer’s crop can spoil before it can be sold. Without a way to hold produce, families are forced into distress sales the day they harvest, taking whatever price the market gives — and the food that rots releases methane on the way. The same farmers are invisible to the banking system, because nothing has ever recorded what they grow or that they pay. Hunger, poverty, and emissions all trace back to one missing cold chain.',
+    body: 'The technology to stop a harvest from rotting is a century old, and it still has not reached the smallholder farmer. Only a small fraction of fresh produce in sub-Saharan Africa ever touches cold storage, and up to half of a farmer’s crop can spoil before it can be sold. Without a way to hold produce, families are forced into distress sales the day they harvest, taking whatever price the market gives, and the food that rots releases methane on the way. The same farmers are invisible to the banking system, because nothing has ever recorded what they grow or that they pay. Hunger, poverty, and emissions all trace back to one missing cold chain.',
   },
   how: {
     label: 'How it works',
     points: [
-      { h: 'Built for the village, not the grid', p: 'A solar-powered pod runs where the electrical grid does not, and is billed pay-as-you-go through mobile money — no upfront cost, no wiring, no standing subscription. It is sized for the shared, sub-village scale that large cold hubs skip, so it reaches the farmers infrastructure has always passed over.' },
-      { h: 'Storage is the wedge; trust is the product', p: 'Every use records a verified history of what a farmer stored, sold, and paid — a ground-truth credential for people the formal banking system has never been able to see. That record is what turns an off-grid box into a first door to credit and crop insurance, on terms a lender can actually check.' },
-      { h: 'Built with the community, not for it', p: 'The work is designed to be co-deployed with the partners and local operators already trusted on the ground, not parachuted in from outside. Reach, service, and trust come from the community running it — the pod is the infrastructure, the people are the network.' },
+      { h: 'Built for the village, not the grid', p: 'A solar-powered pod runs where the electrical grid does not, and is billed pay-as-you-go through mobile money, no upfront cost, no wiring, no standing subscription. It is sized for the shared, sub-village scale that large cold hubs skip, so it reaches the farmers infrastructure has always passed over.' },
+      { h: 'Storage is the wedge; trust is the product', p: 'Every use records a verified history of what a farmer stored, sold, and paid, a ground-truth credential for people the formal banking system has never been able to see. That record is what turns an off-grid box into a first door to credit and crop insurance, on terms a lender can actually check.' },
+      { h: 'Built with the community, not for it', p: 'The work is designed to be co-deployed with the partners and local operators already trusted on the ground, not parachuted in from outside. Reach, service, and trust come from the community running it, the pod is the infrastructure, the people are the network.' },
     ],
   },
   status: {

@@ -88,7 +88,6 @@ function Identity() {
         </h1>
         <p className="id__line">{hero.line}</p>
         <div className="id__rule" aria-hidden />
-        <p className="id__meta">{hero.desc}</p>
       </div>
     </section>
   )
@@ -104,22 +103,40 @@ function FieldStage() {
   const [idx, setIdx] = useState(0)
   const [prev, setPrev] = useState<number | null>(null)
   const [paused, setPaused] = useState(false)
+  const drag = useRef<{ x: number; moved: boolean } | null>(null)
 
-  const go = useCallback((next: number) => {
+  const step = useCallback((delta: number) => {
     setIdx((cur) => {
-      if (next === cur) return cur
       setPrev(cur)
-      return next
+      return (cur + delta + topics.length) % topics.length
     })
   }, [])
 
-  const advance = useCallback(() => go((idx + 1) % topics.length), [go, idx])
-
+  // moves on its own
   useEffect(() => {
     if (reduced || paused) return
-    const id = window.setInterval(() => setIdx((cur) => { setPrev(cur); return (cur + 1) % topics.length }), DWELL_MS)
+    const id = window.setInterval(() => step(1), DWELL_MS)
     return () => window.clearInterval(id)
-  }, [reduced, paused])
+  }, [reduced, paused, step])
+
+  // ...or slide it left/right
+  const onPointerDown = (e: React.PointerEvent) => { drag.current = { x: e.clientX, moved: false } }
+  const onPointerMove = (e: React.PointerEvent) => {
+    const d = drag.current
+    if (d && Math.abs(e.clientX - d.x) > 8) d.moved = true
+  }
+  const onPointerUp = (e: React.PointerEvent) => {
+    const d = drag.current
+    drag.current = null
+    if (!d) return
+    const dx = e.clientX - d.x
+    if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1)
+    else if (!d.moved) step(1)
+  }
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowRight') { e.preventDefault(); step(1) }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); step(-1) }
+  }
 
   const topic = topics[idx]
 
@@ -127,10 +144,18 @@ function FieldStage() {
     <section
       id="fields"
       className="stage"
+      role="group"
+      tabIndex={0}
+      aria-label={`${topic.name}. Slide or use the arrow keys for the next field.`}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      onFocusCapture={() => setPaused(true)}
-      onBlurCapture={() => setPaused(false)}
+      onFocus={() => setPaused(true)}
+      onBlur={() => setPaused(false)}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={() => { drag.current = null }}
+      onKeyDown={onKeyDown}
     >
       {prev !== null && (
         <div className="stage__layer stage__layer--under" aria-hidden>
@@ -138,40 +163,24 @@ function FieldStage() {
         </div>
       )}
       <div key={idx} className="stage__layer stage__layer--in">
-        <img src={topic.image} alt={`${topic.name} — Arbiter`} />
+        <img src={topic.image} alt="" />
       </div>
       <div className="stage__grade" aria-hidden />
-
       <div className="stage__ui">
-        <div className="wrap stage__top">
-          <span className="stage__label">The fields we work in</span>
-          <span className="stage__count mono">
-            {String(idx + 1).padStart(2, '0')} / {String(topics.length).padStart(2, '0')}
-          </span>
-        </div>
-
-        <div className="wrap stage__centre">
-          <span key={`fig-${idx}`} className="field__fig mono">FIG. {topic.fig}</span>
-          <h2 key={`name-${idx}`} className="field__name">{topic.name}</h2>
-        </div>
-
-        <div className="wrap stage__chips" role="tablist" aria-label="Fields">
+        <h2 key={`name-${idx}`} className="field__name">{topic.name}</h2>
+        <div className="stage__dots">
           {topics.map((t, i) => (
             <button
               key={t.id}
               type="button"
-              role="tab"
-              aria-selected={i === idx}
-              className={`chip${i === idx ? ' is-on' : ''}`}
-              onClick={() => go(i)}
-            >
-              {t.name}
-            </button>
+              className={`stage__dot${i === idx ? ' is-on' : ''}`}
+              aria-label={t.name}
+              aria-current={i === idx}
+              onClick={() => { setPrev(idx); setIdx(i) }}
+            />
           ))}
         </div>
       </div>
-
-      <button type="button" className="stage__advance" onClick={advance} aria-label="Next field" />
     </section>
   )
 }
@@ -179,12 +188,8 @@ function FieldStage() {
 function Company() {
   return (
     <section id="company" className="band">
-      <div className="wrap split">
-        <Sweep>
-          <p className="eyebrow">{company.kicker}</p>
-          <h2 className="section-title">{company.title}</h2>
-        </Sweep>
-        <Sweep className="prose" delay={120}>
+      <div className="wrap">
+        <Sweep className="prose prose--wide">
           {company.body.map((p, i) => (<p key={i}>{p}</p>))}
         </Sweep>
       </div>

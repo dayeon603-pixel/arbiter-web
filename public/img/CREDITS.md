@@ -5,7 +5,7 @@ attribution obligation. Provenance is recorded here anyway.
 
 | File | Field | Source | Licence |
 |---|---|---|---|
-| `finance.jpg` | Finance | Wikimedia Commons — "Toronto Skyline at night 2024-08-23" | CC0 1.0 |
+| `finance.jpg` | Finance | Rendered in-house (market board of index, FX and commodity quotes) | Ours, no licence |
 | `health.jpg` | Biocomputing | Openverse / Image Data Resource — idr0160 fluorescence microscopy | CC0 1.0 |
 | `cyber.jpg` | Cybersecurity | Wikimedia Commons — "Fiber Optical Cable" | CC0 1.0 |
 | `agriculture.jpg` | Agriculture | Wikimedia Commons — "Ears of wheat at dusk (Unsplash)" | CC0 1.0 |
