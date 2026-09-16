@@ -2,7 +2,6 @@ export type Topic = { id: string; fig: string; name: string; image: string }
 
 export const hero = {
   line: 'Decision, safety, and infrastructure for the work that has to be right.',
-  desc: 'A multi-industry company, registered in the Republic of Korea in 2026.',
 }
 
 /** The fields the company works in. Names and imagery only, no product detail on the front page. */

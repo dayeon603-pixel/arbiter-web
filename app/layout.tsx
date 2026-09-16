@@ -6,8 +6,8 @@ const archivo = Archivo({ subsets: ['latin'], weight: ['400', '500', '600', '700
 const jb = JetBrains_Mono({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--font-mono-jb', display: 'swap' })
 
 export const metadata: Metadata = {
-  title: 'Arbiter — A multi-industry company',
-  description: 'Arbiter builds decision, safety, and infrastructure across five regulated and high-stakes domains. Built in the open.',
+  title: 'Arbiter',
+  description: 'Decision, safety, and infrastructure for the work that has to be right.',
   themeColor: '#ffffff',
 }
 
