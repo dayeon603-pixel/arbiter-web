@@ -562,7 +562,7 @@ button.nav__cta { background: none; cursor: pointer; }
 .deck__fig { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); }
 .deck__name { font-weight: 800; font-size: clamp(1.45rem, 0.8rem + 2.6vw, 2.8rem); letter-spacing: -0.035em; line-height: 1.05; text-align: center; text-wrap: balance; }
 
-.deck__dots { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s-3); margin-top: clamp(2.5rem, 2rem + 3vw, 4rem); }
+.deck__dots { display: flex; flex-wrap: wrap; justify-content: center; max-width: 100%; gap: var(--s-3); margin-top: clamp(2.5rem, 2rem + 3vw, 4rem); }
 .deck__dot { border: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 70%, transparent); backdrop-filter: blur(8px); border-radius: var(--radius-pill); padding: 0.45rem 1rem; cursor: pointer; transition: border-color 0.25s var(--ease), color 0.25s var(--ease), transform 0.25s var(--ease); }
 .deck__dot-name { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); }
 .deck__dot:hover { transform: translateY(-1px); border-color: color-mix(in srgb, var(--accent) 50%, transparent); }
@@ -621,8 +621,9 @@ button.nav__cta { background: none; cursor: pointer; }
 
 /* ---- phone: keep the deck and its chips inside the gutter ---- */
 @media (max-width: 560px) {
-  .deck__dot { padding: 0.38rem 0.7rem; }
-  .deck__dot-name { font-size: 0.6rem; letter-spacing: 0.1em; }
+  .deck__dots { max-width: 100%; gap: 0.4rem; }
+  .deck__dot { padding: 0.36rem 0.6rem; max-width: 100%; }
+  .deck__dot-name { font-size: 0.54rem; letter-spacing: 0.05em; overflow-wrap: anywhere; }
   .deck__meta { bottom: 0.9rem; }
   .id__word { letter-spacing: 0.06em; }
 }
