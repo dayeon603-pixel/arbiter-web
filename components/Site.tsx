@@ -5,11 +5,9 @@ import Link from 'next/link'
 import Lenis from 'lenis'
 import GradientCanvas from './GradientCanvas'
 import LogoMark from './LogoMark'
-import { topics, hero, company, founder, contactHref, legal, type Topic } from '@/lib/data'
+import { topics, hero, company, founder, contactHref, legal } from '@/lib/data'
 
-/** Must match --flip-ms in globals.css: the hidden face is re-dressed only after the turn lands. */
-const FLIP_MS = 900
-const DWELL_MS = 4200
+const DWELL_MS = 5200
 
 /**
  * Entrance motion is CSS-only by design. Every element is styled visible at rest and the
@@ -70,129 +68,110 @@ function TopBar() {
           <LogoMark size={24} />
           <span className="topbar__word">ARBITER</span>
         </a>
+        <span className="topbar__meta">EST. 2026 · SEOUL</span>
       </div>
     </header>
   )
 }
 
-/** Logo, name, one line. Nothing else above the fold. */
+/** Logo, name, one line, and a rule of micro-type. Nothing else above the fold. */
 function Identity() {
   return (
     <section id="top" className="id">
       <GradientCanvas />
       <div className="wrap id__inner">
-        <div className="id__mark"><LogoMark size={72} /></div>
+        <div className="id__mark"><LogoMark size={76} /></div>
         <h1 className="id__word" aria-label="Arbiter">
           {'ARBITER'.split('').map((ch, i) => (
             <span key={i} className="ch" aria-hidden style={{ animationDelay: `${180 + i * 52}ms` }}>{ch}</span>
           ))}
         </h1>
         <p className="id__line">{hero.line}</p>
-        <p className="id__desc">{hero.desc}</p>
+        <div className="id__rule" aria-hidden />
+        <p className="id__meta">{hero.desc}</p>
       </div>
     </section>
   )
 }
 
-function DeckFace({ topic, side, live }: { topic: Topic; side: 'a' | 'b'; live: boolean }) {
-  return (
-    <div className={`deck__face deck__face--${side}`}>
-      <div className="deck__glass">
-        <span className="deck__sheen" aria-hidden />
-      </div>
-      {/* keyed on arrival so the picture pops out again on every turn */}
-      <div key={`${topic.id}-${live}`} className="deck__photo">
-        <img src={topic.image} alt="" />
-        <span className="deck__photo-gloss" aria-hidden />
-      </div>
-      <div className="deck__meta">
-        <span className="deck__fig">FIG. {topic.fig}</span>
-        <span className="deck__name">{topic.name}</span>
-      </div>
-    </div>
-  )
-}
-
-/** Glass panel that turns through the fields the company works in. */
-function TopicDeck() {
+/**
+ * Full-bleed field stage: the photograph fills the screen, the field name sits over it in
+ * glass lettering. A new field wipes across from the right; the outgoing frame stays beneath
+ * so there is never a gap.
+ */
+function FieldStage() {
   const reduced = usePrefersReducedMotion()
-  const [turn, setTurn] = useState(0)
-  const [slots, setSlots] = useState<[number, number]>([0, 1 % topics.length])
+  const [idx, setIdx] = useState(0)
+  const [prev, setPrev] = useState<number | null>(null)
   const [paused, setPaused] = useState(false)
 
-  const frontVisible = turn % 2 === 0
-  const current = frontVisible ? slots[0] : slots[1]
-
-  const advance = useCallback(() => setTurn((t) => t + 1), [])
-
-  const goTo = useCallback((index: number) => {
-    setTurn((t) => {
-      // dress the face that is about to arrive, then turn onto it
-      setSlots(([a, b]) => (t % 2 === 0 ? [a, index] : [index, b]))
-      return t + 1
+  const go = useCallback((next: number) => {
+    setIdx((cur) => {
+      if (next === cur) return cur
+      setPrev(cur)
+      return next
     })
   }, [])
 
-  // once a turn has landed, pre-load the next topic onto the face now hidden
-  useEffect(() => {
-    const id = window.setTimeout(() => {
-      setSlots(([a, b]) => (turn % 2 === 0 ? [a, (a + 1) % topics.length] : [(b + 1) % topics.length, b]))
-    }, FLIP_MS)
-    return () => window.clearTimeout(id)
-  }, [turn])
+  const advance = useCallback(() => go((idx + 1) % topics.length), [go, idx])
 
-  // autoplay, paused on hover/focus and off entirely for reduced motion
   useEffect(() => {
     if (reduced || paused) return
-    const id = window.setInterval(advance, DWELL_MS)
+    const id = window.setInterval(() => setIdx((cur) => { setPrev(cur); return (cur + 1) % topics.length }), DWELL_MS)
     return () => window.clearInterval(id)
-  }, [reduced, paused, advance])
+  }, [reduced, paused])
+
+  const topic = topics[idx]
 
   return (
-    <section id="fields" className="deck">
-      <div className="wrap">
-        <Sweep className="deck__head">
-          <span className="deck__label">The fields we work in</span>
-          <span className="deck__count mono">
-            {String(current + 1).padStart(2, '0')} / {String(topics.length).padStart(2, '0')}
-          </span>
-        </Sweep>
+    <section
+      id="fields"
+      className="stage"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocusCapture={() => setPaused(true)}
+      onBlurCapture={() => setPaused(false)}
+    >
+      {prev !== null && (
+        <div className="stage__layer stage__layer--under" aria-hidden>
+          <img src={topics[prev].image} alt="" />
+        </div>
+      )}
+      <div key={idx} className="stage__layer stage__layer--in">
+        <img src={topic.image} alt={`${topic.name} — Arbiter`} />
+      </div>
+      <div className="stage__grade" aria-hidden />
 
-        <div
-          className="deck__stage"
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
-          onFocusCapture={() => setPaused(true)}
-          onBlurCapture={() => setPaused(false)}
-        >
-          <button
-            type="button"
-            className="deck__card"
-            style={{ ['--turn' as string]: turn, ['--flip-ms' as string]: `${reduced ? 1 : FLIP_MS}ms` }}
-            onClick={advance}
-            aria-label={`Field ${current + 1} of ${topics.length}: ${topics[current].name}. Activate for the next field.`}
-          >
-            <DeckFace topic={topics[slots[0]]} side="a" live={frontVisible} />
-            <DeckFace topic={topics[slots[1]]} side="b" live={!frontVisible} />
-          </button>
+      <div className="stage__ui">
+        <div className="wrap stage__top">
+          <span className="stage__label">The fields we work in</span>
+          <span className="stage__count mono">
+            {String(idx + 1).padStart(2, '0')} / {String(topics.length).padStart(2, '0')}
+          </span>
         </div>
 
-        <div className="deck__dots" role="tablist" aria-label="Fields">
+        <div className="wrap stage__centre">
+          <span key={`fig-${idx}`} className="field__fig mono">FIG. {topic.fig}</span>
+          <h2 key={`name-${idx}`} className="field__name">{topic.name}</h2>
+        </div>
+
+        <div className="wrap stage__chips" role="tablist" aria-label="Fields">
           {topics.map((t, i) => (
             <button
               key={t.id}
               type="button"
               role="tab"
-              aria-selected={i === current}
-              aria-label={t.name}
-              className={`deck__dot${i === current ? ' is-on' : ''}`}
-              onClick={() => { if (i !== current) goTo(i) }}
+              aria-selected={i === idx}
+              className={`chip${i === idx ? ' is-on' : ''}`}
+              onClick={() => go(i)}
             >
-              <span className="deck__dot-name">{t.name}</span>
+              {t.name}
             </button>
           ))}
         </div>
       </div>
+
+      <button type="button" className="stage__advance" onClick={advance} aria-label="Next field" />
     </section>
   )
 }
@@ -216,11 +195,8 @@ function Company() {
 function Founder() {
   return (
     <section id="founder" className="founder">
-      <div className="wrap founder__row">
-        <Sweep className="founder__portrait">
-          <img src="/img/founder.jpg" alt={`${founder.name}, Founder and Chief Executive of Arbiter`} />
-        </Sweep>
-        <Sweep delay={120}>
+      <div className="wrap founder__inner">
+        <Sweep>
           <p className="eyebrow">{founder.kicker}</p>
           <h2 className="founder__name">{founder.name}</h2>
           <p className="founder__role">Founder &amp; Chief Executive</p>
@@ -275,7 +251,7 @@ export default function Site() {
       <TopBar />
       <main>
         <Identity />
-        <TopicDeck />
+        <FieldStage />
         <Company />
         <Founder />
       </main>
