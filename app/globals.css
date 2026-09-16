@@ -476,3 +476,157 @@ button.nav__cta { background: none; cursor: pointer; }
 @media (prefers-reduced-motion: reduce) {
   .contact-modal__backdrop, .contact-modal__dialog { animation: none; }
 }
+
+/* ================================================================ 2026 front page — identity, topic deck, minimal shell
+   Unlayered on purpose: these rules sit above @layer components and own the new homepage. */
+
+/* ---- top bar: mark + wordmark only, no menu ---- */
+.topbar { position: fixed; inset: 0 0 auto; z-index: 60; border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent); background: color-mix(in srgb, var(--bg) 72%, transparent); backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2); }
+.topbar__inner { display: flex; align-items: center; height: 62px; }
+.topbar__brand { display: inline-flex; align-items: center; gap: 0.55rem; }
+.topbar__brand img { border-radius: 7px; }
+.topbar__word { font-family: var(--font-mono); font-weight: 600; font-size: 0.8rem; letter-spacing: 0.36em; }
+
+/* ---- identity ---- */
+.id { position: relative; overflow: hidden; border-bottom: 1px solid var(--line); padding-block: clamp(6rem, 4rem + 6vw, 8.5rem) clamp(2.5rem, 2rem + 3vw, 4rem); }
+.id__inner { position: relative; z-index: 1; display: grid; justify-items: center; text-align: center; }
+.id__mark img { border-radius: 16px; filter: drop-shadow(0 20px 38px rgba(15, 20, 25, 0.22)); }
+.id__word { position: relative; display: flex; margin-top: var(--s-5); font-weight: 800; font-size: clamp(2.5rem, 1rem + 7vw, 6.2rem); line-height: 1; letter-spacing: 0.1em; padding-left: 0.1em; }
+.id__word .ch { display: inline-block; will-change: transform; }
+/* light sweeping across the wordmark, on a long cycle */
+.id__word::after {
+  content: ""; position: absolute; inset: -0.25em -0.7em; pointer-events: none;
+  background: linear-gradient(105deg, transparent 43%, rgba(255,255,255,0.95) 50%, transparent 57%);
+  transform: translateX(-150%); mix-blend-mode: screen;
+  animation: idSweep 7s cubic-bezier(0.25, 0.7, 0.2, 1) 1.1s infinite;
+}
+@keyframes idSweep { 0% { transform: translateX(-150%); } 32%, 100% { transform: translateX(150%); } }
+.id__line { margin-top: var(--s-6); max-width: 22ch; font-size: clamp(1.1rem, 0.95rem + 0.9vw, 1.55rem); line-height: 1.25; font-weight: 600; letter-spacing: -0.02em; text-wrap: balance; }
+.id__desc { margin-top: var(--s-4); max-width: 46ch; color: var(--dim); font-size: 0.95rem; }
+
+/* ---- topic deck ---- */
+.deck { position: relative; overflow: hidden; padding-block: clamp(4rem, 3rem + 6vw, 7.5rem); }
+/* soft colour behind the glass so it has something to refract */
+.deck::before {
+  content: ""; position: absolute; inset: -12% -6%; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(38% 46% at 22% 30%, rgba(181, 130, 30, 0.22), transparent 70%),
+    radial-gradient(34% 44% at 78% 26%, rgba(120, 155, 205, 0.20), transparent 70%),
+    radial-gradient(44% 40% at 54% 84%, rgba(181, 130, 30, 0.13), transparent 72%);
+  filter: blur(26px); animation: deckDrift 22s ease-in-out infinite alternate;
+}
+@keyframes deckDrift { from { transform: translate3d(-2.5%, -1.5%, 0) scale(1.02); } to { transform: translate3d(2.5%, 1.5%, 0) scale(1.07); } }
+.deck > .wrap { position: relative; z-index: 1; }
+.deck__head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s-5); margin-bottom: clamp(3rem, 2rem + 4vw, 5rem); }
+.deck__label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.24em; text-transform: uppercase; color: var(--faint); }
+.deck__count { font-size: 0.72rem; letter-spacing: 0.16em; color: var(--accent); }
+
+.deck__stage { perspective: 1900px; perspective-origin: 50% 40%; display: grid; place-items: center; padding-top: clamp(2rem, 1rem + 4vw, 3.5rem); }
+.deck__card {
+  position: relative; width: min(100%, 780px); aspect-ratio: 16 / 10;
+  transform-style: preserve-3d; transform: rotateY(calc(var(--turn, 0) * 180deg));
+  transition: transform var(--flip-ms, 900ms) cubic-bezier(0.22, 0.86, 0.2, 1);
+  border: 0; background: none; padding: 0; cursor: pointer;
+}
+.deck__card:focus-visible { outline: none; }
+.deck__card:focus-visible .deck__glass { box-shadow: 0 0 0 2px var(--accent), 0 40px 90px -46px rgba(15, 20, 25, 0.5); }
+.deck__face { position: absolute; inset: 0; transform-style: preserve-3d; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.deck__face--b { transform: rotateY(180deg); }
+
+.deck__glass {
+  position: absolute; inset: 0; border-radius: 24px; overflow: hidden;
+  background: linear-gradient(152deg, rgba(255,255,255,0.74), rgba(255,255,255,0.34));
+  backdrop-filter: blur(20px) saturate(1.35); -webkit-backdrop-filter: blur(20px) saturate(1.35);
+  border: 1px solid rgba(255,255,255,0.75);
+  box-shadow: 0 44px 96px -48px rgba(15, 20, 25, 0.5), inset 0 1px 0 rgba(255,255,255,0.92);
+}
+.deck__sheen {
+  position: absolute; inset: -45%; pointer-events: none;
+  background: linear-gradient(115deg, transparent 44%, rgba(255,255,255,0.6) 50%, transparent 56%);
+  transform: translateX(-48%); animation: deckSheen 5.6s ease-in-out infinite;
+}
+@keyframes deckSheen { 0%, 100% { transform: translateX(-48%); } 50% { transform: translateX(48%); } }
+
+/* the picture sits proud of the glass */
+.deck__photo {
+  position: absolute; left: 50%; top: -9%; width: 72%; aspect-ratio: 16 / 10; margin-left: -36%;
+  transform: translateZ(70px); border-radius: 18px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.85);
+  box-shadow: 0 54px 84px -42px rgba(15, 20, 25, 0.62), 0 18px 36px -24px rgba(15, 20, 25, 0.4);
+  animation: photoPop 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.4s both;
+}
+.deck__photo img { width: 100%; height: 100%; object-fit: cover; }
+.deck__photo-gloss { position: absolute; inset: 0; background: linear-gradient(168deg, rgba(255,255,255,0.28), transparent 42%); pointer-events: none; }
+
+.deck__meta { position: absolute; left: 0; right: 0; bottom: clamp(1rem, 4%, 2.1rem); display: grid; justify-items: center; gap: 0.35rem; transform: translateZ(42px); }
+.deck__fig { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); }
+.deck__name { font-weight: 800; font-size: clamp(1.45rem, 0.8rem + 2.6vw, 2.8rem); letter-spacing: -0.035em; line-height: 1.05; text-align: center; text-wrap: balance; }
+
+.deck__dots { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s-3); margin-top: clamp(2.5rem, 2rem + 3vw, 4rem); }
+.deck__dot { border: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 70%, transparent); backdrop-filter: blur(8px); border-radius: var(--radius-pill); padding: 0.45rem 1rem; cursor: pointer; transition: border-color 0.25s var(--ease), color 0.25s var(--ease), transform 0.25s var(--ease); }
+.deck__dot-name { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); }
+.deck__dot:hover { transform: translateY(-1px); border-color: color-mix(in srgb, var(--accent) 50%, transparent); }
+.deck__dot.is-on { border-color: var(--accent); background: var(--accent-soft); }
+.deck__dot.is-on .deck__dot-name { color: var(--accent); }
+
+@media (max-width: 620px) {
+  .deck__photo { width: 80%; margin-left: -40%; top: -7%; }
+  .deck__dots { gap: var(--s-2); }
+  .deck__dot { padding: 0.4rem 0.75rem; }
+}
+
+/* ---- founder ---- */
+.founder__row { display: grid; grid-template-columns: 300px 1fr; gap: clamp(2rem, 1rem + 4vw, 4rem); align-items: center; }
+.founder__row .founder__portrait { margin: 0; }
+.founder__role { margin-top: var(--s-2); font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); }
+@media (max-width: 760px) { .founder__row { grid-template-columns: 1fr; } }
+
+/* ---- minimal footer ---- */
+.footmin { border-top: 1px solid var(--line); background: var(--bg-2); }
+.footmin__top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-4); padding-block: var(--s-6); }
+.footmin__brand { display: inline-flex; align-items: center; gap: 0.5rem; font-family: var(--font-mono); font-weight: 600; letter-spacing: 0.3em; font-size: 0.82rem; }
+.footmin__brand img { border-radius: 6px; }
+.footmin__links { display: inline-flex; flex-wrap: wrap; gap: var(--s-5); font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); }
+.footmin__links a:hover { color: var(--ink); }
+.footmin__biz { display: grid; gap: var(--s-2); padding-block: var(--s-5); border-top: 1px solid var(--line); }
+.footmin__biz-line { font-size: 0.8rem; color: var(--dim); }
+.footmin__biz-line strong { color: var(--ink); font-weight: 600; }
+.footmin__biz-reg { font-family: var(--font-mono); font-size: 0.68rem; color: var(--faint); line-height: 1.7; }
+.footmin__biz-notice { font-family: var(--font-mono); font-size: 0.62rem; color: var(--faint); opacity: 0.8; line-height: 1.6; }
+.footmin__bar { border-top: 1px solid var(--line); }
+.footmin__bar .wrap { padding-block: var(--s-5); font-family: var(--font-mono); font-size: 0.68rem; color: var(--faint); }
+
+@media (prefers-reduced-motion: reduce) {
+  .id__word::after, .deck__sheen, .deck::before { animation: none; }
+  .deck__card { transition: none; }
+}
+
+/* ---- entrance motion (CSS only: rest state is visible, keyframes run hidden -> visible) ---- */
+@keyframes riseIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@keyframes chRise { from { opacity: 0; transform: translateY(62%); } to { opacity: 1; transform: none; } }
+@keyframes photoPop {
+  from { opacity: 0; transform: translateZ(70px) translateY(24px) scale(0.9); }
+  to   { opacity: 1; transform: translateZ(70px); }
+}
+@keyframes sweepIn {
+  from { opacity: 0; transform: translateY(14px); clip-path: inset(0 100% 0 0); }
+  to   { opacity: 1; transform: none; clip-path: inset(0 0 0 0); }
+}
+
+.id__mark { animation: riseIn 0.85s var(--ease) 0.05s both; }
+.id__word .ch { animation: chRise 0.7s var(--ease) both; }
+.id__line { animation: riseIn 0.8s var(--ease) 0.62s both; }
+.id__desc { animation: riseIn 0.8s var(--ease) 0.78s both; }
+.sweep.is-in { animation: sweepIn 0.85s var(--ease) both; }
+
+/* ---- phone: keep the deck and its chips inside the gutter ---- */
+@media (max-width: 560px) {
+  .deck__dot { padding: 0.38rem 0.7rem; }
+  .deck__dot-name { font-size: 0.6rem; letter-spacing: 0.1em; }
+  .deck__meta { bottom: 0.9rem; }
+  .id__word { letter-spacing: 0.06em; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .id__mark, .id__word .ch, .id__line, .id__desc, .sweep.is-in, .deck__photo { animation: none; }
+}

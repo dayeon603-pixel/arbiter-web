@@ -1,62 +1,17 @@
-export type Sector = {
-  id: string; fig: string; kicker: string; stage: string
-  title: string; mission: string; target: string; image: string
-  product?: { name: string; note: string; href: string }
-  products?: { name: string; note: string; href: string }[]
-}
+export type Topic = { id: string; fig: string; name: string; image: string }
 
 export const hero = {
-  eyebrow: 'Arbiter',
-  title: 'Decision, safety, and infrastructure for the work that has to be right.',
-  sub: 'A multi-industry company building decision, safety, and compliance infrastructure across five regulated and high-stakes domains.',
+  line: 'Decision, safety, and infrastructure for the work that has to be right.',
+  desc: 'A multi-industry company, registered in the Republic of Korea in 2026.',
 }
 
-export const sectors: Sector[] = [
-  {
-    id: 'finance', fig: '01', kicker: 'Finance', stage: 'Shipping',
-    title: 'A decision a regulator can replay.',
-    mission: 'Building neutral trust and compliance infrastructure for money, autonomous agents, and cross-border trade — wherever a high-stakes call must be made and later proven. Each decision produces a signed, tamper-evident record an examiner can verify independently: who decided what, on whose authority, and that the record has not changed since.',
-    target: 'Stablecoin issuers, banks, operators of autonomous AI agents, cross-border traders, and the regulators who audit them.',
-    image: '/img/finance.jpg',
-    products: [
-      { name: 'Caravan', note: 'A neutral trust rail for cross-border trade.', href: '/caravan' },
-      { name: 'Tollgate', note: 'Sanctions screening decisions an examiner can replay offline.', href: '/tollgate' },
-    ],
-  },
-  {
-    id: 'agriculture', fig: '02', kicker: 'Agriculture & Food Security', stage: 'In development',
-    title: 'Cold storage that reaches the last village.',
-    mission: 'Developing solar-powered cold-storage infrastructure for the places the electrical grid does not reach. Up to a third of a smallholder harvest spoils before it can be sold, for want of refrigeration. The work is a pay-as-you-go cold chain at village scale, so a farmer’s crop becomes income instead of waste.',
-    target: 'Smallholder farmers in sub-Saharan Africa, and the food-security programs that serve them.',
-    image: '/img/agriculture.jpg',
-    products: [
-      { name: 'HarvestGuard', note: 'A solar-powered, pay-as-you-go cold chain for smallholder farmers.', href: '/harvestguard' },
-    ],
-  },
-  {
-    id: 'cyber', fig: '03', kicker: 'Cybersecurity & Fraud', stage: 'In development',
-    title: 'Stop the scam, then get the money back.',
-    mission: 'Developing one system for the whole window of a voice-phishing scam: defend the call while it is happening, then guide the recovery in the hour after money moves. It reads the two surfaces the platforms cannot see — the messenger thread and the bank transfer screen — and runs on the device, so the conversation never has to leave it.',
-    target: 'Every phone user a scam can reach — starting with the elderly, who are targeted most and recover least — and the banks and fintechs that carry the loss.',
-    image: '/img/cyber.jpg',
-    products: [
-      { name: 'Goldentime', note: 'On-device defence during the call, and the recovery sequence after the transfer.', href: '/goldentime' },
-    ],
-  },
-  {
-    id: 'health', fig: '04', kicker: 'Health & Bio', stage: 'Shipping · Research',
-    title: 'Catch the error before the claim is denied.',
-    mission: 'Two efforts. The first reads the documents healthcare runs on before a human has to, catching the errors that get a claim denied at submission rather than months later. The second is early-stage research toward giving a voice back to people who have lost the ability to speak, through a silent-speech neural interface.',
-    target: 'U.S. healthcare providers and the billing companies that serve them; and, in research, people living with speech loss.',
-    image: '/img/health.jpg',
-  },
-  {
-    id: 'research', fig: '05', kicker: 'AI Research & Safety', stage: 'Research',
-    title: 'Where capability and calibration diverge.',
-    mission: 'Research into a counter-intuitive failure of large models: a system can grow more capable at a task while growing worse at knowing when it is wrong. The work is to measure that gap rigorously, and to harden models against the structured perturbations that exploit it.',
-    target: 'The AI-safety and model-evaluation field, and anyone deploying models where a confident wrong answer is dangerous.',
-    image: '/img/research.jpg',
-  },
+/** The fields the company works in. Names and imagery only — no product detail on the front page. */
+export const topics: Topic[] = [
+  { id: 'finance', fig: '01', name: 'Finance', image: '/img/finance.jpg' },
+  { id: 'biocomputing', fig: '02', name: 'Biocomputing', image: '/img/health.jpg' },
+  { id: 'ai', fig: '03', name: 'Artificial Intelligence', image: '/img/research.jpg' },
+  { id: 'security', fig: '04', name: 'Cybersecurity', image: '/img/cyber.jpg' },
+  { id: 'agriculture', fig: '05', name: 'Agriculture', image: '/img/agriculture.jpg' },
 ]
 
 export const company = {
@@ -238,4 +193,3 @@ export const goldentime = {
   },
 }
 
-export const navLinks = sectors.map((s) => ({ id: s.id, label: s.kicker.split(' ')[0] }))
