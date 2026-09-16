@@ -80,14 +80,13 @@ function Identity() {
     <section id="top" className="id">
       <GradientCanvas />
       <div className="wrap id__inner">
-        <div className="id__mark"><LogoMark size={76} /></div>
+        <div className="id__mark"><LogoMark size={58} /></div>
         <h1 className="id__word" aria-label="Arbiter">
-          {'ARBITER'.split('').map((ch, i) => (
+          {'Arbiter'.split('').map((ch, i) => (
             <span key={i} className="ch" aria-hidden style={{ animationDelay: `${180 + i * 52}ms` }}>{ch}</span>
           ))}
         </h1>
         <p className="id__line">{hero.line}</p>
-        <div className="id__rule" aria-hidden />
       </div>
     </section>
   )
@@ -100,42 +99,65 @@ function Identity() {
  */
 function FieldStage() {
   const reduced = usePrefersReducedMotion()
+  const wrapRef = useRef<HTMLDivElement>(null)
   const [idx, setIdx] = useState(0)
   const [prev, setPrev] = useState<number | null>(null)
-  const [paused, setPaused] = useState(false)
-  const drag = useRef<{ x: number; moved: boolean } | null>(null)
+  const drag = useRef<{ x: number; y: number } | null>(null)
 
-  const step = useCallback((delta: number) => {
-    setIdx((cur) => {
-      setPrev(cur)
-      return (cur + delta + topics.length) % topics.length
-    })
+  /* prev is tracked in a ref: calling setPrev from inside a setIdx updater is a nested
+     state update, which React can drop, and that left the picture stuck on the first field. */
+  const idxRef = useRef(0)
+  const show = useCallback((next: number) => {
+    if (next === idxRef.current) return
+    setPrev(idxRef.current)
+    idxRef.current = next
+    setIdx(next)
   }, [])
 
-  // moves on its own
+  /* The section is topics.length screens tall and the frame inside is sticky, so ordinary
+     scrolling walks the pictures and then releases the page to the next section. */
   useEffect(() => {
-    if (reduced || paused) return
-    const id = window.setInterval(() => step(1), DWELL_MS)
-    return () => window.clearInterval(id)
-  }, [reduced, paused, step])
+    const wrap = wrapRef.current
+    if (!wrap) return
+    const read = () => {
+      const span = wrap.offsetHeight - window.innerHeight
+      if (span <= 0) return
+      const p = Math.min(Math.max(-wrap.getBoundingClientRect().top / span, 0), 0.9999)
+      show(Math.floor(p * topics.length))
+    }
+    read()
+    window.addEventListener('scroll', read, { passive: true })
+    window.addEventListener('resize', read)
+    return () => {
+      window.removeEventListener('scroll', read)
+      window.removeEventListener('resize', read)
+    }
+  }, [show])
 
-  // ...or slide it left/right
-  const onPointerDown = (e: React.PointerEvent) => { drag.current = { x: e.clientX, moved: false } }
-  const onPointerMove = (e: React.PointerEvent) => {
-    const d = drag.current
-    if (d && Math.abs(e.clientX - d.x) > 8) d.moved = true
-  }
+  /** Scroll to the slice of the section that owns a given picture. */
+  const goTo = useCallback((i: number) => {
+    const wrap = wrapRef.current
+    if (!wrap) return
+    const span = wrap.offsetHeight - window.innerHeight
+    const top = wrap.offsetTop + (span * (i + 0.5)) / topics.length
+    window.scrollTo({ top, behavior: reduced ? 'auto' : 'smooth' })
+  }, [reduced])
+
+  // dragging sideways (or up and down) moves a picture at a time
+  const onPointerDown = (e: React.PointerEvent) => { drag.current = { x: e.clientX, y: e.clientY } }
   const onPointerUp = (e: React.PointerEvent) => {
     const d = drag.current
     drag.current = null
     if (!d) return
     const dx = e.clientX - d.x
-    if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1)
-    else if (!d.moved) step(1)
+    const dy = e.clientY - d.y
+    const move = Math.abs(dx) > Math.abs(dy) ? dx : dy
+    if (Math.abs(move) > 60) goTo(Math.min(Math.max(idx + (move < 0 ? 1 : -1), 0), topics.length - 1))
   }
   const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'ArrowRight') { e.preventDefault(); step(1) }
-    if (e.key === 'ArrowLeft') { e.preventDefault(); step(-1) }
+    const d = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1
+      : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0
+    if (d) { e.preventDefault(); goTo(Math.min(Math.max(idx + d, 0), topics.length - 1)) }
   }
 
   const topic = topics[idx]
@@ -143,42 +165,43 @@ function FieldStage() {
   return (
     <section
       id="fields"
-      className="stage"
-      role="group"
-      tabIndex={0}
-      aria-label={`${topic.name}. Slide or use the arrow keys for the next field.`}
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
-      onPointerCancel={() => { drag.current = null }}
-      onKeyDown={onKeyDown}
+      className="fields"
+      ref={wrapRef}
+      style={{ ['--slides' as string]: topics.length }}
     >
-      {prev !== null && (
-        <div className="stage__layer stage__layer--under" aria-hidden>
-          <img src={topics[prev].image} alt="" />
+      <div
+        className="stage"
+        role="group"
+        tabIndex={0}
+        aria-label={`${topic.name}. Scroll, drag or use the arrow keys for the next field.`}
+        onPointerDown={onPointerDown}
+        onPointerUp={onPointerUp}
+        onPointerCancel={() => { drag.current = null }}
+        onKeyDown={onKeyDown}
+      >
+        {prev !== null && (
+          <div className="stage__layer stage__layer--under" aria-hidden>
+            <img src={topics[prev].image} alt="" />
+          </div>
+        )}
+        <div key={idx} className="stage__layer stage__layer--in">
+          <img src={topic.image} alt="" />
         </div>
-      )}
-      <div key={idx} className="stage__layer stage__layer--in">
-        <img src={topic.image} alt="" />
-      </div>
-      <div className="stage__grade" aria-hidden />
-      <div className="stage__ui">
-        <h2 key={`name-${idx}`} className="field__name">{topic.name}</h2>
-        <div className="stage__dots">
-          {topics.map((t, i) => (
-            <button
-              key={t.id}
-              type="button"
-              className={`stage__dot${i === idx ? ' is-on' : ''}`}
-              aria-label={t.name}
-              aria-current={i === idx}
-              onClick={() => { setPrev(idx); setIdx(i) }}
-            />
-          ))}
+        <div className="stage__grade" aria-hidden />
+        <div className="stage__ui">
+          <h2 key={`name-${idx}`} className="field__name">{topic.name}</h2>
+          <div className="stage__dots">
+            {topics.map((tp, i) => (
+              <button
+                key={tp.id}
+                type="button"
+                className={`stage__dot${i === idx ? ' is-on' : ''}`}
+                aria-label={tp.name}
+                aria-current={i === idx}
+                onClick={() => goTo(i)}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>

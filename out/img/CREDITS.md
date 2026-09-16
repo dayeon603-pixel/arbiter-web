@@ -13,3 +13,6 @@ attribution obligation. Provenance is recorded here anyway.
 
 Google Images was deliberately not used as a source: most results are copyrighted and
 not licensed for commercial use on a company site.
+
+The lower-left of `health.jpg` and `agriculture.jpg` is lifted slightly so the white field
+name keeps tonal separation against otherwise near-black frames.
