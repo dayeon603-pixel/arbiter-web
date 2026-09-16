@@ -7,7 +7,8 @@ import GradientCanvas from './GradientCanvas'
 import LogoMark from './LogoMark'
 import { topics, hero, company, founder, contactHref, legal } from '@/lib/data'
 
-const DWELL_MS = 5200
+/** Fraction of the gap between frames that each picture holds at full strength. */
+const HOLD = 0.42
 
 /**
  * Entrance motion is CSS-only by design. Every element is styled visible at rest and the
@@ -100,50 +101,67 @@ function Identity() {
 function FieldStage() {
   const reduced = usePrefersReducedMotion()
   const wrapRef = useRef<HTMLDivElement>(null)
+  const layers = useRef<(HTMLDivElement | null)[]>([])
+  const idxRef = useRef(0)
   const [idx, setIdx] = useState(0)
-  const [prev, setPrev] = useState<number | null>(null)
   const drag = useRef<{ x: number; y: number } | null>(null)
 
-  /* prev is tracked in a ref: calling setPrev from inside a setIdx updater is a nested
-     state update, which React can drop, and that left the picture stuck on the first field. */
-  const idxRef = useRef(0)
-  const show = useCallback((next: number) => {
-    if (next === idxRef.current) return
-    setPrev(idxRef.current)
-    idxRef.current = next
-    setIdx(next)
-  }, [])
-
-  /* The section is topics.length screens tall and the frame inside is sticky, so ordinary
-     scrolling walks the pictures and then releases the page to the next section. */
+  /* Every frame is stacked and its opacity is written straight to the DOM from a float
+     scroll progress, so the crossfade tracks the scroll instead of snapping between states.
+     Keying a remount per change made a fast flick skip pictures and restart the animation. */
   useEffect(() => {
     const wrap = wrapRef.current
     if (!wrap) return
-    const read = () => {
+    let raf = 0
+    let live = true
+    const paint = () => {
       const span = wrap.offsetHeight - window.innerHeight
-      if (span <= 0) return
-      const p = Math.min(Math.max(-wrap.getBoundingClientRect().top / span, 0), 0.9999)
-      show(Math.floor(p * topics.length))
+      if (span > 0) {
+        const p = Math.min(Math.max(-wrap.getBoundingClientRect().top / span, 0), 1) * (topics.length - 1)
+        /* Frames are never semi-transparent: the incoming picture is opaque and is revealed by a
+           clip-path edge that tracks the scroll. Cross-dissolving two busy photographs leaves both
+           readable at once, which looks like a double exposure however the weights are balanced. */
+        const lo = Math.max(0, Math.min(Math.floor(p), topics.length - 2))
+        const f = Math.min(Math.max(p - lo, 0), 1)
+        const ct = Math.min(Math.max((f - HOLD) / (1 - 2 * HOLD), 0), 1)
+        const w = ct * ct * (3 - 2 * ct)
+        layers.current.forEach((el, i) => {
+          if (!el) return
+          if (i < lo || i > lo + 1) { el.style.opacity = '0'; return }
+          el.style.opacity = '1'
+          if (i === lo) {
+            el.style.zIndex = '1'
+            el.style.maskImage = ''
+            el.style.webkitMaskImage = ''
+            el.style.transform = reduced ? '' : `scale(${(1 + 0.05 * w).toFixed(4)})`
+          } else {
+            el.style.zIndex = '2'
+            el.style.clipPath = ''
+            /* a narrow feathered seam rather than a razor edge; both sides stay fully opaque */
+            const edge = (1 - w) * 100
+            const mask = `linear-gradient(90deg, transparent ${Math.max(edge - 3, 0).toFixed(2)}%, #000 ${Math.min(edge + 3, 100).toFixed(2)}%)`
+            el.style.maskImage = mask
+            el.style.webkitMaskImage = mask
+            el.style.transform = ''
+          }
+        })
+        const near = Math.round(p)
+        if (near !== idxRef.current) { idxRef.current = near; setIdx(near) }
+      }
+      if (live) raf = requestAnimationFrame(paint)
     }
-    read()
-    window.addEventListener('scroll', read, { passive: true })
-    window.addEventListener('resize', read)
-    return () => {
-      window.removeEventListener('scroll', read)
-      window.removeEventListener('resize', read)
-    }
-  }, [show])
+    raf = requestAnimationFrame(paint)
+    return () => { live = false; cancelAnimationFrame(raf) }
+  }, [reduced])
 
-  /** Scroll to the slice of the section that owns a given picture. */
+  /** Scroll to the band of the section that owns a picture. */
   const goTo = useCallback((i: number) => {
     const wrap = wrapRef.current
     if (!wrap) return
     const span = wrap.offsetHeight - window.innerHeight
-    const top = wrap.offsetTop + (span * (i + 0.5)) / topics.length
-    window.scrollTo({ top, behavior: reduced ? 'auto' : 'smooth' })
+    window.scrollTo({ top: wrap.offsetTop + (span * i) / (topics.length - 1), behavior: reduced ? 'auto' : 'smooth' })
   }, [reduced])
 
-  // dragging sideways (or up and down) moves a picture at a time
   const onPointerDown = (e: React.PointerEvent) => { drag.current = { x: e.clientX, y: e.clientY } }
   const onPointerUp = (e: React.PointerEvent) => {
     const d = drag.current
@@ -160,36 +178,32 @@ function FieldStage() {
     if (d) { e.preventDefault(); goTo(Math.min(Math.max(idx + d, 0), topics.length - 1)) }
   }
 
-  const topic = topics[idx]
-
   return (
-    <section
-      id="fields"
-      className="fields"
-      ref={wrapRef}
-      style={{ ['--slides' as string]: topics.length }}
-    >
+    <section id="fields" className="fields" ref={wrapRef} style={{ ['--slides' as string]: topics.length }}>
       <div
         className="stage"
         role="group"
         tabIndex={0}
-        aria-label={`${topic.name}. Scroll, drag or use the arrow keys for the next field.`}
+        aria-label={`${topics[idx].name}. Scroll, drag or use the arrow keys to move between fields.`}
         onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
         onPointerCancel={() => { drag.current = null }}
         onKeyDown={onKeyDown}
       >
-        {prev !== null && (
-          <div className="stage__layer stage__layer--under" aria-hidden>
-            <img src={topics[prev].image} alt="" />
+        {topics.map((tp, i) => (
+          <div
+            key={tp.id}
+            className="stage__layer"
+            ref={(el) => { layers.current[i] = el }}
+            style={{ opacity: i === 0 ? 1 : 0 }}
+            aria-hidden={i !== idx}
+          >
+            <img src={tp.image} alt="" />
           </div>
-        )}
-        <div key={idx} className="stage__layer stage__layer--in">
-          <img src={topic.image} alt="" />
-        </div>
+        ))}
         <div className="stage__grade" aria-hidden />
         <div className="stage__ui">
-          <h2 key={`name-${idx}`} className="field__name">{topic.name}</h2>
+          <h2 key={idx} className="field__name">{topics[idx].name}</h2>
           <div className="stage__dots">
             {topics.map((tp, i) => (
               <button
