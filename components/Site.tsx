@@ -39,28 +39,6 @@ function useLenis(enabled: boolean) {
   }, [enabled])
 }
 
-/** Sweeps its contents in when scrolled into view. Without the observer the contents simply stay visible. */
-function Sweep({ className = '', delay = 0, children }: { className?: string; delay?: number; children: React.ReactNode }) {
-  const ref = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    const el = ref.current
-    if (!el || typeof IntersectionObserver === 'undefined') return
-    const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => {
-        if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target) }
-      }),
-      { rootMargin: '-6% 0px -6% 0px' },
-    )
-    io.observe(el)
-    return () => io.disconnect()
-  }, [])
-  return (
-    <div ref={ref} className={`sweep ${className}`} style={delay ? { animationDelay: `${delay}ms` } : undefined}>
-      {children}
-    </div>
-  )
-}
-
 function TopBar() {
   return (
     <header className="topbar">
@@ -82,11 +60,7 @@ function Identity() {
       <GradientCanvas />
       <div className="wrap id__inner">
         <div className="id__mark"><LogoMark size={58} /></div>
-        <h1 className="id__word" aria-label="Arbiter">
-          {'Arbiter'.split('').map((ch, i) => (
-            <span key={i} className="ch" aria-hidden style={{ animationDelay: `${180 + i * 52}ms` }}>{ch}</span>
-          ))}
-        </h1>
+        <h1 className="id__word">Arbiter</h1>
         <p className="id__line">{hero.line}</p>
       </div>
     </section>
@@ -226,9 +200,9 @@ function Company() {
   return (
     <section id="company" className="band">
       <div className="wrap">
-        <Sweep className="prose prose--wide">
+        <div className="prose prose--wide">
           {company.body.map((p, i) => (<p key={i}>{p}</p>))}
-        </Sweep>
+        </div>
       </div>
     </section>
   )
@@ -238,7 +212,7 @@ function Founder() {
   return (
     <section id="founder" className="founder">
       <div className="wrap founder__inner">
-        <Sweep>
+        <div>
           <p className="eyebrow">{founder.kicker}</p>
           <h2 className="founder__name">{founder.name}</h2>
           <p className="founder__role">Founder &amp; Chief Executive</p>
@@ -246,7 +220,7 @@ function Founder() {
             {founder.lines.map((l, i) => (<p key={i}>{l}</p>))}
           </div>
           <a href={contactHref('Arbiter — Inquiry')} className="founder__contact">{founder.contact}</a>
-        </Sweep>
+        </div>
       </div>
     </section>
   )
