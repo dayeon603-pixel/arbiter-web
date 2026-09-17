@@ -480,7 +480,7 @@ button.nav__cta { background: none; cursor: pointer; }
    Unlayered on purpose: these rules sit above @layer components and own the new homepage. */
 
 /* ---- top bar: mark + wordmark only, no menu ---- */
-.topbar { position: fixed; inset: 0 0 auto; z-index: 60; border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent); background: color-mix(in srgb, var(--bg) 72%, transparent); backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2); }
+.topbar { position: fixed; inset: 0 0 auto; z-index: 60; border-bottom: 1px solid var(--line); background: var(--bg); }
 .topbar__inner { display: flex; align-items: center; height: 62px; }
 .topbar__brand { display: inline-flex; align-items: center; gap: 0.55rem; }
 .topbar__brand img { border-radius: 7px; }
@@ -491,8 +491,6 @@ button.nav__cta { background: none; cursor: pointer; }
 .id__inner { position: relative; z-index: 1; display: grid; justify-items: start; justify-content: start; text-align: left; }
 .id__mark img { border-radius: 16px; filter: drop-shadow(0 20px 38px rgba(15, 20, 25, 0.22)); }
 .id__word { position: relative; display: flex; margin-top: var(--s-4); font-weight: 700; font-size: clamp(3.1rem, 1.4rem + 7vw, 7.4rem); line-height: 0.94; letter-spacing: -0.045em; }
-.id__word .ch { display: inline-block; will-change: transform; }
-/* light sweeping across the wordmark, on a long cycle */
 .id__line { margin-top: var(--s-5); max-width: 26ch; font-size: clamp(1.1rem, 0.85rem + 1.15vw, 1.75rem); line-height: 1.3; font-weight: 400; color: var(--dim); letter-spacing: -0.015em; }
 .topbar__meta { margin-left: auto; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.02em; color: var(--faint); }
 @media (max-width: 620px) { .topbar__meta { display: none; } }
