@@ -197,11 +197,13 @@ function FieldStage() {
 }
 
 function Company() {
+  const [lead, ...rest] = company.body
   return (
     <section id="company" className="band">
-      <div className="wrap">
-        <div className="prose prose--wide">
-          {company.body.map((p, i) => (<p key={i}>{p}</p>))}
+      <div className="wrap company">
+        <p className="company__lead">{lead}</p>
+        <div className="company__cols">
+          {rest.map((p, i) => (<p key={i}>{p}</p>))}
         </div>
       </div>
     </section>
@@ -211,15 +213,15 @@ function Company() {
 function Founder() {
   return (
     <section id="founder" className="founder">
-      <div className="wrap founder__inner">
-        <div>
+      <div className="wrap founder__grid">
+        <div className="founder__id">
           <p className="eyebrow">{founder.kicker}</p>
           <h2 className="founder__name">{founder.name}</h2>
           <p className="founder__role">Founder &amp; Chief Executive</p>
-          <div className="prose" style={{ marginTop: 'var(--s-5)' }}>
-            {founder.lines.map((l, i) => (<p key={i}>{l}</p>))}
-          </div>
-          <a href={contactHref('Arbiter — Inquiry')} className="founder__contact">{founder.contact}</a>
+        </div>
+        <div className="founder__body">
+          {founder.lines.map((l, i) => (<p key={i}>{l}</p>))}
+          <a href={contactHref('Arbiter Inquiry')} className="founder__contact">{founder.contact}</a>
         </div>
       </div>
     </section>
