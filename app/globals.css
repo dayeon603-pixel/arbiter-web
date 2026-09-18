@@ -495,7 +495,7 @@ button.nav__cta { background: none; cursor: pointer; }
 
 /* ---- field stage: full-bleed photograph, field name in glass lettering ---- */
 .fields { position: relative; height: calc(var(--slides, 5) * 100svh); }
-.stage { position: sticky; top: 0; height: 100svh; min-height: 540px; overflow: hidden; background: #05070b; isolation: isolate; }
+.fields > .stage { position: sticky; top: 0; height: 100svh; min-height: 540px; overflow: hidden; background: #05070b; isolation: isolate; }
 .stage__layer { position: absolute; inset: 0; z-index: 1; will-change: opacity, transform; }
 .stage__layer img { width: 100%; height: 100%; object-fit: cover; display: block; }
 /* grade: hold the photograph down so white lettering always reads over it */
@@ -562,9 +562,9 @@ button.nav__cta { background: none; cursor: pointer; }
 .stage__dot.is-on { background: #fff; }
 .stage__dot:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 /* slide it sideways; vertical scrolling still belongs to the page */
-.stage { touch-action: pan-y; cursor: grab; }
-.stage:active { cursor: grabbing; }
-.stage:focus-visible { outline: 2px solid rgba(255,255,255,0.85); outline-offset: -6px; }
+.fields > .stage { touch-action: pan-y; cursor: grab; }
+.fields > .stage:active { cursor: grabbing; }
+.fields > .stage:focus-visible { outline: 2px solid rgba(255,255,255,0.85); outline-offset: -6px; }
 .prose--wide { max-width: 70ch; }
 @media (max-width: 620px) {
   .stage__ui { flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: var(--s-5); }
