@@ -47,7 +47,6 @@ function TopBar() {
           <LogoMark size={24} />
           <span className="topbar__word">ARBITER</span>
         </a>
-        <span className="topbar__meta">EST. 2026 · SEOUL</span>
       </div>
     </header>
   )
@@ -239,7 +238,6 @@ function Footer() {
         <div className="footmin__links">
           <Link href="/privacy">Privacy</Link>
           <Link href="/terms">Terms</Link>
-          <a href={`mailto:${legal.contact}`}>Email</a>
         </div>
       </div>
       <div className="wrap footmin__biz">
