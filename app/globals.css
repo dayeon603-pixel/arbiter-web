@@ -487,7 +487,7 @@ button.nav__cta { background: none; cursor: pointer; }
 .topbar__word { font-weight: 600; font-size: 0.95rem; letter-spacing: -0.01em; }
 
 /* ---- identity ---- */
-.id { position: relative; overflow: hidden; border-bottom: 1px solid var(--line); min-height: 100svh; display: grid; align-content: center; padding-block: clamp(5rem, 4rem + 4vw, 7rem); }
+#top.id { position: relative; overflow: hidden; border-bottom: 1px solid var(--line); min-height: 100svh; display: grid; align-content: center; padding-block: clamp(5rem, 4rem + 4vw, 7rem); }
 .id__inner { position: relative; z-index: 1; display: grid; justify-items: start; justify-content: start; text-align: left; }
 .id__mark img { border-radius: 16px; filter: drop-shadow(0 20px 38px rgba(15, 20, 25, 0.22)); }
 .id__word { position: relative; display: flex; margin-top: var(--s-4); font-weight: 700; font-size: clamp(3.1rem, 1.4rem + 7vw, 7.4rem); line-height: 0.94; letter-spacing: -0.045em; }
