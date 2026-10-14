@@ -11,11 +11,12 @@ export const topics: Topic[] = [
   { id: 'ai', fig: '03', name: 'Artificial Intelligence', image: '/img/research.jpg' },
   { id: 'security', fig: '04', name: 'Cybersecurity', image: '/img/cyber.jpg' },
   { id: 'agriculture', fig: '05', name: 'Agriculture', image: '/img/agriculture.jpg' },
+  { id: 'energy', fig: '06', name: 'Energy', image: '/img/energy.jpg' },
 ]
 
 export const company = {
   kicker: 'The company',
-  title: 'Five domains. One standard of proof.',
+  title: 'Six domains. One standard of proof.',
   body: [
     'Arbiter builds decision, safety, and infrastructure for regulated and high-stakes domains: places where being wrong is expensive and someone is required to be right.',
     'Every product is held to the same standard. It has to work under scrutiny, hold up when the record is examined years later, and state plainly what it can and cannot prove.',
@@ -28,7 +29,7 @@ export const founder = {
   kicker: 'Leadership',
   name: 'Dayeon Kang',
   lines: [
-    'I’m the founder of Arbiter, a developer, quantitative researcher, and civic-technology builder. I lead design, engineering, and delivery across all five domains, from the cold-chain hardware thesis to the cryptographic trust rails to the AI-safety research.',
+    'I’m the founder of Arbiter, a developer, quantitative researcher, and civic-technology builder. I lead research, design, engineering, and delivery across all six domains, from energy measurement for AI inference and the cold-chain hardware thesis to the cryptographic trust rails and the AI-safety research.',
     'My method is the same everywhere: find a place where a high-stakes decision is made badly or slowly, build the system that makes it well, and keep proof it was right.',
   ],
   contact: 'dayeon603@gmail.com',
@@ -192,3 +193,27 @@ export const goldentime = {
   },
 }
 
+
+
+export const landauer = {
+  eyebrow: 'A product of Arbiter · Energy & AI Infrastructure',
+  name: 'Landauer',
+  tagline: 'The energy meter for AI inference: what each request actually costs to serve.',
+  lead: 'AI is becoming one of the fastest-growing loads on the electrical grid, yet no one can say how many joules a single inference request costs. Landauer is software that turns the power counters GPUs and CPUs already expose into per-request energy accounts under real batched serving, so that efficiency claims, chargeback, and carbon reporting rest on numbers that can be checked.',
+  problem: {
+    label: 'The problem',
+    body: 'Data-centre electricity use is projected to roughly double by 2030, with AI servers driving much of the increase. Yet energy is measured at the wrong level for the decisions people make: providers meter at the rack, serving frameworks report tokens per second, and published figures assume a batch size of one, a regime production never runs. Worse, the two common ways of counting per-request energy can rank the same serving configurations in opposite orders, so a setting adopted to save energy can quietly use more once idle power is counted. An energy figure that cannot be checked cannot be trusted, priced, or reported.',
+  },
+  how: {
+    label: 'How it works',
+    points: [
+      { h: 'Software on the counters you already have', p: 'Landauer reads the power counters that GPUs and CPUs already expose and matches them to the requests the serving system was running. No new hardware is installed, and every result carries the validity envelope of the device it was measured on, because a figure from one chip does not transfer to another.' },
+      { h: 'Every joule accounted for', p: 'Shared energy is divided across the requests in flight, and every report must conserve it: attributed, unassigned, and idle energy have to add up to the measured total. A report that does not add up is rejected rather than issued, so energy cannot silently disappear from the accounting.' },
+      { h: 'Savings that survive the accounting', p: 'Idle power is reported both ways, so an efficiency change is kept only if it still saves energy once idle is counted. That is the foundation for the efficiency levers built on top of the meter, and for sustainability reporting that holds up when it is examined.' },
+    ],
+  },
+  status: {
+    label: 'Status',
+    body: 'Landauer is in active research and development. The measurement core is built and tested, and it has been run on real NVIDIA GPUs; a research paper on the method is in submission. The efficiency levers are designed but not yet measured, and no outside team uses the meter yet. No customers, revenue, or funding are claimed anywhere.',
+  },
+}

@@ -216,7 +216,7 @@ function Founder() {
         <div className="founder__id">
           <p className="eyebrow">{founder.kicker}</p>
           <h2 className="founder__name">{founder.name}</h2>
-          <p className="founder__role">Founder &amp; Chief Executive</p>
+          <p className="founder__role">Founder, Chief Executive &amp; Head Researcher</p>
         </div>
         <div className="founder__body">
           {founder.lines.map((l, i) => (<p key={i}>{l}</p>))}

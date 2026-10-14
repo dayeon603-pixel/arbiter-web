@@ -9,6 +9,7 @@ attribution obligation. Provenance is recorded here anyway.
 | `health.jpg` | Biocomputing | Openverse / Image Data Resource — idr0160 fluorescence microscopy | CC0 1.0 |
 | `cyber.jpg` | Cybersecurity | Wikimedia Commons — "Fiber Optical Cable" | CC0 1.0 |
 | `agriculture.jpg` | Agriculture | Wikimedia Commons — "Ears of wheat at dusk (Unsplash)" | CC0 1.0 |
+| `energy.jpg` | Energy | Rendered in-house from Landauer's own measured NVIDIA Tesla T4 power traces | Ours, no licence |
 | `research.jpg` | Artificial Intelligence | Wikimedia Commons — "Nvidia G70 die shot" | Public domain |
 
 Google Images was deliberately not used as a source: most results are copyrighted and
