@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700'], 
 
 export const metadata: Metadata = {
   title: 'Arbiter',
-  description: 'Decision, safety, and infrastructure for the work that has to be right.',
+  description: 'Technology built on research, for the systems that have to be right: from the energy AI uses to the money it moves.',
   themeColor: '#ffffff',
 }
 

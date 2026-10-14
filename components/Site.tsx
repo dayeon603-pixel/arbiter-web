@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Lenis from 'lenis'
-import GradientCanvas from './GradientCanvas'
 import LogoMark from './LogoMark'
 import { topics, hero, company, founder, contactHref, legal } from '@/lib/data'
 
@@ -52,15 +51,15 @@ function TopBar() {
   )
 }
 
-/** Logo, name, one line, and a rule of micro-type. Nothing else above the fold. */
+/** The opening frame: a pale picture with the name set large in glass, one line beneath. */
 function Identity() {
   return (
-    <section id="top" className="id">
-      <GradientCanvas />
-      <div className="wrap id__inner">
-        <div className="id__mark"><LogoMark size={58} /></div>
-        <h1 className="id__word">Arbiter</h1>
-        <p className="id__line">{hero.line}</p>
+    <section id="top" className="opening">
+      <img className="opening__img" src="/img/hero.jpg" alt="" />
+      <div className="wrap opening__inner">
+        <h1 className="opening__word">Arbiter</h1>
+        <p className="opening__line">{hero.line}</p>
+        <p className="opening__cue" aria-hidden>Scroll to see what we build</p>
       </div>
     </section>
   )

@@ -1,7 +1,7 @@
 export type Topic = { id: string; fig: string; name: string; image: string }
 
 export const hero = {
-  line: 'Decision, safety, and infrastructure for the work that has to be right.',
+  line: 'Technology built on research, for the systems that have to be right: from the energy AI uses to the money it moves.',
 }
 
 /** The fields the company works in. Names and imagery only, no product detail on the front page. */
@@ -16,12 +16,12 @@ export const topics: Topic[] = [
 
 export const company = {
   kicker: 'The company',
-  title: 'Six domains. One standard of proof.',
+  title: 'Six fields. One standard of proof.',
   body: [
-    'Arbiter builds decision, safety, and infrastructure for regulated and high-stakes domains: places where being wrong is expensive and someone is required to be right.',
-    'Every product is held to the same standard. It has to work under scrutiny, hold up when the record is examined years later, and state plainly what it can and cannot prove.',
-    'The company was registered in 2026, after the work was already underway. Each product was researched, engineered, and tested as working software before there was an entity to hold it. Nothing here began as a business plan waiting for a build.',
-    'The unifying idea is the same in every domain. Take an ambiguous input, apply the rules, make the call, and keep proof a third party can check.',
+    'We build systems for work where a wrong number is expensive.',
+    'Arbiter is a technology company built on research. We work across six fields, finance, biocomputing, artificial intelligence, cybersecurity, agriculture, and energy: from what an AI request really costs in energy to whether a harvest survives the trip to market.',
+    'Every product starts as research and is tested as working software before it is offered to anyone. Each one has to work under scrutiny, keep a record a third party can check, and state plainly what it can and cannot prove.',
+    'Arbiter was registered in 2026, after the work was already underway. Nothing here began as a business plan waiting for a build.',
   ],
 }
 
